@@ -44,8 +44,6 @@ public class User {
     private Level level;
     @NotNull(message = "User::point must not be null")
     private Integer point;
-    @NotNull(message = "User::payCode must not be null")
-    private String payCode;
 
     public User(String name, String username, String password, String email) {
         this.id = UUID.randomUUID().toString();
@@ -58,13 +56,5 @@ public class User {
         this.paid = 0;
         this.level = Level.LEVEL1;
         this.point = 0;
-        Map<String, String> config = new HashMap<String, String>() {{
-            put("id", id);
-        }};
-        this.payCode = Base64.getEncoder()
-                .encodeToString(new Gson()
-                        .toJson(config, new TypeToken<Map<String, String>>() {
-                        }.getType())
-                        .getBytes());
     }
 }

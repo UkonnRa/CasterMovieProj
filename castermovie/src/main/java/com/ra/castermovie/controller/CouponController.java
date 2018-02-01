@@ -29,13 +29,13 @@ public class CouponController {
         return couponLogic.update(vo.getId(), new Coupon(vo.getId(), vo.getCondition(), vo.getTheaterId(), vo.getName(), vo.getDescription(), vo.getDiscount(), vo.getExpiredType(), vo.getExpiredTime(), vo.getLimitPerUser(), vo.getLimitNumber()));
     }
 
-    @GetMapping(value = "findallBtTheaterid/{theaterId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<List<Coupon>> findAllByTheaterId(@PathVariable String theaterId) {
+    @GetMapping(value = "findallBtTheaterid", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Result<List<Coupon>> findAllByTheaterId(@RequestParam String theaterId) {
         return couponLogic.findAllByTheaterId(theaterId);
     }
 
-    @GetMapping(value = "findallbytheateridandname/{theaterId}/{name}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<List<Coupon>> findAllByTheaterIdAndName(@PathVariable String theaterId, @PathVariable String name) {
+    @GetMapping(value = "findallbytheateridandname", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Result<List<Coupon>> findAllByTheaterIdAndName(@RequestParam String theaterId, @RequestParam String name) {
         return couponLogic.findAllByTheaterIdAndName(theaterId, name);
     }
 

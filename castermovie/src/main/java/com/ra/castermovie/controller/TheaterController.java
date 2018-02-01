@@ -40,13 +40,13 @@ public class TheaterController {
     }
 
     @GetMapping(value = "findallshowplaying", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<List<PublicInfo>> findAllShowPlaying(@RequestBody FindAllShowPlayingVO vo) {
+    Result<List<PublicInfo>> findAllShowPlaying(@ModelAttribute FindAllShowPlayingVO vo) {
         Pair<Instant, Instant> timePair = Pair.of(Instant.ofEpochMilli(vo.getTimeFrom()), Instant.ofEpochMilli(vo.getTimeTo()));
         return theaterLogic.findAllShowPlaying(vo.getTheaterId(), timePair, vo.getGenreList());
     }
 
-    @GetMapping(value = "findalltheater/{regionId:\\d{6}}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<List<Theater>> findAllTheater(@PathVariable int regionId) {
+    @GetMapping(value = "findalltheater", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Result<List<Theater>> findAllTheater(@RequestParam int regionId) {
         return theaterLogic.findAllTheater(regionId);
     }
 
