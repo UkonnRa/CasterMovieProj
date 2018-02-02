@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class FindAllShowPlayingVO {
     private String theaterId;
-    private long timeFrom;
-    private long timeTo;
+    private Long timeFrom;
+    private Long timeTo;
     private List<Genre> genreList;
 }

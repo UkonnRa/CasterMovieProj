@@ -41,7 +41,9 @@ public class TheaterController {
 
     @GetMapping(value = "findallshowplaying", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<List<PublicInfo>> findAllShowPlaying(@ModelAttribute FindAllShowPlayingVO vo) {
-        Pair<Instant, Instant> timePair = Pair.of(Instant.ofEpochMilli(vo.getTimeFrom()), Instant.ofEpochMilli(vo.getTimeTo()));
+        Instant from = vo.getTimeFrom() == null ? Instant.MIN : Instant.ofEpochMilli(vo.getTimeFrom());
+        Instant to = vo.getTimeTo() == null ? Instant.MAX : Instant.ofEpochMilli(vo.getTimeTo());
+        Pair<Instant, Instant> timePair = Pair.of(from, to);
         return theaterLogic.findAllShowPlaying(vo.getTheaterId(), timePair, vo.getGenreList());
     }
 

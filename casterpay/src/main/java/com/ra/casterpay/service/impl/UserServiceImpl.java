@@ -1,8 +1,8 @@
 package com.ra.casterpay.service.impl;
 
 import com.ra.casterpay.model.User;
-import com.ra.casterpay.repository.UserRepository;
 import com.ra.casterpay.model.user.Role;
+import com.ra.casterpay.repository.UserRepository;
 import com.ra.casterpay.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

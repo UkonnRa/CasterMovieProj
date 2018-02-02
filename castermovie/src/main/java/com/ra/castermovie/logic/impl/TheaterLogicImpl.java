@@ -3,11 +3,13 @@ package com.ra.castermovie.logic.impl;
 import com.ra.castermovie.logic.TheaterLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.PublicInfo;
+import com.ra.castermovie.model.Region;
 import com.ra.castermovie.model.Show;
 import com.ra.castermovie.model.Theater;
 import com.ra.castermovie.model.common.Genre;
 import com.ra.castermovie.model.theater.State;
 import com.ra.castermovie.service.PublicInfoService;
+import com.ra.castermovie.service.RegionService;
 import com.ra.castermovie.service.ShowService;
 import com.ra.castermovie.service.TheaterService;
 import com.ra.castermovie.util.HttpRestUtil;
@@ -25,19 +27,23 @@ public class TheaterLogicImpl implements TheaterLogic {
     private final TheaterService theaterService;
     private final PublicInfoService publicInfoService;
     private final ShowService showService;
+    private final RegionService regionService;
 
     @Value("${casterpay.new-user}")
     private String newUserUrl;
 
     @Autowired
-    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService) {
+    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RegionService regionService) {
         this.theaterService = theaterService;
         this.publicInfoService = publicInfoService;
         this.showService = showService;
+        this.regionService = regionService;
     }
 
     @Override
     public synchronized Result<Theater> register(String password, String name, int regionId, String location, int seatNumber) {
+        Region region = regionService.findById(regionId).block();
+        if (region == null) return Result.fail("地区信息不存在");
         Theater t;
         String id;
         do {
@@ -59,7 +65,7 @@ public class TheaterLogicImpl implements TheaterLogic {
         map.put("id", theaterId);
         map.put("role", "THEATER");
         map.put("initMoney", initMoney);
-        HttpRestUtil.httpPost(newUserUrl, map);
+        HttpRestUtil.httpPost(newUserUrl, map, Result.class);
 
         return update(theaterId, theater);
     }
@@ -74,6 +80,8 @@ public class TheaterLogicImpl implements TheaterLogic {
     public Result<Theater> newPublicInfo(String theaterId, String showId, List<Instant> schedules, Integer basePrice, Map<Integer, Double> priceTable) {
         Theater t = theaterService.findById(theaterId).block();
         if (t == null || t.getState() != State.FINISHED) return Result.fail("剧院不存在");
+        Show show = showService.findById(showId).block();
+        if (show == null) return Result.fail("该电影不存在");
         List<String> publicInfos = t.getPublicInfos();
         if (publicInfos == null) publicInfos = new ArrayList<>();
         Boolean[] booleans = new Boolean[t.getSeatNumber()];

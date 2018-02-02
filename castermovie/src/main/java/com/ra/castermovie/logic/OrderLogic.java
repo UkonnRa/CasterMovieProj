@@ -2,8 +2,6 @@ package com.ra.castermovie.logic;
 
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.Order;
-import com.ra.castermovie.model.PayInfo;
-import com.ra.castermovie.model.RetrieveInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -20,11 +18,7 @@ public interface OrderLogic {
 
     Result<Order> payOrder(String userId, String orderId);
 
-    Result<Order> receivePayInfo(PayInfo payInfo);
-
     Result<Map<String, List<String>>> distributeTicket(String publicInfoId);
 
     Result<Order> retrieveOrder(String orderId);
-
-    Result<Order> receiveRetrieveInfo(RetrieveInfo info);
 }

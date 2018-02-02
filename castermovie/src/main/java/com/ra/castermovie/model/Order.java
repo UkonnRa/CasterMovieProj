@@ -23,6 +23,7 @@ public class Order {
     private Condition condition;
     @NotNull(message = "Order::userId must not be null")
     private String userId;
+    private String payUserId;
     @NotNull(message = "Order::publicInfoId must not be null")
     private String publicInfoId;
     @NotNull(message = "Order::originalCost must not be null")
@@ -41,6 +42,7 @@ public class Order {
         this.id = UUID.randomUUID().toString();
         this.condition = Condition.EXISTING;
         this.userId = userId;
+        this.payUserId = null;
         this.publicInfoId = publicInfoId;
         this.originalCost = originalCost;
         this.actualCost = actualCost;

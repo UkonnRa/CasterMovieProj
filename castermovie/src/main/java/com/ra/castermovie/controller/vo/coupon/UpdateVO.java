@@ -1,6 +1,5 @@
 package com.ra.castermovie.controller.vo.coupon;
 
-import com.ra.castermovie.model.Coupon;
 import com.ra.castermovie.model.common.Condition;
 import com.ra.castermovie.model.coupon.ExpiredType;
 import lombok.AllArgsConstructor;
@@ -21,4 +20,5 @@ public class UpdateVO {
     private Long expiredTime;
     private Integer limitPerUser;
     private Integer limitNumber;
+    private Integer consumingPoint;
 }

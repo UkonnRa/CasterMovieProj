@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ValidateVO {
     private String id;
-    private String email;
 }

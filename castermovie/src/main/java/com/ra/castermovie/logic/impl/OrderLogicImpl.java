@@ -100,6 +100,7 @@ public class OrderLogicImpl implements OrderLogic {
 
         if (!publicInfo.getTheaterId().equals(theaterId)) return Result.fail("该订单不属于该剧场");
         if (order.getSeats().contains(null)) return Result.fail("该订单未配票，不能check in");
+        if (order.getOrderState() != OrderState.READY) return Result.fail("该订单未完成");
 
         order.setOrderState(OrderState.FINISHED);
         Order result = orderService.update(orderId, order).block();
@@ -138,30 +139,36 @@ public class OrderLogicImpl implements OrderLogic {
     }
 
     @Override
+    // payUser and orderUser may not the same
     public Result<Order> payOrder(String userId, String orderId) {
         Order order = orderService.findById(orderId).block();
         if (order == null) return Result.fail("订单不存在");
         PublicInfo p = publicInfoService.findById(order.getPublicInfoId()).block();
         if (order == null) return Result.fail("剧集信息不存在");
+        User payUser = userService.findById(userId).block();
+        if (payUser == null) return Result.fail("付款用户不存在");
+
+        order.setPayUserId(userId);
+        Order result = orderService.update(orderId, order).block();
 
         Map<String, Object> bodyMap = new HashMap<>();
         bodyMap.put("userId", userId);
         bodyMap.put("theaterId", p.getTheaterId());
         bodyMap.put("orderId", order.getId());
         bodyMap.put("money", order.getActualCost());
-        HttpRestUtil.httpPost(payOrderUrl, bodyMap);
+        Result back = HttpRestUtil.httpPost(payOrderUrl, bodyMap, Result.class);
+        log.info("OrderLogic.payOrder ==> {}", back);
+        String backOrderId = (String) back.getValue();
+        String backMessage = back.getMessage();
+        if (backOrderId != null) {
+            Order backOrder = orderService.findById(backOrderId).block();
+            if (backOrder == null) return Result.fail("订单不存在");
+            backOrder.setOrderState(OrderState.READY);
+            Order backResult = orderService.update(backOrderId, backOrder).block();
+            return backResult == null ? Result.fail("保存订单失败") : Result.succeed(backResult);
+        }
 
-        return Result.succeed(orderService.findById(orderId).block());
-    }
-
-    @Override
-    public synchronized Result<Order> receivePayInfo(PayInfo payInfo) {
-        Order order = orderService.findById(payInfo.getOrderId()).block();
-        if (order == null) return Result.fail("不存在该订单，付款失败");
-        if (!payInfo.getPayOk()) return Result.fail(payInfo.getMessage());
-        order.setOrderState(OrderState.READY);
-        Order result = orderService.update(order.getId(), order).block();
-        return result == null ? Result.fail("接受pay info失败，请稍等后重新查看") : Result.succeed(result);
+        return Result.fail(backMessage);
     }
 
     @Override
@@ -219,8 +226,7 @@ public class OrderLogicImpl implements OrderLogic {
         long interval = ChronoUnit.DAYS.between(now, Instant.ofEpochMilli(publicInfo.getSchedule()));
         if (order.getOrderState() == OrderState.CANCELLED || order.getOrderState() == OrderState.FINISHED) {
             return Result.fail("订单状态不符合条件，无法取消");
-        }
-        if (order.getOrderState() == OrderState.READY) {
+        } else if (order.getOrderState() == OrderState.READY) {
             Map<String, Object> bodyMap = new HashMap<>();
             bodyMap.put("orderId", orderId);
             if (interval >= MIN_FULL_RETRIEVE_DAY) {
@@ -228,28 +234,21 @@ public class OrderLogicImpl implements OrderLogic {
             } else if (interval > 0) {
                 bodyMap.put("discount", String.valueOf(((MIN_FULL_RETRIEVE_DAY - interval) * 1.0 / MIN_FULL_RETRIEVE_DAY)));
             }
-            HttpRestUtil.httpPost(retrieveOrderUrl, bodyMap);
+            Result back = HttpRestUtil.httpPost(retrieveOrderUrl, bodyMap, Result.class);
+            String backOrderId = (String) back.getValue();
+            String backMessage = back.getMessage();
+            if (backOrderId != null) {
+                Order backOrder = orderService.findById(backOrderId).block();
+                if (backOrder == null) return Result.fail("订单不存在");
+                backOrder.setOrderState(OrderState.CANCELLED);
+                Order backResult = orderService.update(backOrderId, backOrder).block();
+                return backResult == null ? Result.fail("保存订单失败") : Result.succeed(backResult);
+            }
+        } else if (order.getOrderState() == OrderState.UNPAID) {
+            order.setOrderState(OrderState.CANCELLED);
+            Order result = orderService.update(orderId, order).block();
+            return result == null ? Result.fail("存储订单失败") : Result.succeed(result);
         }
-        return Result.succeed(orderService.findById(orderId).block());
-    }
-
-    @Override
-    public synchronized Result<Order> receiveRetrieveInfo(RetrieveInfo info) {
-        if (!info.getRetrieveOk()) return Result.fail(info.getMessage());
-
-        Order order = orderService.findById(info.getOrderId()).block();
-        if (order == null) return Result.fail("订单不存在");
-        PublicInfo publicInfo = publicInfoService.findById(order.getPublicInfoId()).block();
-        if (publicInfo == null) return Result.fail("剧集信息不存在");
-        order.setOrderState(OrderState.CANCELLED);
-        Order result = orderService.update(order.getId(), order).block();
-        if (publicInfo.getSchedule() >= System.currentTimeMillis()) {
-            List<Boolean> seats = publicInfo.getSeatDistribution();
-            order.getSeats().forEach(i -> seats.set(i, true));
-            publicInfo.setSeatDistribution(seats);
-            return result == null && publicInfoService.update(publicInfo.getId(), publicInfo) == null ? Result.fail("数据库异常，请重新刷新") : Result.succeed(result);
-        } else {
-            return result == null ? Result.fail("数据库异常，请重新刷新") : Result.succeed(result);
-        }
+        return Result.fail("遇见未知的订单状态");
     }
 }

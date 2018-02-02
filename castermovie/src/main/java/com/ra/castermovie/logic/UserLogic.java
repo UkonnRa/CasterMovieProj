@@ -8,7 +8,7 @@ public interface UserLogic {
 
     Result<User> login(String username, String password);
 
-    Result<User> validate(String id, String email);
+    Result<User> validate(String id);
 
     Result<User> validateCheck(String bString);
 
@@ -16,4 +16,6 @@ public interface UserLogic {
     Result<User> cancelUser(String id);
 
     Result<User> update(String id, User user);
+
+    Result<User> recharge(String id, Integer money);
 }

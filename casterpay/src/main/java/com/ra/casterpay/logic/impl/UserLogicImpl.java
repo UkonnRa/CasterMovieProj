@@ -21,6 +21,6 @@ public class UserLogicImpl implements UserLogic {
     @Override
     public Result<String> newUser(String id, Role role, Integer initMoney) {
         User user = userService.save(new User(id, role, initMoney)).block();
-        return user == null? Result.fail("无法创建用户"): Result.succeed(user.getId());
+        return user == null ? Result.fail("无法创建用户") : Result.succeed(user.getId());
     }
 }

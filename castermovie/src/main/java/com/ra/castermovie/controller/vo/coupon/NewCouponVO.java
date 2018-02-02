@@ -17,4 +17,5 @@ public class NewCouponVO {
     private Long expiredTime;
     private Integer limitPerUser;
     private Integer limitNumber;
+    private Integer consumingPoint;
 }

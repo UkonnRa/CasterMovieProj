@@ -1,4 +1,4 @@
-package com.ra.castermovie.controller.vo.user;
+package com.ra.castermovie.controller.vo.couponinfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValidateCheckVO {
-    private String bString;
+public class GetCouponVO {
+    private String userId;
+    private String couponId;
 }

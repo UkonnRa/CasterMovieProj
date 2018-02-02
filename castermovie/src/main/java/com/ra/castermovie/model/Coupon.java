@@ -36,8 +36,11 @@ public class Coupon {
     private Integer limitPerUser;
     @NotNull(message = "Coupon::limitNumber must not be null")
     private Integer limitNumber;
+    @NotNull(message = "Coupon::consumingPoint must not be null")
+    private Integer consumingPoint;
 
-    public Coupon(String theaterId, String name, String description, Double discount, ExpiredType expiredType, Long expiredTime, Integer limitPerUser, Integer limitNumber) {
+
+    public Coupon(String theaterId, String name, String description, Double discount, ExpiredType expiredType, Long expiredTime, Integer limitPerUser, Integer limitNumber, Integer consumingPoint) {
         this.id = UUID.randomUUID().toString();
         this.condition = Condition.EXISTING;
         this.theaterId = theaterId;
@@ -48,5 +51,6 @@ public class Coupon {
         this.expiredTime = expiredTime;
         this.limitPerUser = limitPerUser;
         this.limitNumber = limitNumber;
+        this.consumingPoint = consumingPoint;
     }
 }

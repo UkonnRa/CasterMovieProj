@@ -5,7 +5,6 @@ import com.ra.castermovie.controller.vo.coupon.UpdateVO;
 import com.ra.castermovie.logic.CouponLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.Coupon;
-import com.ra.castermovie.model.coupon.ExpiredType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,15 +20,15 @@ public class CouponController {
 
     @PostMapping(value = "newcoupon", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Coupon> newCoupon(@RequestBody NewCouponVO vo) {
-        return couponLogic.newCoupon(vo.getTheaterId(), vo.getName(), vo.getDescription(), vo.getDiscount(), vo.getExpiredType(), vo.getExpiredTime(), vo.getLimitPerUser(), vo.getLimitNumber());
+        return couponLogic.newCoupon(vo.getTheaterId(), vo.getName(), vo.getDescription(), vo.getDiscount(), vo.getExpiredType(), vo.getExpiredTime(), vo.getLimitPerUser(), vo.getLimitNumber(), vo.getConsumingPoint());
     }
 
     @PostMapping(value = "update", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Coupon> update(@RequestBody UpdateVO vo) {
-        return couponLogic.update(vo.getId(), new Coupon(vo.getId(), vo.getCondition(), vo.getTheaterId(), vo.getName(), vo.getDescription(), vo.getDiscount(), vo.getExpiredType(), vo.getExpiredTime(), vo.getLimitPerUser(), vo.getLimitNumber()));
+        return couponLogic.update(vo.getId(), new Coupon(vo.getId(), vo.getCondition(), vo.getTheaterId(), vo.getName(), vo.getDescription(), vo.getDiscount(), vo.getExpiredType(), vo.getExpiredTime(), vo.getLimitPerUser(), vo.getLimitNumber(), vo.getConsumingPoint()));
     }
 
-    @GetMapping(value = "findallBtTheaterid", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "findallbytheaterid", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<List<Coupon>> findAllByTheaterId(@RequestParam String theaterId) {
         return couponLogic.findAllByTheaterId(theaterId);
     }

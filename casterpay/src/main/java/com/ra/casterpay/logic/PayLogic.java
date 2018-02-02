@@ -1,7 +1,6 @@
 package com.ra.casterpay.logic;
 
 import com.ra.casterpay.logic.common.Result;
-import com.ra.casterpay.model.User;
 
 public interface PayLogic {
     double theaterGainRate = 0.90;

@@ -1,5 +1,6 @@
 package com.ra.castermovie.controller;
 
+import com.ra.castermovie.controller.vo.couponinfo.GetCouponVO;
 import com.ra.castermovie.logic.CouponInfoLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.CouponInfo;
@@ -15,9 +16,9 @@ public class CouponInfoController {
     @Autowired
     private CouponInfoLogic couponInfoLogic;
 
-    @GetMapping(value = "getcoupon", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<CouponInfo> getCoupon(@RequestParam String userId, @RequestParam String couponId) {
-        return couponInfoLogic.getCoupon(userId, couponId);
+    @PostMapping(value = "getcoupon", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Result<CouponInfo> getCoupon(@RequestBody GetCouponVO vo) {
+        return couponInfoLogic.getCoupon(vo.getUserId(), vo.getCouponId());
     }
 
     @GetMapping(value = "findallbyuserid", consumes = MediaType.APPLICATION_JSON_VALUE)

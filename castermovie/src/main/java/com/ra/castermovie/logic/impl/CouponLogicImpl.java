@@ -20,8 +20,8 @@ public class CouponLogicImpl implements CouponLogic {
     }
 
     @Override
-    public Result<Coupon> newCoupon(String theaterId, String name, String description, Double discount, ExpiredType expiredType, Long expiredTime, Integer limitPerUser, Integer limitNumber) {
-        Coupon coupon = couponService.save(new Coupon(theaterId, name, description, discount, expiredType, expiredTime, limitPerUser, limitNumber)).block();
+    public Result<Coupon> newCoupon(String theaterId, String name, String description, Double discount, ExpiredType expiredType, Long expiredTime, Integer limitPerUser, Integer limitNumber, Integer consumingPoint) {
+        Coupon coupon = couponService.save(new Coupon(theaterId, name, description, discount, expiredType, expiredTime, limitPerUser, limitNumber, consumingPoint)).block();
         return coupon == null ? Result.fail("数据库异常，优惠券信息保存失败") : Result.succeed(coupon);
     }
 

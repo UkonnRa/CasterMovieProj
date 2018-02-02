@@ -1,7 +1,5 @@
 package com.ra.castermovie.model;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.ra.castermovie.model.common.Condition;
 import com.ra.castermovie.model.user.Level;
 import com.ra.castermovie.model.user.State;
@@ -13,9 +11,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -42,6 +37,7 @@ public class User {
     private Integer paid;
     @NotNull(message = "User::level must not be null")
     private Level level;
+    // 一分钱一个点，以实际支付为准
     @NotNull(message = "User::point must not be null")
     private Integer point;
 

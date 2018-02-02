@@ -6,10 +6,7 @@ import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/castermovie/user")
@@ -29,12 +26,12 @@ public class UserController {
 
     @PostMapping(value = "validate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<User> validate(@RequestBody ValidateVO vo) {
-        return userLogic.validate(vo.getId(), vo.getEmail());
+        return userLogic.validate(vo.getId());
     }
 
-    @PostMapping(value = "validatecheck", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<User> validateCheck(@RequestBody ValidateCheckVO vo) {
-        return userLogic.validateCheck(vo.getBString());
+    @GetMapping(value = "validatecheck/{bString}", consumes = MediaType.ALL_VALUE)
+    Result<User> validateCheck(@PathVariable String bString) {
+        return userLogic.validateCheck(bString);
     }
 
     @PostMapping(value = "canceluser", consumes = MediaType.APPLICATION_JSON_VALUE)
