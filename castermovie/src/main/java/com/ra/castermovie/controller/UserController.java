@@ -1,6 +1,9 @@
 package com.ra.castermovie.controller;
 
-import com.ra.castermovie.controller.vo.user.*;
+import com.ra.castermovie.controller.vo.user.CancelUserVO;
+import com.ra.castermovie.controller.vo.user.RegisterVO;
+import com.ra.castermovie.controller.vo.user.UpdateVO;
+import com.ra.castermovie.controller.vo.user.ValidateVO;
 import com.ra.castermovie.logic.UserLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.User;
@@ -19,10 +22,10 @@ public class UserController {
         return userLogic.register(vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail());
     }
 
-    @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<User> login(@RequestBody LoginVO vo) {
-        return userLogic.login(vo.getUsername(), vo.getPassword());
-    }
+//    @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE)
+//    Result<User> login(@RequestBody LoginVO vo) {
+//        return userLogic.login(vo.getUsername(), vo.getPassword());
+//    }
 
     @PostMapping(value = "validate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<User> validate(@RequestBody ValidateVO vo) {
@@ -41,7 +44,7 @@ public class UserController {
 
     @PostMapping(value = "update", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<User> update(@RequestBody UpdateVO vo) {
-        return userLogic.update(vo.getId(), new User(vo.getId(), vo.getCondition(), vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail(), vo.getState(), vo.getPaid(), vo.getLevel(), vo.getPoint()));
+        return userLogic.update(vo.getId(), new User(vo.getId(), vo.getCondition(), vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail(), vo.getRole(), vo.getState(), vo.getPaid(), vo.getLevel(), vo.getPoint()));
     }
 
 }

@@ -3,7 +3,9 @@ package com.ra.castermovie.util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -21,8 +23,8 @@ public class HttpRestUtil {
         headers.setAccept(Collections.singletonList(MediaType.ALL));
         HttpEntity<String> entity = new HttpEntity<>(reqBody, headers);
         URI uri = URI.create(url);
-        ResponseEntity<T> r = template.exchange(uri, HttpMethod.POST, entity, tClass);
-        log.info("castermovie ResponseEntity ===> {}", r.getBody());
-        return r.getBody();
+        T t = template.postForObject(uri, entity, tClass);
+        log.info("castermovie ResponseEntity ===> {}", t);
+        return t;
     }
 }

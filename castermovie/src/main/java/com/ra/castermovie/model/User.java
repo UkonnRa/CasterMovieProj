@@ -2,6 +2,7 @@ package com.ra.castermovie.model;
 
 import com.ra.castermovie.model.common.Condition;
 import com.ra.castermovie.model.user.Level;
+import com.ra.castermovie.model.user.Role;
 import com.ra.castermovie.model.user.State;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,6 +32,8 @@ public class User {
     private String password;
     @NotNull(message = "User::email must not be null")
     private String email;
+    @NotNull(message = "User::role must not be null")
+    private Role role;
     @NotNull(message = "User::state must not be null")
     private State state;
     @NotNull(message = "User::paid must not be null")
@@ -41,13 +44,14 @@ public class User {
     @NotNull(message = "User::point must not be null")
     private Integer point;
 
-    public User(String name, String username, String password, String email) {
+    public User(String name, String username, String password, String email, Role role) {
         this.id = UUID.randomUUID().toString();
         this.condition = Condition.EXISTING;
         this.name = name;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.role = role;
         this.state = State.UNCHECKED;
         this.paid = 0;
         this.level = Level.LEVEL1;

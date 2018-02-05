@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.ra.castermovie.logic.UserLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.User;
+import com.ra.castermovie.model.user.Role;
 import com.ra.castermovie.model.user.State;
 import com.ra.castermovie.service.MailService;
 import com.ra.castermovie.service.UserService;
@@ -38,7 +39,7 @@ public class UserLogicImpl implements UserLogic {
     public Result<User> register(String name, String username, String password, String email) {
         User u;
         try {
-            u = userService.save(new User(name, username, password, email)).block();
+            u = userService.save(new User(name, username, password, email, Role.CUSTOMER)).block();
         } catch (Exception e) {
             e.printStackTrace();
             return Result.fail(e.getMessage());
