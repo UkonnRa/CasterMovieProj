@@ -1,44 +1,51 @@
 import React from 'react';
-import { Modal, Form, Input, Radio } from 'antd';
-const FormItem = Form.Item;
+import {login} from '../redux/auth/actions'
+import {connect} from 'react-redux'
+import {Form, Input, Modal} from 'antd';
 
 const LoginForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onCreate, form } = props;
-        const { getFieldDecorator } = form;
+        const {visible, onCancel, form, login} = props;
+        const {getFieldDecorator} = form;
+
+        const formToValues = () => {
+            form.validateFields((err, values) => {
+                if (err) return;
+                form.resetFields();
+                onCancel();
+                login(values)
+            })
+        };
+
         return (
             <Modal
                 visible={visible}
-                title="Create a new collection"
-                okText="Create"
+                title="LOGIN"
+                okText="Login"
                 onCancel={onCancel}
-                onOk={onCreate}
+                onOk={formToValues}
             >
                 <Form layout="vertical">
-                    <FormItem label="Title">
-                        {getFieldDecorator('title', {
-                            rules: [{ required: true, message: 'Please input the title of collection!' }],
+                    <Form.Item label="Username">
+                        {getFieldDecorator('username', {
+                            rules: [{required: true, message: 'Please input username'}],
                         })(
-                            <Input />
-                            )}
-                    </FormItem>
-                    <FormItem label="Description">
-                        {getFieldDecorator('description')(<Input type="textarea" />)}
-                    </FormItem>
-                    <FormItem className="collection-create-form_last-form-item">
-                        {getFieldDecorator('modifier', {
-                            initialValue: 'public',
-                        })(
-                            <Radio.Group>
-                                <Radio value="public">Public</Radio>
-                                <Radio value="private">Private</Radio>
-                            </Radio.Group>
-                            )}
-                    </FormItem>
+                            <Input/>
+                        )}
+                    </Form.Item>
+                    <Form.Item label="Password">
+                        {getFieldDecorator('password')(<Input type="password"/>)}
+                    </Form.Item>
                 </Form>
             </Modal>
         );
     }
 );
 
-export default LoginForm;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        login: (values) => dispatch(login(values))
+    }
+};
+
+export default connect(null, mapDispatchToProps)(LoginForm);

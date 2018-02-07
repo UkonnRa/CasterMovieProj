@@ -1,0 +1,2 @@
+export const POPOVER_SHOW = "POPOVER_SHOW";
+export const POPOVER_FADE = "POPOVER_FADE";

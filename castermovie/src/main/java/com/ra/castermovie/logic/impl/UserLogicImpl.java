@@ -2,6 +2,7 @@ package com.ra.castermovie.logic.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.ra.castermovie.auth.util.TokenAuthenticationService;
 import com.ra.castermovie.logic.UserLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.User;
@@ -10,6 +11,8 @@ import com.ra.castermovie.model.user.State;
 import com.ra.castermovie.service.MailService;
 import com.ra.castermovie.service.UserService;
 import com.ra.castermovie.util.HttpRestUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -47,13 +50,13 @@ public class UserLogicImpl implements UserLogic {
         return u == null ? Result.fail("数据库连接失败") : Result.succeed(u);
     }
 
-    @Override
-    public Result<User> login(String username, String password) {
-        User u = userService.findByUsername(username).block();
-        if (u == null) return Result.fail("该用户不存在");
-        if (u.getState() != State.REGISTERED) return Result.fail("该用户不处于" + State.REGISTERED.tip + "状态");
-        return Result.succeed(u);
-    }
+//    @Override
+//    public Result<User> login(String username, String password) {
+//        User u = userService.findByUsername(username).block();
+//        if (u == null) return Result.fail("该用户不存在");
+//        if (u.getState() != State.REGISTERED) return Result.fail("该用户不处于" + State.REGISTERED.tip + "状态");
+//        return Result.succeed(u);
+//    }
 
     @Override
     public Result<User> validate(String id) {
@@ -120,5 +123,19 @@ public class UserLogicImpl implements UserLogic {
         map.put("money", money);
         HttpRestUtil.httpPost(rechargeUrl, map, Result.class);
         return Result.succeed(user);
+    }
+
+    @Override
+    public Result<User> getByJwt(String jwtString) {
+        Claims jwt = Jwts.parser()
+                .setSigningKey(TokenAuthenticationService.SECRET)
+                .parseClaimsJws(jwtString).getBody();
+        User user = userService.findByUsername(jwt.get("username", String.class)).block();
+        if (user != null) {
+            return Result.succeed(user);
+        } else {
+            return Result.fail("用户不存在");
+        }
+
     }
 }

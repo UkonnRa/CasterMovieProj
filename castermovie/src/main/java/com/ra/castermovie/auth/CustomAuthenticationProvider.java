@@ -33,7 +33,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         User user = userService.findByUsername(name).block();
 
         // 认证逻辑
-        if (user.getUsername().equals(name) && user.getPassword().equals(password)) {
+        if (user != null && user.getUsername().equals(name) && user.getPassword().equals(password)) {
 
             // 这里设置权限和角色
             ArrayList<GrantedAuthority> authorities = new ArrayList<>();

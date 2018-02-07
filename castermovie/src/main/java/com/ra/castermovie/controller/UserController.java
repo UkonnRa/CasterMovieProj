@@ -47,4 +47,9 @@ public class UserController {
         return userLogic.update(vo.getId(), new User(vo.getId(), vo.getCondition(), vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail(), vo.getRole(), vo.getState(), vo.getPaid(), vo.getLevel(), vo.getPoint()));
     }
 
+    @GetMapping(value = "getbyjwt", consumes = MediaType.ALL_VALUE)
+    Result<User> getByJwt(@RequestParam String jwt) {
+        return userLogic.getByJwt(jwt);
+    }
+
 }

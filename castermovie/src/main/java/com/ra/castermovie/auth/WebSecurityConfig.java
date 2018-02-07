@@ -5,7 +5,6 @@ import com.ra.castermovie.auth.filter.JWTLoginFilter;
 import com.ra.castermovie.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,8 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 // 对请求进行认证
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, permittedUrls).permitAll()
-                .antMatchers(HttpMethod.GET, permittedUrls).permitAll()
+                .antMatchers(permittedUrls).permitAll()
                 // 所有请求需要身份认证
                 .anyRequest().authenticated()
                 .and()
@@ -49,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         // 使用自定义身份验证组件
         auth.authenticationProvider(new CustomAuthenticationProvider(userService));
 

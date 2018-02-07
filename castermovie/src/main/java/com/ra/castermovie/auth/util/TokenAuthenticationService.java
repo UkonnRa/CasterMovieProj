@@ -15,10 +15,10 @@ import java.util.Date;
 import java.util.List;
 
 public class TokenAuthenticationService {
-    private static final long EXPIRATION_TIME = 3_600_000;     // 1h
+    private static final long EXPIRATION_TIME = 24 * 3_600_000;     // 1d
     private static final String TOKEN_PREFIX = "Bearer";        // Token前缀
     private static final String HEADER_STRING = "Authorization";// 存放Token的Header Key
-    private static String SECRET = "Y2FzdGVybW92aWVfc2VjcmV0X2tleQ==";// JWT密码
+    public static String SECRET = "Y2FzdGVybW92aWVfc2VjcmV0X2tleQ==";// JWT密码
 
     // JWT生成方法
     public static void addAuthentication(HttpServletResponse response, String username) {
@@ -27,8 +27,9 @@ public class TokenAuthenticationService {
         String JWT = Jwts.builder()
                 // 保存权限（角色）
 //                .claim("authorities", "ROLE_ADMIN,AUTH_WRITE")
+                .claim("username", username)
                 // 用户名写入标题
-                .setSubject(username)
+//                .setSubject(username)
                 // 有效期设置
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 // 签名设置
@@ -60,7 +61,7 @@ public class TokenAuthenticationService {
                     .getBody();
 
             // 拿用户名
-            String user = claims.getSubject();
+            String user = claims.get("username", String.class);
 
             // 得到 权限（角色）
 //            List<GrantedAuthority> authorities =  AuthorityUtils.commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
