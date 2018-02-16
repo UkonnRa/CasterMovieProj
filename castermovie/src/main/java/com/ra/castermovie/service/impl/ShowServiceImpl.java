@@ -1,22 +1,32 @@
 package com.ra.castermovie.service.impl;
 
+import com.ra.castermovie.model.PublicInfo;
 import com.ra.castermovie.model.Show;
 import com.ra.castermovie.model.common.Condition;
 import com.ra.castermovie.model.common.Genre;
+import com.ra.castermovie.repo.PublicInfoRepository;
 import com.ra.castermovie.repo.ShowRepository;
+import com.ra.castermovie.service.PublicInfoService;
 import com.ra.castermovie.service.ShowService;
 import com.ra.castermovie.service.util.Filters;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ShowServiceImpl implements ShowService {
     @Autowired
     private ShowRepository showRepository;
+    @Autowired
+    private PublicInfoRepository publicInfoRepository;
 
     @Override
     public Flux<Show> findAllByName(String name) {
@@ -26,6 +36,20 @@ public class ShowServiceImpl implements ShowService {
     @Override
     public Flux<Show> findAllByGenreIn(List<Genre> genreList) {
         return Filters.filterDeleted(showRepository.findAllByGenreIn(genreList), Show.class);
+    }
+
+    @Override
+    public Flux<Show> findAllByGenreInAndStartTime(List<Genre> genreList, Long startTime) {
+        Flux<Show> shows = Filters.filterDeleted(showRepository.findAllByGenreIn(genreList), Show.class);
+        return shows.filter(
+                show -> publicInfoRepository.findAllByShowId(
+                        show.getId())
+                        .map(PublicInfo::getSchedule)
+                        .collectList()
+                        .block()
+                        .stream()
+                        .max(Long::compareTo)
+                        .orElse(Long.MAX_VALUE) > System.currentTimeMillis());
     }
 
     @Override

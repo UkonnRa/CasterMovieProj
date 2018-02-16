@@ -2,12 +2,13 @@ import axios from 'axios'
 import {setAuthToken} from './util/setAuthToken'
 import {LOGIN, LOGOUT} from './types'
 import jwt from 'jsonwebtoken'
+import {Api} from "../../api";
 
 export function login({username, password}) {
     return dispatch => {
         axios({
             method: 'post',
-            url: 'http://localhost:8080/api/castermovie/user/login',
+            url: Api.user.login,
             data: {
                 username: username,
                 password: password
@@ -20,12 +21,15 @@ export function login({username, password}) {
                 const token = resp.data.value;
                 setAuthToken(token);
                 localStorage.setItem("jwt", token);
-                axios.get('http://localhost:8080/api/castermovie/user/getbyjwt', {
+                axios.get(Api.user.getByJwt, {
                     params: {jwt: localStorage.getItem("jwt")},
-                    headers: {'Content-Type': 'application/json;charset=utf-8', Authorization: `Bearer ${token}`}
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8',
+                        Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                    }
                 })
                     .then((resp) => {
-                        dispatch({type: LOGIN, username: resp.data.value.username, role: resp.data.value.role})
+                        dispatch({type: LOGIN, user: resp.data.value})
                     })
             }
         })

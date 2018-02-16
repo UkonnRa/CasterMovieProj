@@ -29,4 +29,9 @@ public class ShowLogicImpl implements ShowLogic {
     public Result<List<Show>> findAllByGenreIn(List<Genre> genreList) {
         return Result.succeed(showService.findAllByGenreIn(genreList).collectList().block());
     }
+
+    @Override
+    public Result<List<Show>> findAllByGenreInAndStartTime(List<Genre> genreList, Long startTime) {
+        return Result.succeed(showService.findAllByGenreInAndStartTime(genreList, startTime).collectList().block());
+    }
 }

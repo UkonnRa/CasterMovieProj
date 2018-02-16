@@ -1,40 +1,74 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {Icon, Layout, Menu} from 'antd';
+import {collapseSide, expandSide, chooseSiderMenu} from "../../redux/ui/frameSider/actions";
+import {Role, SiderMap} from "../../model/user"
+import {connect} from "react-redux";
 
 const {Sider} = Layout;
-const SubMenu = Menu.SubMenu;
 
-export const FrameSider = ({collapsed, onCollapse}) =>
-    <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={onCollapse}>
-        <div className="logo"/>
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-            <Menu.Item key="1">
-                <Icon type="pie-chart"/>
-                <span>Option 1</span>
-            </Menu.Item>
-            <Menu.Item key="2">
-                <Icon type="desktop"/>
-                <span>Option 2</span>
-            </Menu.Item>
-            <SubMenu
-                key="sub1"
-                title={<span><Icon type="user"/><span>User</span></span>}>
-                <Menu.Item key="3">Tom</Menu.Item>
-                <Menu.Item key="4">Bill</Menu.Item>
-                <Menu.Item key="5">Alex</Menu.Item>
-            </SubMenu>
-            <SubMenu
-                key="sub2"
-                title={<span><Icon type="team"/><span>Team</span></span>}>
-                <Menu.Item key="6">Team 1</Menu.Item>
-                <Menu.Item key="8">Team 2</Menu.Item>
-            </SubMenu>
-            <Menu.Item key="9">
-                <Icon type="file"/>
-                <span>File</span>
-            </Menu.Item>
-        </Menu>
-    </Sider>;
+class FrameSider extends Component {
+
+    onCollapse = (collapsed) => {
+        if (collapsed) this.props.collapseSide();
+        else this.props.expandSide()
+    };
+
+    onItemClick = (item) => {
+        this.props.chooseSiderMenu(item.key)
+    };
+
+    menuItem = () => {
+        switch (this.props.userRole) {
+            case Role.CUSTOMER:
+            default:
+                return this.parseMapToComp(SiderMap.customer)
+        }
+    };
+
+    parseMapToComp = (map) => {
+        return map.map(item => {
+            if (item.type === "item")
+                return <Menu.Item key={item.key}>
+                    <Icon type={item.icon}/>
+                    <span>{item.text}</span>
+                </Menu.Item>;
+            else if (item.type === "subMenu") {
+                const title = <span><Icon type={item.icon}/><span>{item.text}</span></span>;
+                return <Menu.SubMenu key={item.key} title={title}>
+                    {this.parseMapToComp(item.item)}
+                </Menu.SubMenu>
+            }
+        })
+    };
+
+    render() {
+        return (
+            <Sider
+                collapsible
+                collapsed={this.props.sideCollapsed}
+                onCollapse={this.onCollapse}>
+                <Menu theme="dark" onClick={this.onItemClick} selectedKeys={[this.props.itemKey]} mode="inline">
+                    {this.menuItem()}
+                </Menu>
+            </Sider>
+        )
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        userRole: state.loginReducer.user.role,
+        sideCollapsed: state.siderReducer.sideCollapsed,
+        itemKey: state.siderReducer.key
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        collapseSide: () => dispatch(collapseSide()),
+        expandSide: () => dispatch(expandSide()),
+        chooseSiderMenu: (item) => dispatch(chooseSiderMenu(item))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FrameSider)

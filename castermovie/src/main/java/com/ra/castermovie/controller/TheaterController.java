@@ -34,12 +34,12 @@ public class TheaterController {
         return theaterLogic.update(vo.getId(), vo.getTheater());
     }
 
-    @PostMapping(value = "newpublicinfo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "newPublicInfo", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Theater> newPublicInfo(@RequestBody NewPublicInfoVO vo) {
         return theaterLogic.newPublicInfo(vo.getTheaterId(), vo.getShowId(), vo.getSchedules(), vo.getBasePrice(), vo.getPriceTable());
     }
 
-    @GetMapping(value = "findallshowplaying", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "findAllShowPlaying", consumes = MediaType.ALL_VALUE)
     Result<List<PublicInfo>> findAllShowPlaying(@ModelAttribute FindAllShowPlayingVO vo) {
         Instant from = vo.getTimeFrom() == null ? Instant.MIN : Instant.ofEpochMilli(vo.getTimeFrom());
         Instant to = vo.getTimeTo() == null ? Instant.MAX : Instant.ofEpochMilli(vo.getTimeTo());
@@ -47,7 +47,7 @@ public class TheaterController {
         return theaterLogic.findAllShowPlaying(vo.getTheaterId(), timePair, vo.getGenreList());
     }
 
-    @GetMapping(value = "findalltheater", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "findAllTheater", consumes = MediaType.ALL_VALUE)
     Result<List<Theater>> findAllTheater(@RequestParam int regionId) {
         return theaterLogic.findAllTheater(regionId);
     }

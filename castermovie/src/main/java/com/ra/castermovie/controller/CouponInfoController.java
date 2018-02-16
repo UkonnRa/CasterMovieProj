@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/castermovie/couponinfo")
+@RequestMapping("api/castermovie/couponInfo")
 public class CouponInfoController {
     @Autowired
     private CouponInfoLogic couponInfoLogic;
 
-    @PostMapping(value = "getcoupon", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "getCoupon", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<CouponInfo> getCoupon(@RequestBody GetCouponVO vo) {
         return couponInfoLogic.getCoupon(vo.getUserId(), vo.getCouponId());
     }
 
-    @GetMapping(value = "findallbyuserid", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "findAllByUserId", consumes = MediaType.ALL_VALUE)
     Result<List<CouponInfo>> findAllByUserId(@RequestParam String userId) {
         return couponInfoLogic.findAllByUserId(userId);
     }

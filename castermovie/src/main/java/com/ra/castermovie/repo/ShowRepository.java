@@ -11,4 +11,5 @@ public interface ShowRepository extends ReactiveMongoRepository<Show, String> {
     Flux<Show> findAllByName(String name);
 
     Flux<Show> findAllByGenreIn(List<Genre> genreList);
+
 }

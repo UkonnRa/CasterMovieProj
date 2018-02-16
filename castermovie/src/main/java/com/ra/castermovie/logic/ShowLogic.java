@@ -10,4 +10,6 @@ public interface ShowLogic {
     Result<Show> newShow(String name, Genre genre, int duration);
 
     Result<List<Show>> findAllByGenreIn(List<Genre> genreList);
+
+    Result<List<Show>> findAllByGenreInAndStartTime(List<Genre> genreList, Long startTime);
 }

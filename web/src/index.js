@@ -6,10 +6,12 @@ import thunk from 'redux-thunk';
 import {composeWithDevTools} from 'redux-devtools-extension'; //devToolsEnhancer,
 import {applyMiddleware, combineReducers, createStore} from 'redux'
 import BaseFrame from './App';
-import Child from './component/Child'
 import {loginReducer} from './redux/auth/reducers'
 import {popoverReducer} from './redux/ui/avatarAffix/reducers'
 import {modalReducer} from './redux/ui/baseFrame/reducers'
+import {siderReducer, /*siderMenuReducer*/} from './redux/ui/frameSider/reducers'
+import {orderReducer} from "./redux/order/reducers";
+import {showReducer} from "./redux/show/reducers";
 import registerServiceWorker from './registerServiceWorker';
 
 const middleware = [thunk];
@@ -18,13 +20,17 @@ const reducers = combineReducers({
     loginReducer,
     popoverReducer,
     modalReducer,
+    siderReducer,
+    // siderMenuReducer,
+    orderReducer,
+    showReducer,
 });
 
 let store = createStore(reducers, composeWithDevTools(
     applyMiddleware(...middleware)
 ));
 
-const Ch1 = Form.create()(BaseFrame(Child));
+const Ch1 = Form.create()(BaseFrame);
 
 ReactDOM.render(
     <Provider store={store}>

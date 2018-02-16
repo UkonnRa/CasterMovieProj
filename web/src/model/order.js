@@ -1,0 +1,1 @@
+export const OrderState = {UNPAID: "UNPAID", READY: "READY", FINISHED: "FINISHED", CANCELLED: "CANCELLED"};

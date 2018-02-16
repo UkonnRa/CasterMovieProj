@@ -20,7 +20,7 @@ public class TicketManagerController {
     @Autowired
     private UserLogic userLogic;
 
-    @GetMapping(value = "findallrequestinfo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "findAllRequestInfo", consumes = MediaType.ALL_VALUE)
     Result<List<RequestInfo>> findAllRequestInfo(@RequestParam String theaterId) {
         return ticketsManagerLogic.findAllRequestInfo(theaterId);
     }

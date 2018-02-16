@@ -21,4 +21,6 @@ public interface OrderLogic {
     Result<Map<String, List<String>>> distributeTicket(String publicInfoId);
 
     Result<Order> retrieveOrder(String orderId);
+
+    Result<List<Order>> findAllByUserId(String userId);
 }

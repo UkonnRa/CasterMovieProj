@@ -18,7 +18,7 @@ public class CouponController {
     @Autowired
     private CouponLogic couponLogic;
 
-    @PostMapping(value = "newcoupon", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "newCoupon", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Coupon> newCoupon(@RequestBody NewCouponVO vo) {
         return couponLogic.newCoupon(vo.getTheaterId(), vo.getName(), vo.getDescription(), vo.getDiscount(), vo.getExpiredType(), vo.getExpiredTime(), vo.getLimitPerUser(), vo.getLimitNumber(), vo.getConsumingPoint());
     }
@@ -28,12 +28,12 @@ public class CouponController {
         return couponLogic.update(vo.getId(), new Coupon(vo.getId(), vo.getCondition(), vo.getTheaterId(), vo.getName(), vo.getDescription(), vo.getDiscount(), vo.getExpiredType(), vo.getExpiredTime(), vo.getLimitPerUser(), vo.getLimitNumber(), vo.getConsumingPoint()));
     }
 
-    @GetMapping(value = "findallbytheaterid", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "findAllByTheaterId", consumes = MediaType.ALL_VALUE)
     Result<List<Coupon>> findAllByTheaterId(@RequestParam String theaterId) {
         return couponLogic.findAllByTheaterId(theaterId);
     }
 
-    @GetMapping(value = "findallbytheateridandname", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "findAllByTheaterIdAndName", consumes = MediaType.ALL_VALUE)
     Result<List<Coupon>> findAllByTheaterIdAndName(@RequestParam String theaterId, @RequestParam String name) {
         return couponLogic.findAllByTheaterIdAndName(theaterId, name);
     }

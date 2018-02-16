@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("api/castermovie/order")
@@ -18,27 +20,30 @@ public class OrderController {
     @Autowired
     private OrderLogic orderLogic;
 
-    @PostMapping(value = "neworder", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "newOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Order> newOrder(@RequestBody NewOrderVO vo) {
         return orderLogic.newOrder(vo.getUserId(), vo.getPublicInfoId(), vo.getCouponInfoId(), vo.getSeats());
     }
 
-    @PostMapping(value = "checkin", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "checkIn", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Order> checkIn(@RequestBody CheckInVO vo) {
         return orderLogic.checkIn(vo.getTheaterId(), vo.getOrderId());
     }
 
 
-    @PostMapping(value = "payorder", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "payOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Order> payOrder(@RequestBody PayOrderVO vo) {
         return orderLogic.payOrder(vo.getUserId(), vo.getOrderId());
     }
 
-    @PostMapping(value = "retrieveorder", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "retrieveOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Order> retrieveOrder(@RequestParam String orderId) {
-        Result<Order> result = orderLogic.retrieveOrder(orderId);
-        log.info("retrieveOrder ===> {}", result);
-        return result;
+        return orderLogic.retrieveOrder(orderId);
+    }
+
+    @GetMapping(value = "findAllByUserId", consumes = MediaType.ALL_VALUE)
+    Result<List<Order>> findAllByUserId(@RequestParam String userId) {
+        return orderLogic.findAllByUserId(userId);
     }
 
 }

@@ -32,12 +32,12 @@ public class UserController {
         return userLogic.validate(vo.getId());
     }
 
-    @GetMapping(value = "validatecheck/{bString}", consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "validateCheck/{bString}", consumes = MediaType.ALL_VALUE)
     Result<User> validateCheck(@PathVariable String bString) {
         return userLogic.validateCheck(bString);
     }
 
-    @PostMapping(value = "canceluser", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "cancelUser", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<User> cancelUser(@RequestBody CancelUserVO vo) {
         return userLogic.cancelUser(vo.getId());
     }
@@ -47,7 +47,7 @@ public class UserController {
         return userLogic.update(vo.getId(), new User(vo.getId(), vo.getCondition(), vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail(), vo.getRole(), vo.getState(), vo.getPaid(), vo.getLevel(), vo.getPoint()));
     }
 
-    @GetMapping(value = "getbyjwt", consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "getByJwt", consumes = MediaType.ALL_VALUE)
     Result<User> getByJwt(@RequestParam String jwt) {
         return userLogic.getByJwt(jwt);
     }

@@ -19,6 +19,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/castermovie/user/register",
             "/api/castermovie/user/validate",
             "/api/castermovie/user/validatecheck/**",
+            "/api/castermovie/show/findAllByGenreInAndStartTime",
     };
     private final UserService userService;
 

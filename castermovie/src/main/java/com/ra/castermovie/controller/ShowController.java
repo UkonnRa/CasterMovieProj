@@ -8,7 +8,11 @@ import com.ra.castermovie.model.common.Genre;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -17,14 +21,20 @@ public class ShowController {
     @Autowired
     private ShowLogic showLogic;
 
-    @PostMapping(value = "newshow", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "newShow", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Show> newShow(@RequestBody NewShowVO vo) {
         return showLogic.newShow(vo.getName(), vo.getGenre(), vo.getDuration());
     }
 
-    @GetMapping(value = "findallbygenrein", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<List<Show>> findAllByGenreIn(@RequestParam List<Genre> genreList) {
+    @GetMapping(value = "findAllByGenreIn", consumes = MediaType.ALL_VALUE)
+    Result<List<Show>> findAllByGenreIn(@RequestParam(required = false) List<Genre> genreList) {
         return showLogic.findAllByGenreIn(genreList);
+    }
+
+    @GetMapping(value = "findAllByGenreInAndStartTime", consumes = MediaType.ALL_VALUE)
+    Result<List<Show>> findAllByGenreInAndStartTime(@RequestParam(required = false) List<Genre> genreList, @RequestParam Long startTime) {
+        if (genreList == null) genreList = Arrays.asList(Genre.values());
+        return showLogic.findAllByGenreInAndStartTime(genreList, startTime);
     }
 
 }

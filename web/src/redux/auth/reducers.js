@@ -3,8 +3,7 @@ import _ from 'lodash'
 
 const initialState = {
     isAuthed: false,
-    username: "",
-    userRole: ""
+    user: {}
 };
 
 export function loginReducer(state = initialState, action = {}) {
@@ -13,15 +12,13 @@ export function loginReducer(state = initialState, action = {}) {
             console.log(`reducer: LOGIN ===> ${JSON.stringify(action)}`);
             return {
                 isAuthed: !_.isEmpty(action),
-                username: action.username,
-                userRole: action.role
+                user: action.user
             };
         case LOGOUT:
             console.log(`reducer: LOGOUT ===> ${JSON.stringify(action)}`);
             return {
                 isAuthed: false,
-                username: "",
-                userRole: ""
+                user: {}
             };
         default:
             return state

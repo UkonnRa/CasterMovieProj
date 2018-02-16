@@ -251,4 +251,9 @@ public class OrderLogicImpl implements OrderLogic {
         }
         return Result.fail("遇见未知的订单状态");
     }
+
+    @Override
+    public Result<List<Order>> findAllByUserId(String userId) {
+        return Result.succeed(orderService.findAllByUserId(userId).collectList().block());
+    }
 }

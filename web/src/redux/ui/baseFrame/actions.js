@@ -1,13 +1,6 @@
-import { MODAL_FADE, MODAL_SHOW } from './types'
+import {MODAL_FADE, MODAL_SHOW} from './types'
 
-export function fadeModal() {
-    return dispatch => {
-        dispatch({ type: MODAL_FADE })
-    }
-}
+export const fadeModal = () => dispatch => dispatch({type: MODAL_FADE});
 
-export function showModal() {
-    return dispatch => {
-        dispatch({ type: MODAL_SHOW })
-    }
-}
+export const showModal = () => dispatch => dispatch({type: MODAL_SHOW});
+
