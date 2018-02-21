@@ -23,7 +23,7 @@ public class PublicInfo {
     private Condition condition;
     @NotNull(message = "PublicInfo::timestamp must not be null")
     private Long timestamp;
-    @NotNull(message = "PublicInfo::timestamp must not be null")
+    @NotNull(message = "PublicInfo::theaterId must not be null")
     private String theaterId;
     @NotNull(message = "PublicInfo::showId must not be null")
     private String showId;

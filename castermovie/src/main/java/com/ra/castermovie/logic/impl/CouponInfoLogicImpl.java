@@ -5,6 +5,7 @@ import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.Coupon;
 import com.ra.castermovie.model.CouponInfo;
 import com.ra.castermovie.model.User;
+import com.ra.castermovie.model.couponinfo.UserCouponInfo;
 import com.ra.castermovie.service.CouponInfoService;
 import com.ra.castermovie.service.CouponService;
 import com.ra.castermovie.service.UserService;
@@ -49,7 +50,10 @@ public class CouponInfoLogicImpl implements CouponInfoLogic {
     }
 
     @Override
-    public Result<List<CouponInfo>> findAllByUserId(String userId) {
-        return Result.succeed(couponInfoService.findAllByUserId(userId).collectList().block());
+    public Result<List<UserCouponInfo>> findAllByUserId(String userId) {
+        return Result.succeed(couponInfoService.findAllByUserId(userId).map(info -> {
+            Coupon coupon = couponService.findById(info.getCouponId()).block();
+            return new UserCouponInfo(info, coupon);
+        }).collectList().block());
     }
 }

@@ -6,7 +6,6 @@ import com.ra.castermovie.model.common.Condition;
 import com.ra.castermovie.model.common.Genre;
 import com.ra.castermovie.repo.PublicInfoRepository;
 import com.ra.castermovie.repo.ShowRepository;
-import com.ra.castermovie.service.PublicInfoService;
 import com.ra.castermovie.service.ShowService;
 import com.ra.castermovie.service.util.Filters;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +14,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -41,15 +37,14 @@ public class ShowServiceImpl implements ShowService {
     @Override
     public Flux<Show> findAllByGenreInAndStartTime(List<Genre> genreList, Long startTime) {
         Flux<Show> shows = Filters.filterDeleted(showRepository.findAllByGenreIn(genreList), Show.class);
-        return shows.filter(
-                show -> publicInfoRepository.findAllByShowId(
-                        show.getId())
-                        .map(PublicInfo::getSchedule)
-                        .collectList()
-                        .block()
-                        .stream()
-                        .max(Long::compareTo)
-                        .orElse(Long.MAX_VALUE) > System.currentTimeMillis());
+        return shows.filter(show -> {
+            Long maxTime = publicInfoRepository.findAllByShowId(show.getId())
+                    .map(PublicInfo::getSchedule)
+                    .sort(Long::compare)
+                    .blockLast();
+            maxTime = maxTime == null ? Long.MIN_VALUE : maxTime;
+            return startTime < maxTime;
+        });
     }
 
     @Override

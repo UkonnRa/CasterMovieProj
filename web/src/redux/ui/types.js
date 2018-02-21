@@ -1,0 +1,1 @@
+export const NOW_ROUTER = "NOW_ROUTER";

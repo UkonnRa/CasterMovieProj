@@ -1,14 +1,16 @@
+import {RouteTable} from "../route";
+
 export const Role = {CUSTOMER: "CUSTOMER", THEATER: "THEATER", TICKETS: "TICKETS"};
 
 export const SiderMap = {
-    customer: [
-        {type: "item", key: "1", icon: "desktop", text: "主页"},
-        {type: "item", key: "2", icon: "bars", text: '剧集列表'},
+    CUSTOMER: [
+        {type: "item", icon: "desktop", key: RouteTable[Role.CUSTOMER].Main.path,text: RouteTable[Role.CUSTOMER].Main.text},
+        {type: "item", icon: "bars", key: RouteTable[Role.CUSTOMER].ShowList.path, text: RouteTable[Role.CUSTOMER].ShowList.text},
         {
-            type: "subMenu", key: "sub1", icon: "idcard", text: "我的", item: [
-                {type: "item", key: "3", text: "我的信息"},
-                {type: "item", key: "4", text: "我的订单"},
-                {type: "item", key: "5", text: "我的动态"}
+            type: "subMenu", icon: "idcard", text: "我的", item: [
+                {type: "item", key: RouteTable[Role.CUSTOMER].MyInfo.path, text: RouteTable[Role.CUSTOMER].MyInfo.text},
+                {type: "item", key: RouteTable[Role.CUSTOMER].MyOrder.path, text: RouteTable[Role.CUSTOMER].MyOrder.text},
+                {type: "item", key: RouteTable[Role.CUSTOMER].MyCouponInfo.path, text: RouteTable[Role.CUSTOMER].MyCouponInfo.text}
             ]
         }
     ],

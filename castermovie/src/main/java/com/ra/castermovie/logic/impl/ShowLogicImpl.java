@@ -34,4 +34,10 @@ public class ShowLogicImpl implements ShowLogic {
     public Result<List<Show>> findAllByGenreInAndStartTime(List<Genre> genreList, Long startTime) {
         return Result.succeed(showService.findAllByGenreInAndStartTime(genreList, startTime).collectList().block());
     }
+
+    @Override
+    public Result<Show> findById(String id) {
+        Show show = showService.findById(id).block();
+        return show == null? Result.fail("代码失效"): Result.succeed(show);
+    }
 }

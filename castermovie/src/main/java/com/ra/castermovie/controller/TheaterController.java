@@ -52,4 +52,9 @@ public class TheaterController {
         return theaterLogic.findAllTheater(regionId);
     }
 
+    @GetMapping(value = "findById", consumes = MediaType.ALL_VALUE)
+    Result<Theater> findById(@RequestParam String id) {
+        return theaterLogic.findById(id);
+    }
+
 }

@@ -21,11 +21,13 @@ export const Api = {
         newPublicInfo: `${HTTP_HEADER}/theater/newPublicInfo`,
         findAllShowPlaying: `${HTTP_HEADER}/theater/findAllShowPlaying`,
         findAllTheater: `${HTTP_HEADER}/theater/findAllTheater`,
+        findById: `${HTTP_HEADER}/theater/findById`,
     },
     show: {
         newShow: `${HTTP_HEADER}/show/newShow`,
         findAllByGenreIn: `${HTTP_HEADER}/show/findAllByGenreIn`,
         findAllByGenreInAndStartTime: `${HTTP_HEADER}/show/findAllByGenreInAndStartTime`,
+        findById: `${HTTP_HEADER}/show/findById`,
     },
     order: {
         newOrder: `${HTTP_HEADER}/order/newOrder`,
@@ -33,6 +35,9 @@ export const Api = {
         payOrder: `${HTTP_HEADER}/order/payOrder`,
         retrieveOrder: `${HTTP_HEADER}/order/retrieveOrder`,
         findAllByUserId: `${HTTP_HEADER}/order/findAllByUserId`,
+    },
+    publicInfo: {
+        findAllByShowId: `${HTTP_HEADER}/publicInfo/findAllByShowId`,
     },
     couponInfo: {
         getCoupon: `${HTTP_HEADER}/couponInfo/getCoupon`,

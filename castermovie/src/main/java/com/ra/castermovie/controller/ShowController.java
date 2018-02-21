@@ -33,8 +33,12 @@ public class ShowController {
 
     @GetMapping(value = "findAllByGenreInAndStartTime", consumes = MediaType.ALL_VALUE)
     Result<List<Show>> findAllByGenreInAndStartTime(@RequestParam(required = false) List<Genre> genreList, @RequestParam Long startTime) {
-        if (genreList == null) genreList = Arrays.asList(Genre.values());
         return showLogic.findAllByGenreInAndStartTime(genreList, startTime);
+    }
+
+    @GetMapping(value = "findById", consumes = MediaType.ALL_VALUE)
+    Result<Show> findById(@RequestParam String id) {
+        return showLogic.findById(id);
     }
 
 }

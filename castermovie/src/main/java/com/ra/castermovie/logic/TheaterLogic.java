@@ -22,4 +22,6 @@ public interface TheaterLogic {
     Result<List<PublicInfo>> findAllShowPlaying(String theaterId, Pair<Instant, Instant> timePair, List<Genre> genreList);
 
     Result<List<Theater>> findAllTheater(int regionId);
+
+    Result<Theater> findById(String id);
 }

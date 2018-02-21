@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {Icon, Layout, Menu} from 'antd';
-import {collapseSide, expandSide, chooseSiderMenu} from "../../redux/ui/frameSider/actions";
-import {Role, SiderMap} from "../../model/user"
+import {collapseSide, expandSide} from "../../redux/ui/frameSider/actions";
+import {route} from "../../redux/ui/actions";
+import {SiderMap} from "../../model/user"
 import {connect} from "react-redux";
 
 const {Sider} = Layout;
@@ -14,16 +15,11 @@ class FrameSider extends Component {
     };
 
     onItemClick = (item) => {
-        this.props.chooseSiderMenu(item.key)
+        this.props.route(item.key)
     };
 
-    menuItem = () => {
-        switch (this.props.userRole) {
-            case Role.CUSTOMER:
-            default:
-                return this.parseMapToComp(SiderMap.customer)
-        }
-    };
+    menuItem = () =>
+                this.parseMapToComp(SiderMap[this.props.userRole]);
 
     parseMapToComp = (map) => {
         return map.map(item => {
@@ -34,7 +30,7 @@ class FrameSider extends Component {
                 </Menu.Item>;
             else if (item.type === "subMenu") {
                 const title = <span><Icon type={item.icon}/><span>{item.text}</span></span>;
-                return <Menu.SubMenu key={item.key} title={title}>
+                return <Menu.SubMenu key={item.text} title={title}>
                     {this.parseMapToComp(item.item)}
                 </Menu.SubMenu>
             }
@@ -59,7 +55,7 @@ const mapStateToProps = (state) => {
     return {
         userRole: state.loginReducer.user.role,
         sideCollapsed: state.siderReducer.sideCollapsed,
-        itemKey: state.siderReducer.key
+        itemKey: state.routeReducer.key
     }
 };
 
@@ -67,7 +63,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         collapseSide: () => dispatch(collapseSide()),
         expandSide: () => dispatch(expandSide()),
-        chooseSiderMenu: (item) => dispatch(chooseSiderMenu(item))
+        route: (item) => dispatch(route(item))
     }
 };
 

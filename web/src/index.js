@@ -9,9 +9,12 @@ import BaseFrame from './App';
 import {loginReducer} from './redux/auth/reducers'
 import {popoverReducer} from './redux/ui/avatarAffix/reducers'
 import {modalReducer} from './redux/ui/baseFrame/reducers'
-import {siderReducer, /*siderMenuReducer*/} from './redux/ui/frameSider/reducers'
+import {siderReducer} from './redux/ui/frameSider/reducers'
 import {orderReducer} from "./redux/order/reducers";
 import {showReducer} from "./redux/show/reducers";
+import {routeReducer} from "./redux/ui/reducers";
+import {couponInfoReducer} from "./redux/couponInfo/reducers";
+import {publicInfoReducer} from "./redux/publicInfo/reducers";
 import registerServiceWorker from './registerServiceWorker';
 
 const middleware = [thunk];
@@ -21,9 +24,11 @@ const reducers = combineReducers({
     popoverReducer,
     modalReducer,
     siderReducer,
-    // siderMenuReducer,
     orderReducer,
     showReducer,
+    routeReducer,
+    couponInfoReducer,
+    publicInfoReducer,
 });
 
 let store = createStore(reducers, composeWithDevTools(

@@ -1,25 +1,34 @@
-import {LOGIN, LOGOUT} from './types'
+import {LOGIN, LOGOUT, GET_CURRENT_USER} from './types'
+import {Role} from "../../model/user";
 import _ from 'lodash'
 
 const initialState = {
     isAuthed: false,
-    user: {}
+    user: {
+        role: Role.CUSTOMER
+    },
 };
 
 export function loginReducer(state = initialState, action = {}) {
     switch (action.type) {
         case LOGIN:
-            console.log(`reducer: LOGIN ===> ${JSON.stringify(action)}`);
             return {
                 isAuthed: !_.isEmpty(action),
                 user: action.user
             };
         case LOGOUT:
-            console.log(`reducer: LOGOUT ===> ${JSON.stringify(action)}`);
             return {
                 isAuthed: false,
-                user: {}
+                user: {
+                    role: Role.CUSTOMER
+                }
             };
+        case GET_CURRENT_USER:
+            return {
+                isAuthed: !_.isEmpty(action),
+                user: action.user
+            };
+
         default:
             return state
     }

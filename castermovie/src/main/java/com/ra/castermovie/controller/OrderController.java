@@ -6,6 +6,7 @@ import com.ra.castermovie.controller.vo.order.PayOrderVO;
 import com.ra.castermovie.logic.OrderLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.Order;
+import com.ra.castermovie.model.order.UserOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,28 +22,28 @@ public class OrderController {
     private OrderLogic orderLogic;
 
     @PostMapping(value = "newOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<Order> newOrder(@RequestBody NewOrderVO vo) {
+    Result<UserOrder> newOrder(@RequestBody NewOrderVO vo) {
         return orderLogic.newOrder(vo.getUserId(), vo.getPublicInfoId(), vo.getCouponInfoId(), vo.getSeats());
     }
 
     @PostMapping(value = "checkIn", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<Order> checkIn(@RequestBody CheckInVO vo) {
+    Result<UserOrder> checkIn(@RequestBody CheckInVO vo) {
         return orderLogic.checkIn(vo.getTheaterId(), vo.getOrderId());
     }
 
 
     @PostMapping(value = "payOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<Order> payOrder(@RequestBody PayOrderVO vo) {
+    Result<UserOrder> payOrder(@RequestBody PayOrderVO vo) {
         return orderLogic.payOrder(vo.getUserId(), vo.getOrderId());
     }
 
     @PostMapping(value = "retrieveOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<Order> retrieveOrder(@RequestParam String orderId) {
+    Result<UserOrder> retrieveOrder(@RequestParam String orderId) {
         return orderLogic.retrieveOrder(orderId);
     }
 
     @GetMapping(value = "findAllByUserId", consumes = MediaType.ALL_VALUE)
-    Result<List<Order>> findAllByUserId(@RequestParam String userId) {
+    Result<List<UserOrder>> findAllByUserId(@RequestParam String userId) {
         return orderLogic.findAllByUserId(userId);
     }
 

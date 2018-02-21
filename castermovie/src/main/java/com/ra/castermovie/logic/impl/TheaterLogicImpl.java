@@ -111,4 +111,10 @@ public class TheaterLogicImpl implements TheaterLogic {
     public Result<List<Theater>> findAllTheater(int regionId) {
         return Result.succeed(theaterService.findAllByRegionId(regionId).collectList().block().stream().filter(u -> u.getState() == State.FINISHED).collect(Collectors.toList()));
     }
+
+    @Override
+    public Result<Theater> findById(String id) {
+        Theater t = theaterService.findById(id).block();
+        return t == null? Result.fail("剧院不存在"): Result.succeed(t);
+    }
 }

@@ -1,8 +1,21 @@
 import axios from 'axios'
 import {setAuthToken} from './util/setAuthToken'
-import {LOGIN, LOGOUT} from './types'
+import {LOGIN, LOGOUT, GET_CURRENT_USER} from './types'
 import jwt from 'jsonwebtoken'
 import {Api} from "../../api";
+
+export const getByJwt = () =>
+        axios.get(Api.user.getByJwt, {
+            params: {jwt: localStorage.getItem("jwt")},
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                Authorization: `Bearer ${localStorage.getItem("jwt")}`
+            }
+        });
+
+export const getCurrentUser = () => dispatch => {
+    getByJwt().then((resp => dispatch({type: GET_CURRENT_USER, user: resp.data.value})))
+};
 
 export function login({username, password}) {
     return dispatch => {
@@ -21,16 +34,9 @@ export function login({username, password}) {
                 const token = resp.data.value;
                 setAuthToken(token);
                 localStorage.setItem("jwt", token);
-                axios.get(Api.user.getByJwt, {
-                    params: {jwt: localStorage.getItem("jwt")},
-                    headers: {
-                        'Content-Type': 'application/json;charset=utf-8',
-                        Authorization: `Bearer ${localStorage.getItem("jwt")}`
-                    }
+                getByJwt().then((resp) => {
+                    dispatch({type: LOGIN, user: resp.data.value})
                 })
-                    .then((resp) => {
-                        dispatch({type: LOGIN, user: resp.data.value})
-                    })
             }
         })
     }
