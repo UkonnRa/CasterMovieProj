@@ -5,12 +5,18 @@ import MyCouponInfo from '../component/user/MyCouponInfo'
 import MyOrder from '../component/user/MyOrder'
 import ShowList from "../component/user/ShowList"
 import ShowInfo from "../component/user/ShowInfo"
+import ChooseSeat from "../component/user/ChooseSeat"
 
 export const route = (props) => {
-    if (RouteTable[props.role][props.itemKey].needAuthed){
-        return !props.isAuthed? <Main/>: RouteTable[props.role][props.itemKey].component
+    let itemKey = props.itemKey;
+    if (itemKey.indexOf("#") !== -1) {
+        itemKey = props.itemKey.substring(0, props.itemKey.indexOf("#"))
+    }
+    console.log(itemKey);
+    if (RouteTable[props.role][itemKey].needAuthed){
+        return !props.isAuthed? <Main/>: RouteTable[props.role][itemKey].component
     } else {
-        return RouteTable[props.role][props.itemKey].component
+        return RouteTable[props.role][itemKey].component
     }
 };
 
@@ -48,6 +54,12 @@ export const RouteTable = {
             path: "ShowInfo",
             text: "剧集信息",
             component: <ShowInfo/>
+        },
+        ChooseSeat: {
+            path: "ChooseSeat",
+            text: "选择座位",
+            needAuthed: true,
+            component: <ChooseSeat/>
         }
     }
 };

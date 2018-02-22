@@ -41,7 +41,7 @@ public class TheaterLogicImpl implements TheaterLogic {
     }
 
     @Override
-    public synchronized Result<Theater> register(String password, String name, int regionId, String location, int seatNumber) {
+    public synchronized Result<Theater> register(String password, String name, int regionId, String location, int seatNumber, int seatPerLine) {
         Region region = regionService.findById(regionId).block();
         if (region == null) return Result.fail("地区信息不存在");
         Theater t;
@@ -51,7 +51,7 @@ public class TheaterLogicImpl implements TheaterLogic {
             id = id.substring(id.length() - 7);
             t = theaterService.findById(id).block();
         } while (t != null);
-        t = theaterService.save(new Theater(id, password, name, regionId, location, seatNumber)).block();
+        t = theaterService.save(new Theater(id, password, name, regionId, location, seatNumber, seatPerLine)).block();
         return t == null ? Result.fail("数据库错误，剧院信息保存失败") : Result.succeed(t);
     }
 

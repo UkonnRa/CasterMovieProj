@@ -38,6 +38,7 @@ export const Api = {
     },
     publicInfo: {
         findAllByShowId: `${HTTP_HEADER}/publicInfo/findAllByShowId`,
+        findById: `${HTTP_HEADER}/publicInfo/findById`,
     },
     couponInfo: {
         getCoupon: `${HTTP_HEADER}/couponInfo/getCoupon`,

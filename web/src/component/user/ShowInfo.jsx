@@ -3,12 +3,14 @@ import {Divider, List, Tabs} from 'antd'
 import {connect} from 'react-redux'
 import {AreaCascader, AreaSelect} from 'react-area-linkage';
 import {Genre} from "../../model/show";
-import {findAllPublicInfoByShowId} from "../../redux/publicInfo/actions";
+import {findAllPublicInfoByShowId, findById} from "../../redux/publicInfo/actions";
+import {route} from "../../redux/ui/actions";
 import Moment from 'moment';
 import {extendMoment} from 'moment-range';
 import axios from 'axios'
 import {Api} from "../../api";
 import _ from 'lodash'
+import {RouteTable} from "../../route";
 
 const moment = extendMoment(Moment);
 
@@ -41,12 +43,13 @@ class ShowInfo extends Component {
     };
 
     onRegionCodeChange = (code) => {
-        console.log(code);
         this.setState({regionCode: !_.isEmpty(code) ? Number(_.last(code)) : -1})
     };
 
     onChooseTheaterClick = (publicInfoId) => {
-        console.log(publicInfoId)
+        this.props.findById(publicInfoId).then(() => {
+            this.props.route(RouteTable.CUSTOMER.ChooseSeat.path + `#${publicInfoId}`)
+        })
     };
 
     render() {
@@ -78,7 +81,9 @@ class ShowInfo extends Component {
 const
     mapDispatchToProps = (dispatch) => {
         return {
-            findAllPublicInfoByShowId: (showId) => dispatch(findAllPublicInfoByShowId(showId))
+            findAllPublicInfoByShowId: (showId) => dispatch(findAllPublicInfoByShowId(showId)),
+            findById: (id) => dispatch(findById(id)),
+            route: (path) => dispatch(route(path))
         }
     };
 

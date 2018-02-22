@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PublicInfoLogic {
     Result<List<PublicInfo>> findAllByShowId(String showId);
+
+    Result<PublicInfo> findById(String id);
 }

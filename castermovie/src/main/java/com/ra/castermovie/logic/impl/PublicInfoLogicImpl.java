@@ -18,4 +18,10 @@ public class PublicInfoLogicImpl implements PublicInfoLogic {
     public Result<List<PublicInfo>> findAllByShowId(String showId) {
         return Result.succeed(publicInfoService.findAllByShowId(showId).collectList().block());
     }
+
+    @Override
+    public Result<PublicInfo> findById(String id) {
+        PublicInfo info = publicInfoService.findById(id).block();
+        return info == null? Result.fail("该公示信息不存在"): Result.succeed(info);
+    }
 }

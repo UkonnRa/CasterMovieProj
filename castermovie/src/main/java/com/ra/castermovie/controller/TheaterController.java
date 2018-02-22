@@ -21,7 +21,7 @@ public class TheaterController {
 
     @PostMapping(value = "register", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Theater> register(@RequestBody RegisterVO vo) {
-        return theaterLogic.register(vo.getPassword(), vo.getName(), vo.getRegionId(), vo.getLocation(), vo.getSeatNumber());
+        return theaterLogic.register(vo.getPassword(), vo.getName(), vo.getRegionId(), vo.getLocation(), vo.getSeatNumber(), vo.getSeatPerLine());
     }
 
     @PostMapping(value = "validate", consumes = MediaType.APPLICATION_JSON_VALUE)

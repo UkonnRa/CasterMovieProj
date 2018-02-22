@@ -37,10 +37,12 @@ public class Theater {
     private String location;
     @NotNull(message = "Theater::seatNumber must not be null")
     private Integer seatNumber;
+    @NotNull(message = "Theater::seatPerLine must not be null")
+    private Integer seatPerLine;
     private List<String> publicInfos;
     private Map<Level, Double> discounts;
 
-    public Theater(String id, String password, String name, Integer regionId, String location, Integer seatNumber) {
+    public Theater(String id, String password, String name, Integer regionId, String location, Integer seatNumber, Integer seatPerLine) {
         this.id = id;
         this.condition = Condition.EXISTING;
         this.state = State.WAITING;
@@ -49,6 +51,7 @@ public class Theater {
         this.regionId = regionId;
         this.location = location;
         this.seatNumber = seatNumber;
+        this.seatPerLine = seatPerLine;
         this.publicInfos = Collections.emptyList();
         this.discounts = Collections.emptyMap();
     }

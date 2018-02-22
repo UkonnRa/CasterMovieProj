@@ -24,4 +24,9 @@ public class PublicInfoController {
         return publicInfoLogic.findAllByShowId(showId);
     }
 
+    @GetMapping(value = "findById", consumes = MediaType.ALL_VALUE)
+    Result<PublicInfo> findById(@RequestParam String id) {
+        return publicInfoLogic.findById(id);
+    }
+
 }

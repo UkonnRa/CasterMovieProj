@@ -3,7 +3,7 @@ import {RouteTable} from "../route";
 export const Role = {CUSTOMER: "CUSTOMER", THEATER: "THEATER", TICKETS: "TICKETS"};
 
 export const SiderMap = {
-    CUSTOMER: [
+    [Role.CUSTOMER]: [
         {type: "item", icon: "desktop", key: RouteTable[Role.CUSTOMER].Main.path,text: RouteTable[Role.CUSTOMER].Main.text},
         {type: "item", icon: "bars", key: RouteTable[Role.CUSTOMER].ShowList.path, text: RouteTable[Role.CUSTOMER].ShowList.text},
         {

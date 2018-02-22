@@ -15,7 +15,7 @@ class Main extends Component {
     };
 
     onShowItemClick = (showId) => {
-        this.props.selectShow(showId).then(() => this.props.route(RouteTable[Role.CUSTOMER].ShowInfo.path))
+        this.props.selectShow(showId).then(() => this.props.route(RouteTable[Role.CUSTOMER].ShowInfo.path + `#${showId}`))
     };
 
     render() {
@@ -23,6 +23,7 @@ class Main extends Component {
         return (
             _.chunk(this.props.shows, 4).map((showRow, index) => {
                 return (
+                    <div>
                     <Row style={{margin: "0 0 16px"}} key={index} gutter={16}>
                         {showRow.map((show, innerIndex) => {
                             return (
@@ -35,6 +36,7 @@ class Main extends Component {
                             )
                         })}
                     </Row>
+                    </div>
                 )
             })
         )

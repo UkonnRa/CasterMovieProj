@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface TheaterLogic {
-    Result<Theater> register(String password, String name, int regionId, String location, int seatNumber);
+    Result<Theater> register(String password, String name, int regionId, String location, int seatNumber, int seatPerLine);
 
     Result<Theater> validate(String theaterId, int initMoney);
 

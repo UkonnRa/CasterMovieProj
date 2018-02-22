@@ -13,4 +13,5 @@ public class RegisterVO {
     private int regionId;
     private String location;
     private int seatNumber;
+    private int seatPerLine;
 }
