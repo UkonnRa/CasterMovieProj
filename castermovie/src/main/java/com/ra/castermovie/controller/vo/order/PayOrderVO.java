@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PayOrderVO {
     private String userId;
+    private String couponInfoId;
     private String orderId;
 }

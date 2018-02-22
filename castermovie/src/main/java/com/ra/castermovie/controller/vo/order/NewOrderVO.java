@@ -12,6 +12,5 @@ import java.util.List;
 public class NewOrderVO {
     private String userId;
     private String publicInfoId;
-    private String couponInfoId;
     private List<Integer> seats;
 }

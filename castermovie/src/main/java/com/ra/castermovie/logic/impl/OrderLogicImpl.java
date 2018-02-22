@@ -47,31 +47,31 @@ public class OrderLogicImpl implements OrderLogic {
     }
 
     @Override
-    public synchronized Result<UserOrder> newOrder(String userId, String publicInfoId, String couponInfoId, List<Integer> seats) {
+    public synchronized Result<UserOrder> newOrder(String userId, String publicInfoId, List<Integer> seats) {
         if (seats.contains(null) && seats.size() > 20) return Result.fail("未选座的用户每单最多可买20张");
         if (!seats.contains(null) && seats.size() > 6) return Result.fail("选座的用户每单最多可买6张");
 
-        double couponDiscount = 1.0;
+//        double couponDiscount = 1.0;
 
         User user = userService.findById(userId).block();
         if (user == null) return Result.fail("该用户不存在");
 
-        if (couponInfoId != null) {
-            CouponInfo selectedCoupon = couponInfoService.findById(couponInfoId).block();
-            if (selectedCoupon == null) return Result.fail("该优惠券信息不存在");
-            else if (selectedCoupon.getState() != State.READY) return Result.fail("该优惠券不可用");
-
-            Coupon coupon = couponService.findById(selectedCoupon.getCouponId()).block();
-            if (coupon == null) {
-                selectedCoupon.setState(State.EXPIRED);
-                couponInfoService.update(couponInfoId, selectedCoupon).block();
-                return Result.fail("该优惠券不存在或已经被店家删除");
-            }
-
-            if (!selectedCoupon.getUserId().equals(userId)) return Result.fail("该优惠券不属于该用户");
-
-            couponDiscount = coupon.getDiscount();
-        }
+//        if (couponInfoId != null) {
+//            CouponInfo selectedCoupon = couponInfoService.findById(couponInfoId).block();
+//            if (selectedCoupon == null) return Result.fail("该优惠券信息不存在");
+//            else if (selectedCoupon.getState() != State.READY) return Result.fail("该优惠券不可用");
+//
+//            Coupon coupon = couponService.findById(selectedCoupon.getCouponId()).block();
+//            if (coupon == null) {
+//                selectedCoupon.setState(State.EXPIRED);
+//                couponInfoService.update(couponInfoId, selectedCoupon).block();
+//                return Result.fail("该优惠券不存在或已经被店家删除");
+//            }
+//
+//            if (!selectedCoupon.getUserId().equals(userId)) return Result.fail("该优惠券不属于该用户");
+//
+//            couponDiscount = coupon.getDiscount();
+//        }
 
         PublicInfo publicInfo = publicInfoService.findById(publicInfoId).block();
         if (publicInfo == null) return Result.fail("该剧集信息不存在");
@@ -90,8 +90,8 @@ public class OrderLogicImpl implements OrderLogic {
             double disc = priceTable.getOrDefault(i, 1.0);
             return (int) (publicInfo.getBasePrice() * disc);
         }).sum();
-        int actualCost = (int) (couponDiscount * theater.getDiscounts().getOrDefault(user.getLevel(), 1.0) * originalCost);
-        return newOrder(userId, publicInfoId, originalCost, actualCost, seats, couponInfoId);
+        int actualCost = (int) (/*couponDiscount **/ theater.getDiscounts().getOrDefault(user.getLevel(), 1.0) * originalCost);
+        return newOrder(userId, publicInfoId, originalCost, actualCost, seats/*, couponInfoId*/);
     }
 
     @Override
@@ -109,8 +109,8 @@ public class OrderLogicImpl implements OrderLogic {
         UserOrder result = orderService.update(orderId, order).map(o -> {
             User me = userService.findById(o.getUserId()).block();
             User pay = userService.findById(o.getPayUserId()).block();
-            CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
-            Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
+            CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
+            Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
             PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
             Show show = showService.findById(publicInfo1.getShowId()).block();
             Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
@@ -119,7 +119,7 @@ public class OrderLogicImpl implements OrderLogic {
         return result == null ? Result.fail("入场失败，请重试") : Result.succeed(result);
     }
 
-    private synchronized Result<UserOrder> newOrder(String userId, String publicInfoId, int originalCost, int actualCost, List<Integer> seats, String couponInfoId) {
+    private synchronized Result<UserOrder> newOrder(String userId, String publicInfoId, int originalCost, int actualCost, List<Integer> seats/*, String couponInfoId*/) {
         PublicInfo p = publicInfoService.findById(publicInfoId).block();
         if (p == null) return Result.fail("剧集信息不存在");
 
@@ -129,15 +129,15 @@ public class OrderLogicImpl implements OrderLogic {
                 return Result.fail("开演前两周内禁止出售配坐票");
             }
             Collections.fill(seats, null);
-            UserOrder result = orderService.save(new Order(userId, publicInfoId, originalCost, actualCost, seats, couponInfoId)).map(o -> {
+            UserOrder result = orderService.save(new Order(userId, publicInfoId, originalCost, actualCost, seats, null)).map(o -> {
                 User me = userService.findById(o.getUserId()).block();
-                User pay = userService.findById(o.getPayUserId()).block();
-                CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
-                Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
+//                User pay = userService.findById(o.getPayUserId()).block();
+//                CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
+//                Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
                 PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
                 Show show = showService.findById(publicInfo1.getShowId()).block();
                 Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-                return new UserOrder(o, me, pay, coupon, show, theater, publicInfo1);
+                return new UserOrder(o, me, null, null, show, theater, publicInfo1);
             }).block();
             return result == null ? Result.fail("数据库异常，请重试") : Result.succeed(result);
         }
@@ -147,16 +147,16 @@ public class OrderLogicImpl implements OrderLogic {
             seats.forEach(i -> distri.set(i, false));
             p.setSeatDistribution(distri);
             publicInfoService.update(publicInfoId, p).block();
-            UserOrder result = orderService.save(new Order(userId, publicInfoId, originalCost, actualCost, seats, couponInfoId))
+            UserOrder result = orderService.save(new Order(userId, publicInfoId, originalCost, actualCost, seats, null))
                     .map(o -> {
                         User me = userService.findById(o.getUserId()).block();
-                        User pay = userService.findById(o.getPayUserId()).block();
-                        CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
-                        Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
+//                        User pay = userService.findById(o.getPayUserId()).block();
+//                        CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
+//                        Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
                         PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
                         Show show = showService.findById(publicInfo1.getShowId()).block();
                         Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-                        return new UserOrder(o, me, pay, coupon, show, theater, publicInfo1);
+                        return new UserOrder(o, me, null, null, show, theater, publicInfo1);
                     }).block();
 
             if (result == null) {
@@ -171,22 +171,42 @@ public class OrderLogicImpl implements OrderLogic {
 
     @Override
     // payUser and orderUser may not the same
-    public Result<UserOrder> payOrder(String userId, String orderId) {
+    public Result<UserOrder> payOrder(String userId, String couponInfoId, String orderId) {
         Order order = orderService.findById(orderId).block();
         if (order == null) return Result.fail("订单不存在");
         PublicInfo p = publicInfoService.findById(order.getPublicInfoId()).block();
         if (order == null) return Result.fail("剧集信息不存在");
         User payUser = userService.findById(userId).block();
         if (payUser == null) return Result.fail("付款用户不存在");
+        double couponDiscount = 1.0;
+        if (couponInfoId != null) {
+            CouponInfo selectedCoupon = couponInfoService.findById(couponInfoId).block();
+            if (selectedCoupon == null) return Result.fail("该优惠券信息不存在");
+            else if (selectedCoupon.getState() != State.READY) return Result.fail("该优惠券不可用");
+
+            Coupon coupon = couponService.findById(selectedCoupon.getCouponId()).block();
+            if (coupon == null) {
+                selectedCoupon.setState(State.EXPIRED);
+                couponInfoService.update(couponInfoId, selectedCoupon).block();
+                return Result.fail("该优惠券不存在或已经被店家删除");
+            }
+
+            if (!selectedCoupon.getUserId().equals(userId)) return Result.fail("该优惠券不属于该用户");
+
+            couponDiscount = coupon.getDiscount();
+        }
 
         order.setPayUserId(userId);
+        order.setActualCost((int)(order.getActualCost() * couponDiscount));
+        order.setUsedCouponInfoId(couponInfoId);
         Order result = orderService.update(orderId, order).block();
+
 
         Map<String, Object> bodyMap = new HashMap<>();
         bodyMap.put("userId", userId);
         bodyMap.put("theaterId", p.getTheaterId());
-        bodyMap.put("orderId", order.getId());
-        bodyMap.put("money", order.getActualCost());
+        bodyMap.put("orderId", result.getId());
+        bodyMap.put("money", result.getActualCost());
         Result back = HttpRestUtil.httpPost(payOrderUrl, bodyMap, Result.class);
         log.info("OrderLogic.payOrder ==> {}", back);
         String backOrderId = (String) back.getValue();
@@ -198,8 +218,8 @@ public class OrderLogicImpl implements OrderLogic {
             UserOrder backResult = orderService.update(backOrderId, backOrder).map(o -> {
                 User me = userService.findById(o.getUserId()).block();
                 User pay = userService.findById(o.getPayUserId()).block();
-                CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
-                Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
+                CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
+                Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
                 PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
                 Show show = showService.findById(publicInfo1.getShowId()).block();
                 Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
@@ -284,8 +304,8 @@ public class OrderLogicImpl implements OrderLogic {
                 UserOrder backResult = orderService.update(backOrderId, backOrder).map(o -> {
                     User me = userService.findById(o.getUserId()).block();
                     User pay = userService.findById(o.getPayUserId()).block();
-                    CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
-                    Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
+                    CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
+                    Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
                     PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
                     Show show = showService.findById(publicInfo1.getShowId()).block();
                     Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
@@ -298,8 +318,8 @@ public class OrderLogicImpl implements OrderLogic {
             UserOrder result = orderService.update(orderId, order).map(o -> {
                 User me = userService.findById(o.getUserId()).block();
                 User pay = userService.findById(o.getPayUserId()).block();
-                CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
-                Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
+                CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
+                Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
                 PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
                 Show show = showService.findById(publicInfo1.getShowId()).block();
                 Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
@@ -315,8 +335,8 @@ public class OrderLogicImpl implements OrderLogic {
         return Result.succeed(orderService.findAllByUserId(userId).map(o -> {
             User me = userService.findById(o.getUserId()).block();
             User pay = userService.findById(o.getPayUserId()).block();
-            CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
-            Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
+            CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
+            Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
             PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
             Show show = showService.findById(publicInfo1.getShowId()).block();
             Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();

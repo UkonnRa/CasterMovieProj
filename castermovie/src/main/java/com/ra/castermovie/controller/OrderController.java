@@ -5,7 +5,6 @@ import com.ra.castermovie.controller.vo.order.NewOrderVO;
 import com.ra.castermovie.controller.vo.order.PayOrderVO;
 import com.ra.castermovie.logic.OrderLogic;
 import com.ra.castermovie.logic.common.Result;
-import com.ra.castermovie.model.Order;
 import com.ra.castermovie.model.order.UserOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class OrderController {
 
     @PostMapping(value = "newOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<UserOrder> newOrder(@RequestBody NewOrderVO vo) {
-        return orderLogic.newOrder(vo.getUserId(), vo.getPublicInfoId(), vo.getCouponInfoId(), vo.getSeats());
+        return orderLogic.newOrder(vo.getUserId(), vo.getPublicInfoId(), vo.getSeats());
     }
 
     @PostMapping(value = "checkIn", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -34,7 +33,7 @@ public class OrderController {
 
     @PostMapping(value = "payOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<UserOrder> payOrder(@RequestBody PayOrderVO vo) {
-        return orderLogic.payOrder(vo.getUserId(), vo.getOrderId());
+        return orderLogic.payOrder(vo.getUserId(), vo.getCouponInfoId(), vo.getOrderId());
     }
 
     @PostMapping(value = "retrieveOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
