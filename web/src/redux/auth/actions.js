@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {setAuthToken} from './util/setAuthToken'
-import {LOGIN, LOGOUT, GET_CURRENT_USER} from './types'
+import {GET_CURRENT_USER, LOGIN, LOGOUT} from './types'
 import jwt from 'jsonwebtoken'
 import {Api} from "../../api";
 
@@ -14,7 +14,13 @@ export const getByJwt = () =>
         });
 
 export const getCurrentUser = () => dispatch => {
-    getByJwt().then((resp => dispatch({type: GET_CURRENT_USER, user: resp.data.value})))
+    getByJwt().then((resp => {
+        if (resp.data.value) {
+            dispatch({type: GET_CURRENT_USER, user: resp.data.value})
+        } else {
+            dispatch({type: LOGOUT})
+        }
+    }))
 };
 
 export function login({username, password}) {

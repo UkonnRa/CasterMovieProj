@@ -17,28 +17,31 @@ const LoginForm = Form.create()(
             })
         };
 
-        return (
-            <Modal
-                visible={visible}
-                title="LOGIN"
-                okText="Login"
-                onCancel={onCancel}
-                onOk={formToValues}
-            >
-                <Form layout="vertical">
-                    <Form.Item label="Username">
-                        {getFieldDecorator('username', {
-                            rules: [{required: true, message: 'Please input username'}],
-                        })(
-                            <Input/>
-                        )}
-                    </Form.Item>
-                    <Form.Item label="Password">
-                        {getFieldDecorator('password')(<Input type="password"/>)}
-                    </Form.Item>
-                </Form>
-            </Modal>
-        );
+        const onCreateUser = () => {
+
+        };
+
+        return <Modal
+            visible={visible}
+            title="用户登陆"
+            okText="登陆"
+            cancelText="取消"
+            onCancel={onCancel}
+            onOk={formToValues}>
+            <Form layout="vertical">
+                <Form.Item label="用户名">
+                    {getFieldDecorator('username', {
+                        rules: [{required: true, message: '请输入用户名'}],
+                    })(<Input/>)}
+                </Form.Item>
+                <Form.Item label="密码">
+                    {getFieldDecorator('password', {
+                        rules: [{required: true, message: '请输入密码'}],
+                    })(<Input type="password"/>)}
+                </Form.Item>
+            </Form>
+            <a onClick={onCreateUser}>创建用户</a>
+        </Modal>
     }
 );
 

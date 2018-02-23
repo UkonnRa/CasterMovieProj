@@ -1,8 +1,12 @@
 import React, {Component} from 'react'
-import {List, Divider, Pagination} from 'antd'
+import {Divider, List, Pagination} from 'antd'
 import {connect} from 'react-redux'
-import {findAllByUserId} from "../../redux/order/actions";
+import {findAllByUserId, findById} from "../../redux/order/actions";
 import _ from 'lodash'
+import {OrderState} from "../../model/order";
+import {route} from "../../redux/ui/actions";
+import {RouteTable} from "../../route";
+
 
 class MyOrder extends Component {
     constructor (props) {
@@ -25,6 +29,17 @@ class MyOrder extends Component {
         },
     };
 
+    setListItemActions = (id) => {
+        const targetOrder = this.props.orders.find(o => o.id === id);
+        console.log(targetOrder);
+        if (!_.isEmpty(targetOrder) && targetOrder.orderState === OrderState.UNPAID) {
+            return [<a onClick={async () => {
+                await this.props.findOrderById(id);
+                this.props.route(`${RouteTable.CUSTOMER.PayOrder.path}#${id}`)
+            }}>前去付款</a>]
+        }
+    };
+
     render() {
         return (
             <div>
@@ -32,7 +47,7 @@ class MyOrder extends Component {
                 <List
                     dataSource={this.props.orders.slice(this.state.start, this.state.end)}
                     renderItem={item => (
-                        <List.Item key={item.id}>
+                        <List.Item key={item.id} actions={this.setListItemActions(item.id)}>
                             <List.Item.Meta
                                 title={item.showName}
                                 description={new Date(item.startTime).toLocaleString()}/>
@@ -66,7 +81,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        findAllByUserId: (userId) => dispatch(findAllByUserId(userId))
+        findAllByUserId: (userId) => dispatch(findAllByUserId(userId)),
+        route: (key) => dispatch(route(key)),
+        findOrderById: (orderId) => dispatch(findById(orderId)),
     }
 };
 

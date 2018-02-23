@@ -23,4 +23,6 @@ public interface OrderLogic {
     Result<UserOrder> retrieveOrder(String orderId);
 
     Result<List<UserOrder>> findAllByUserId(String userId);
+
+    Result<UserOrder> findById(String id);
 }

@@ -1,1 +1,2 @@
 export const ORDER_FIND_ALL_BY_USER_ID = "ORDER_FIND_ALL_BY_USER_ID";
+export const FIND_ORDER_BY_ID = "FIND_ORDER_BY_ID";

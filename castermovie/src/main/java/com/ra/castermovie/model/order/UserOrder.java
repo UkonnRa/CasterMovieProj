@@ -1,13 +1,10 @@
 package com.ra.castermovie.model.order;
 
 import com.ra.castermovie.model.*;
-import com.ra.castermovie.model.common.Condition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -16,6 +13,7 @@ import java.util.List;
 public class UserOrder {
     private String id;
     private String theaterName;
+    private String theaterId;
     private String showName;
     private String username;
     private String payUsername;
@@ -30,6 +28,7 @@ public class UserOrder {
     public UserOrder(Order order, User me, User payUser, Coupon coupon, Show show, Theater theater, PublicInfo publicInfo){
         this.id = order.getId();
         this.theaterName = theater.getName();
+        this.theaterId = theater.getId();
         this.showName = show.getName();
         this.username = me.getUsername();
         this.payUsername = payUser == null? null: payUser.getUsername();

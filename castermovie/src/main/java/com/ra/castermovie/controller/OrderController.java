@@ -46,4 +46,8 @@ public class OrderController {
         return orderLogic.findAllByUserId(userId);
     }
 
+    @GetMapping(value = "findById", consumes = MediaType.ALL_VALUE)
+    Result<UserOrder> findById(@RequestParam String id) {
+        return orderLogic.findById(id);
+    }
 }

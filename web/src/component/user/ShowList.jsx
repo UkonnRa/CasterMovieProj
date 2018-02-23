@@ -33,7 +33,6 @@ class ShowList extends Component {
     };
 
     handleTagChecked = (key, checked) => {
-        console.log(`${key} checked: ${checked}`);
         const nextSelectedGenres = checked ?
             [...this.state.selectedGenres, key] :
             this.state.selectedGenres.filter(t => t !== key);
@@ -57,7 +56,7 @@ class ShowList extends Component {
     };
 
     onShowItemClick = (showId) => {
-        this.props.selectShow(showId).then(() => this.props.route(RouteTable[Role.CUSTOMER].ShowInfo.path + `${showId}`))
+        this.props.selectShow(showId).then(() => this.props.route(`${RouteTable[Role.CUSTOMER].ShowInfo.path}#${showId}`))
     };
 
     render() {

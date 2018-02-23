@@ -35,6 +35,7 @@ export const Api = {
         payOrder: `${HTTP_HEADER}/order/payOrder`,
         retrieveOrder: `${HTTP_HEADER}/order/retrieveOrder`,
         findAllByUserId: `${HTTP_HEADER}/order/findAllByUserId`,
+        findById: `${HTTP_HEADER}/order/findById`,
     },
     publicInfo: {
         findAllByShowId: `${HTTP_HEADER}/publicInfo/findAllByShowId`,

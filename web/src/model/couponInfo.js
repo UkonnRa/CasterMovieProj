@@ -1,0 +1,1 @@
+export const State = {READY: "READY", USED : "USED", EXPIRED: "EXPIRED"};

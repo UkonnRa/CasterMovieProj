@@ -6,12 +6,15 @@ import com.ra.castermovie.model.*;
 import com.ra.castermovie.model.couponinfo.State;
 import com.ra.castermovie.model.order.OrderState;
 import com.ra.castermovie.model.order.UserOrder;
+import com.ra.castermovie.model.user.Level;
 import com.ra.castermovie.service.*;
 import com.ra.castermovie.util.HttpRestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -51,28 +54,8 @@ public class OrderLogicImpl implements OrderLogic {
         if (seats.contains(null) && seats.size() > 20) return Result.fail("未选座的用户每单最多可买20张");
         if (!seats.contains(null) && seats.size() > 6) return Result.fail("选座的用户每单最多可买6张");
 
-//        double couponDiscount = 1.0;
-
         User user = userService.findById(userId).block();
         if (user == null) return Result.fail("该用户不存在");
-
-//        if (couponInfoId != null) {
-//            CouponInfo selectedCoupon = couponInfoService.findById(couponInfoId).block();
-//            if (selectedCoupon == null) return Result.fail("该优惠券信息不存在");
-//            else if (selectedCoupon.getState() != State.READY) return Result.fail("该优惠券不可用");
-//
-//            Coupon coupon = couponService.findById(selectedCoupon.getCouponId()).block();
-//            if (coupon == null) {
-//                selectedCoupon.setState(State.EXPIRED);
-//                couponInfoService.update(couponInfoId, selectedCoupon).block();
-//                return Result.fail("该优惠券不存在或已经被店家删除");
-//            }
-//
-//            if (!selectedCoupon.getUserId().equals(userId)) return Result.fail("该优惠券不属于该用户");
-//
-//            couponDiscount = coupon.getDiscount();
-//        }
-
         PublicInfo publicInfo = publicInfoService.findById(publicInfoId).block();
         if (publicInfo == null) return Result.fail("该剧集信息不存在");
 
@@ -84,14 +67,18 @@ public class OrderLogicImpl implements OrderLogic {
         Collections.sort(keyList);
         int originalCost = seats.stream().mapToInt(seat -> {
             int i = 0;
-            for (; i < keyList.size() - 1; i++) {
-                if (keyList.get(i) <= seat && seat < keyList.get(i + 1)) break;
+            if (keyList.get(keyList.size() - 1) <= seat) {
+                i = keyList.size() - 1;
+            } else {
+                for (; i < keyList.size(); i++) {
+                    if (keyList.get(i) <= seat && seat < keyList.get(i + 1)) break;
+                }
             }
-            double disc = priceTable.getOrDefault(i, 1.0);
+            double disc = priceTable.getOrDefault(keyList.get(i), 1.0);
             return (int) (publicInfo.getBasePrice() * disc);
         }).sum();
-        int actualCost = (int) (/*couponDiscount **/ theater.getDiscounts().getOrDefault(user.getLevel(), 1.0) * originalCost);
-        return newOrder(userId, publicInfoId, originalCost, actualCost, seats/*, couponInfoId*/);
+        int actualCost = (int) (theater.getDiscounts().getOrDefault(user.getLevel(), 1.0) * originalCost);
+        return newOrder(userId, publicInfoId, originalCost, actualCost, seats);
     }
 
     @Override
@@ -106,16 +93,7 @@ public class OrderLogicImpl implements OrderLogic {
         if (order.getOrderState() != OrderState.READY) return Result.fail("该订单未完成");
 
         order.setOrderState(OrderState.FINISHED);
-        UserOrder result = orderService.update(orderId, order).map(o -> {
-            User me = userService.findById(o.getUserId()).block();
-            User pay = userService.findById(o.getPayUserId()).block();
-            CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
-            Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
-            PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
-            Show show = showService.findById(publicInfo1.getShowId()).block();
-            Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-            return new UserOrder(o, me, pay, coupon, show, theater, publicInfo1);
-        }).block();
+        UserOrder result = orderToUserOrder(orderService.update(orderId, order));
         return result == null ? Result.fail("入场失败，请重试") : Result.succeed(result);
     }
 
@@ -129,16 +107,7 @@ public class OrderLogicImpl implements OrderLogic {
                 return Result.fail("开演前两周内禁止出售配坐票");
             }
             Collections.fill(seats, null);
-            UserOrder result = orderService.save(new Order(userId, publicInfoId, originalCost, actualCost, seats, null)).map(o -> {
-                User me = userService.findById(o.getUserId()).block();
-//                User pay = userService.findById(o.getPayUserId()).block();
-//                CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
-//                Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
-                PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
-                Show show = showService.findById(publicInfo1.getShowId()).block();
-                Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-                return new UserOrder(o, me, null, null, show, theater, publicInfo1);
-            }).block();
+            UserOrder result = orderToUserOrder(orderService.save(new Order(userId, publicInfoId, originalCost, actualCost, seats, null)));
             return result == null ? Result.fail("数据库异常，请重试") : Result.succeed(result);
         }
         Collections.sort(seats);
@@ -147,17 +116,7 @@ public class OrderLogicImpl implements OrderLogic {
             seats.forEach(i -> distri.set(i, false));
             p.setSeatDistribution(distri);
             publicInfoService.update(publicInfoId, p).block();
-            UserOrder result = orderService.save(new Order(userId, publicInfoId, originalCost, actualCost, seats, null))
-                    .map(o -> {
-                        User me = userService.findById(o.getUserId()).block();
-//                        User pay = userService.findById(o.getPayUserId()).block();
-//                        CouponInfo info = o.getUsedCouponInfoId() == null? null: couponInfoService.findById(o.getUsedCouponInfoId()).block();
-//                        Coupon coupon = info == null? null: couponService.findById(info.getCouponId()).block();
-                        PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
-                        Show show = showService.findById(publicInfo1.getShowId()).block();
-                        Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-                        return new UserOrder(o, me, null, null, show, theater, publicInfo1);
-                    }).block();
+            UserOrder result = orderToUserOrder(orderService.save(new Order(userId, publicInfoId, originalCost, actualCost, seats, null)));
 
             if (result == null) {
                 return Result.fail("数据库异常，请重试");
@@ -171,6 +130,7 @@ public class OrderLogicImpl implements OrderLogic {
 
     @Override
     // payUser and orderUser may not the same
+    // Only deal with coupon discount
     public Result<UserOrder> payOrder(String userId, String couponInfoId, String orderId) {
         Order order = orderService.findById(orderId).block();
         if (order == null) return Result.fail("订单不存在");
@@ -193,11 +153,15 @@ public class OrderLogicImpl implements OrderLogic {
 
             if (!selectedCoupon.getUserId().equals(userId)) return Result.fail("该优惠券不属于该用户");
 
+            selectedCoupon.setState(State.USED);
+            CouponInfo resultInfo = couponInfoService.update(couponInfoId, selectedCoupon).block();
+            if (resultInfo == null) return Result.fail("数据库异常，优惠券信息无法更新");
+
             couponDiscount = coupon.getDiscount();
         }
 
         order.setPayUserId(userId);
-        order.setActualCost((int)(order.getActualCost() * couponDiscount));
+        order.setActualCost((int) (order.getActualCost() * couponDiscount));
         order.setUsedCouponInfoId(couponInfoId);
         Order result = orderService.update(orderId, order).block();
 
@@ -215,17 +179,19 @@ public class OrderLogicImpl implements OrderLogic {
             Order backOrder = orderService.findById(backOrderId).block();
             if (backOrder == null) return Result.fail("订单不存在");
             backOrder.setOrderState(OrderState.READY);
-            UserOrder backResult = orderService.update(backOrderId, backOrder).map(o -> {
-                User me = userService.findById(o.getUserId()).block();
-                User pay = userService.findById(o.getPayUserId()).block();
-                CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
-                Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
-                PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
-                Show show = showService.findById(publicInfo1.getShowId()).block();
-                Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-                return new UserOrder(o, me, pay, coupon, show, theater, publicInfo1);
-            }).block();
-            return backResult == null ? Result.fail("保存订单失败") : Result.succeed(backResult);
+            UserOrder backResult = orderToUserOrder(orderService.update(backOrderId, backOrder));
+            payUser = userService.findById(userId).block();
+            if (payUser == null) return Result.fail("付款用户不存在");
+            payUser.setPoint(payUser.getPoint() + backOrder.getActualCost());
+            payUser.setPaid(payUser.getPaid() + backOrder.getActualCost());
+            User finalPayUser = payUser;
+            payUser.setLevel(IntStream.range(0, Level.values().length - 1)
+                    .filter(i -> Level.values()[i].minPaid <= finalPayUser.getPaid() && finalPayUser.getPaid() < Level.values()[i + 1].minPaid)
+                    .mapToObj(i -> Level.values()[i])
+                    .collect(Collectors.toList()).get(0)
+            );
+            User resultUpdate = userService.update(payUser.getId(), payUser).block();
+            return resultUpdate == null || backResult == null ? Result.fail("保存订单失败") : Result.succeed(backResult);
         }
 
         return Result.fail(backMessage);
@@ -286,7 +252,16 @@ public class OrderLogicImpl implements OrderLogic {
         long interval = ChronoUnit.DAYS.between(now, Instant.ofEpochMilli(publicInfo.getSchedule()));
         if (order.getOrderState() == OrderState.CANCELLED || order.getOrderState() == OrderState.FINISHED) {
             return Result.fail("订单状态不符合条件，无法取消");
-        } else if (order.getOrderState() == OrderState.READY) {
+        }
+
+        // 取消已分配座位
+        List<Boolean> seats = publicInfo.getSeatDistribution();
+        order.getSeats().forEach(seat -> seats.set(seat, true));
+        publicInfo.setSeatDistribution(seats);
+        publicInfo = publicInfoService.update(publicInfo.getId(), publicInfo).block();
+        if (publicInfo == null) return Result.fail("保存public info失败");
+
+        if (order.getOrderState() == OrderState.READY) {
             Map<String, Object> bodyMap = new HashMap<>();
             bodyMap.put("orderId", orderId);
             if (interval >= MIN_FULL_RETRIEVE_DAY) {
@@ -296,35 +271,16 @@ public class OrderLogicImpl implements OrderLogic {
             }
             Result back = HttpRestUtil.httpPost(retrieveOrderUrl, bodyMap, Result.class);
             String backOrderId = (String) back.getValue();
-            String backMessage = back.getMessage();
             if (backOrderId != null) {
                 Order backOrder = orderService.findById(backOrderId).block();
                 if (backOrder == null) return Result.fail("订单不存在");
                 backOrder.setOrderState(OrderState.CANCELLED);
-                UserOrder backResult = orderService.update(backOrderId, backOrder).map(o -> {
-                    User me = userService.findById(o.getUserId()).block();
-                    User pay = userService.findById(o.getPayUserId()).block();
-                    CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
-                    Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
-                    PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
-                    Show show = showService.findById(publicInfo1.getShowId()).block();
-                    Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-                    return new UserOrder(o, me, pay, coupon, show, theater, publicInfo1);
-                }).block();
+                UserOrder backResult = orderToUserOrder(orderService.update(backOrderId, backOrder));
                 return backResult == null ? Result.fail("保存订单失败") : Result.succeed(backResult);
             }
         } else if (order.getOrderState() == OrderState.UNPAID) {
             order.setOrderState(OrderState.CANCELLED);
-            UserOrder result = orderService.update(orderId, order).map(o -> {
-                User me = userService.findById(o.getUserId()).block();
-                User pay = userService.findById(o.getPayUserId()).block();
-                CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
-                Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
-                PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
-                Show show = showService.findById(publicInfo1.getShowId()).block();
-                Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-                return new UserOrder(o, me, pay, coupon, show, theater, publicInfo1);
-            }).block();
+            UserOrder result = orderToUserOrder(orderService.update(orderId, order));
             return result == null ? Result.fail("存储订单失败") : Result.succeed(result);
         }
         return Result.fail("遇见未知的订单状态");
@@ -332,15 +288,31 @@ public class OrderLogicImpl implements OrderLogic {
 
     @Override
     public Result<List<UserOrder>> findAllByUserId(String userId) {
-        return Result.succeed(orderService.findAllByUserId(userId).map(o -> {
-            User me = userService.findById(o.getUserId()).block();
-            User pay = userService.findById(o.getPayUserId()).block();
-            CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
-            Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
-            PublicInfo publicInfo1 = publicInfoService.findById(o.getPublicInfoId()).block();
-            Show show = showService.findById(publicInfo1.getShowId()).block();
-            Theater theater = theaterService.findById(publicInfo1.getTheaterId()).block();
-            return new UserOrder(o, me, pay, coupon, show, theater, publicInfo1);
-        }).collectList().block());
+        return Result.succeed(orderToUserOrder(orderService.findAllByUserId(userId)));
+    }
+
+    @Override
+    public Result<UserOrder> findById(String id) {
+        UserOrder order = orderToUserOrder(orderService.findById(id));
+        return order == null ? Result.fail("订单不存在") : Result.succeed(order);
+    }
+
+    private UserOrder mapper(Order o) {
+        User me = userService.findById(o.getUserId()).block();
+        User pay = o.getPayUserId() == null ? null : userService.findById(o.getPayUserId()).block();
+        CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
+        Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();
+        PublicInfo publicInfo = publicInfoService.findById(o.getPublicInfoId()).block();
+        Show show = showService.findById(publicInfo.getShowId()).block();
+        Theater theater = theaterService.findById(publicInfo.getTheaterId()).block();
+        return new UserOrder(o, me, pay, coupon, show, theater, publicInfo);
+    }
+
+    private UserOrder orderToUserOrder(Mono<Order> mono) {
+        return mono.map(this::mapper).block();
+    }
+
+    private List<UserOrder> orderToUserOrder(Flux<Order> mono) {
+        return mono.map(this::mapper).collectList().block();
     }
 }

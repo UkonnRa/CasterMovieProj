@@ -3,14 +3,26 @@ import {Breadcrumb, Input, Layout} from 'antd';
 import LoginForm from './component/LoginForm'
 import FrameSider from './component/frame/FrameSider'
 import AvatarAffix from './component/frame/AvatarAffix'
+import Main from './component/user/Main'
+
 import {fadeModal, showModal} from './redux/ui/baseFrame/actions'
 import {connect} from 'react-redux'
 import {route, RouteTable} from "./route";
+import {getCurrentUser} from "./redux/auth/actions";
+import {LOGIN} from "./redux/auth/types";
+
 
 const {Header, Content, Footer} = Layout;
 const Search = Input.Search;
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            comp: <Main/>
+        }
+    }
+
     handleCancel = () => {
         this.props.fadeModal()
     };
@@ -21,7 +33,7 @@ class App extends Component {
         }
     };
 
-    render() {
+    render = () => {
         return (
             <Layout style={{minHeight: '100vh'}}>
                 {!this.props.isAuthed ? (
@@ -35,11 +47,10 @@ class App extends Component {
                     <Content style={{margin: '0 16px', marginTop: 80}}>
                         <Breadcrumb style={{margin: '0 0 16px'}}>
                             {
-                                this.props.itemKey.indexOf("#") === -1?
-                                    <Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey].text}</Breadcrumb.Item>:
+                                this.props.itemKey.indexOf("#") === -1 ?
+                                    <Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey].text}</Breadcrumb.Item> :
                                     <Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey.split("#")[0]].text}</Breadcrumb.Item>
                             }
-                            {/*{<Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey].text}</Breadcrumb.Item>}*/}
                         </Breadcrumb>
                         <div style={{padding: 24, background: '#fff', textAlign: 'center'}}>
 
@@ -81,6 +92,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         showModal: () => dispatch(showModal()),
         fadeModal: () => dispatch(fadeModal()),
+        getCurrentUser: () => dispatch(getCurrentUser()),
+        loginWithDispatch: (value) => dispatch({type: LOGIN, user: value}),
     }
 };
 
