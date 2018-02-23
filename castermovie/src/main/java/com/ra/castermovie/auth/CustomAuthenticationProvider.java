@@ -2,6 +2,7 @@ package com.ra.castermovie.auth;
 
 import com.ra.castermovie.auth.model.GrantedAuthorityImpl;
 import com.ra.castermovie.model.User;
+import com.ra.castermovie.model.user.State;
 import com.ra.castermovie.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -32,16 +33,17 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         User user = userService.findByUsername(name).block();
 
-        // 认证逻辑
-        if (user != null && user.getUsername().equals(name) && user.getPassword().equals(password)) {
-
-            // 这里设置权限和角色
+        if (user == null) {
+            throw new BadCredentialsException("用户不存在");
+        } else if (!user.getUsername().equals(name) || !user.getPassword().equals(password)) {
+            throw new BadCredentialsException("用户名或密码错误");
+        }else if (!user.getState().equals(State.REGISTERED)) {
+            throw new BadCredentialsException("用户处于`" + user.getState().tip + "`状态， 无法登陆");
+        } else {
             ArrayList<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new GrantedAuthorityImpl(user.getRole().name()));
             // 生成令牌
             return new UsernamePasswordAuthenticationToken(name, password, authorities);
-        } else {
-            throw new BadCredentialsException("密码错误~");
         }
     }
 

@@ -1,10 +1,10 @@
 package com.ra.castermovie.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.ra.castermovie.auth.model.AccountCredentials;
-import com.ra.castermovie.auth.model.JSONResult;
 import com.ra.castermovie.auth.util.TokenAuthenticationService;
-import org.json.JSONObject;
+import com.ra.castermovie.logic.common.Result;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,7 +13,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(
             HttpServletRequest req, HttpServletResponse res)
-            throws AuthenticationException, IOException, ServletException {
+            throws AuthenticationException, IOException {
 
         // JSON反序列化成 AccountCredentials
         AccountCredentials creds = new ObjectMapper().readValue(req.getInputStream(), AccountCredentials.class);
@@ -46,17 +45,18 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     protected void successfulAuthentication(
             HttpServletRequest req,
             HttpServletResponse res, FilterChain chain,
-            Authentication auth) throws IOException, ServletException {
+            Authentication auth) {
 
         TokenAuthenticationService.addAuthentication(res, auth.getName());
     }
 
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
 
-        response.setContentType("application/json");
+        response.setContentType("application/json;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getOutputStream().println(JSONResult.fillResultString("Internal Server Error!!!", JSONObject.NULL));
+//        response.getOutputStream().println(JSONResult.fillResultString(failed.getMessage(), JSONObject.NULL));
+        response.getWriter().println(new Gson().toJson(Result.fail(failed.getMessage())));
     }
 }

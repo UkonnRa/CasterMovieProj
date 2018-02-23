@@ -18,7 +18,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/castermovie/user/login",
             "/api/castermovie/user/register",
             "/api/castermovie/user/validate",
-            "/api/castermovie/user/validatecheck/**",
+            "/api/castermovie/user/validateCheck/**",
             "/api/castermovie/show/**",
             "/api/castermovie/publicInfo/**",
             "/api/castermovie/theater/**",

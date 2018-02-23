@@ -35,9 +35,7 @@ class AvatarAffix extends Component {
             <Popover visible={this.props.popoverVisible} trigger="click" title={this.props.user.username} content={this.popoverContent()}
                      onVisibleChange={this.onPopoverVisibleChange}>
                 <Affix style={this.props.style}>
-                    <Avatar size="large" icon={this.props.isAuthed ? null : "user"} onClick={this.onAvatarClickInner}>
-                        {this.props.isAuthed ? this.props.user.username : null}
-                    </Avatar>
+                    <Avatar size="large" icon={this.props.isAuthed ? "user" : "ellipsis"} onClick={this.onAvatarClickInner}/>
                 </Affix>
             </Popover>
         )

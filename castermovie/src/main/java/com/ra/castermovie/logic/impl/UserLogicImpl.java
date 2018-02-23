@@ -15,6 +15,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
@@ -43,20 +44,19 @@ public class UserLogicImpl implements UserLogic {
         User u;
         try {
             u = userService.save(new User(name, username, password, email, Role.CUSTOMER)).block();
+        } catch (DuplicateKeyException e) {
+            e.printStackTrace();
+            return Result.fail("用户名重名，请重试");
         } catch (Exception e) {
             e.printStackTrace();
             return Result.fail(e.getMessage());
         }
-        return u == null ? Result.fail("数据库连接失败") : Result.succeed(u);
+        if (u == null) return Result.fail("数据库连接失败");
+        else {
+            validate(u.getId());
+            return Result.succeed(u);
+        }
     }
-
-//    @Override
-//    public Result<User> login(String username, String password) {
-//        User u = userService.findByUsername(username).block();
-//        if (u == null) return Result.fail("该用户不存在");
-//        if (u.getState() != State.REGISTERED) return Result.fail("该用户不处于" + State.REGISTERED.tip + "状态");
-//        return Result.succeed(u);
-//    }
 
     @Override
     public Result<User> validate(String id) {
