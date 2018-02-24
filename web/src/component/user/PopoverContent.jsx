@@ -4,6 +4,8 @@ import {Role} from "../../model/user"
 import {OrderState} from "../../model/order"
 import {logout} from "../../redux/auth/actions";
 import {fadePopover} from "../../redux/ui/avatarAffix/actions";
+import {route} from "../../redux/ui/actions";
+import {RouteTable} from "../../route";
 
 
 class PopoverContent extends Component {
@@ -11,6 +13,7 @@ class PopoverContent extends Component {
     onLogoutClick = () => {
         this.props.logout();
         this.props.fadePopover();
+        this.props.route(RouteTable.CUSTOMER.Main.path, this.props.isAuthed);
         alert("成功退出")
     };
 
@@ -34,7 +37,8 @@ class PopoverContent extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.loginReducer.user,
-        orders: state.orderReducer.orders
+        orders: state.orderReducer.orders,
+        isAuthed: state.loginReducer.isAuthed,
     }
 };
 
@@ -42,6 +46,7 @@ const mapDispatchToProps = dispatch => {
     return {
         logout: () => dispatch(logout()),
         fadePopover: () => dispatch(fadePopover()),
+        route: (key, isAuthed) => dispatch(route(key, isAuthed)),
     }
 };
 

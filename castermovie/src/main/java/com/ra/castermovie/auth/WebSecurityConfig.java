@@ -2,6 +2,7 @@ package com.ra.castermovie.auth;
 
 import com.ra.castermovie.auth.filter.JWTAuthenticationFilter;
 import com.ra.castermovie.auth.filter.JWTLoginFilter;
+import com.ra.castermovie.service.TheaterService;
 import com.ra.castermovie.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -21,13 +22,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/castermovie/user/validateCheck/**",
             "/api/castermovie/show/**",
             "/api/castermovie/publicInfo/**",
-            "/api/castermovie/theater/**",
+            "/api/castermovie/theater/register",
+            "/api/castermovie/theater/findAllShowPlaying",
+            "/api/castermovie/theater/findById",
+            "/api/castermovie/theater/findAllTheater",
     };
     private final UserService userService;
+    private final TheaterService theaterService;
 
     @Autowired
-    public WebSecurityConfig(UserService userService) {
+    public WebSecurityConfig(UserService userService, TheaterService theaterService) {
         this.userService = userService;
+        this.theaterService = theaterService;
     }
 
     // 设置 HTTP 验证规则
@@ -52,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         // 使用自定义身份验证组件
-        auth.authenticationProvider(new CustomAuthenticationProvider(userService));
+        auth.authenticationProvider(new CustomAuthenticationProvider(userService, theaterService));
 
     }
 }

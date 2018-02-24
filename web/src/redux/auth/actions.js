@@ -3,6 +3,7 @@ import {setAuthToken} from './util/setAuthToken'
 import {GET_CURRENT_USER, LOGIN, LOGOUT} from './types'
 import jwt from 'jsonwebtoken'
 import {Api} from "../../api";
+import {Role} from "../../model/user";
 
 export const getByJwt = () => {
     if (localStorage.getItem("jwt")) {
@@ -13,7 +14,8 @@ export const getByJwt = () => {
                 Authorization: `Bearer ${localStorage.getItem("jwt")}`
             }
         })
-    } else return Promise.reject("jwt不存在")
+    }
+    else return Promise.resolve({data: {message: "jwt不存在，请登录后重试"}})
 };
 
 export const getCurrentUser = () => dispatch => {
@@ -26,14 +28,15 @@ export const getCurrentUser = () => dispatch => {
     }))
 };
 
-export function login({username, password}) {
+export function login({username, password, role = Role.CUSTOMER}) {
     return dispatch =>
         axios({
             method: 'post',
             url: Api.user.login,
             data: {
                 username: username,
-                password: password
+                password: password,
+                role: role,
             },
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'

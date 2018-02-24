@@ -13,4 +13,5 @@ public class NewOrderVO {
     private String userId;
     private String publicInfoId;
     private List<Integer> seats;
+    private String couponInfoId;
 }

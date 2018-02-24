@@ -56,7 +56,7 @@ class ShowList extends Component {
     };
 
     onShowItemClick = (showId) => {
-        this.props.selectShow(showId).then(() => this.props.route(`${RouteTable[Role.CUSTOMER].ShowInfo.path}#${showId}`))
+        this.props.selectShow(showId).then(() => this.props.route(`${RouteTable[Role.CUSTOMER].ShowInfo.path}#${showId}`, this.props.isAuthed))
     };
 
     render() {
@@ -106,6 +106,7 @@ const mapStateToProps = state => {
     return {
         shows: state.showReducer.shows,
         userId: state.loginReducer.user.id,
+        isAuthed: state.loginReducer.isAuthed,
     }
 };
 
@@ -113,7 +114,7 @@ const mapDispatchToProps = dispatch => {
     return {
         findAllByGenreInAndStartTime: (value) => dispatch(findAllByGenreInAndStartTime(value)),
         selectShow: (showId) => dispatch(selectShow(showId)),
-        route: (key) => dispatch(route(key)),
+        route: (key, isAuthed) => dispatch(route(key, isAuthed)),
     }
 };
 

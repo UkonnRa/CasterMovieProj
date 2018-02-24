@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -22,7 +23,7 @@ public class OrderController {
 
     @PostMapping(value = "newOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<UserOrder> newOrder(@RequestBody NewOrderVO vo) {
-        return orderLogic.newOrder(vo.getUserId(), vo.getPublicInfoId(), vo.getSeats());
+        return orderLogic.newOrder(vo.getUserId(), vo.getPublicInfoId(), vo.getSeats(), vo.getCouponInfoId());
     }
 
     @PostMapping(value = "checkIn", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -49,5 +50,10 @@ public class OrderController {
     @GetMapping(value = "findById", consumes = MediaType.ALL_VALUE)
     Result<UserOrder> findById(@RequestParam String id) {
         return orderLogic.findById(id);
+    }
+
+    @PostMapping(value = "distributeTicket", consumes = MediaType.ALL_VALUE)
+    Result<Map<String, List<String>>> distributeTicket(@RequestParam String publicInfoId) {
+        return orderLogic.distributeTicket(publicInfoId);
     }
 }

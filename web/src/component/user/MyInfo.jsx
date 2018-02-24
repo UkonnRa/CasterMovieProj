@@ -45,7 +45,7 @@ class MyInfo extends Component {
             alert("修改成功，请用新密码登陆");
             this.setState({changePassword: false});
             this.props.logout();
-            this.props.route(RouteTable.CUSTOMER.Main.path)
+            this.props.route(RouteTable.CUSTOMER.Main.path, this.props.isAuthed)
         }).catch(err => alert(err))
     };
 
@@ -96,6 +96,7 @@ class MyInfo extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.loginReducer.user,
+        isAuthed: state.loginReducer.isAuthed,
     }
 };
 
@@ -104,7 +105,7 @@ const mapDispatchToProps = dispatch => {
         getCurrentUser: () => dispatch(getCurrentUser()),
         update: (user) => dispatch(update(user)),
         logout: () => dispatch(logout()),
-        route: (key) => dispatch(route(key)),
+        route: (key, isAuthed) => dispatch(route(key, isAuthed)),
     }
 };
 

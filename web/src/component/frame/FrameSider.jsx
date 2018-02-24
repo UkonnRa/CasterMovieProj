@@ -15,7 +15,7 @@ class FrameSider extends Component {
     };
 
     onItemClick = (item) => {
-        this.props.route(item.key)
+        this.props.route(item.key, this.props.isAuthed)
     };
 
     menuItem = () =>
@@ -55,7 +55,8 @@ const mapStateToProps = (state) => {
     return {
         userRole: state.loginReducer.user.role,
         sideCollapsed: state.siderReducer.sideCollapsed,
-        itemKey: state.routeReducer.key
+        itemKey: state.routeReducer.key,
+        isAuthed: state.loginReducer.isAuthed,
     }
 };
 
@@ -63,7 +64,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         collapseSide: () => dispatch(collapseSide()),
         expandSide: () => dispatch(expandSide()),
-        route: (item) => dispatch(route(item))
+        route: (item, isAuthed) => dispatch(route(item, isAuthed))
     }
 };
 

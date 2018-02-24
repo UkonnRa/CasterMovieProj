@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Form} from 'antd'
 import {Provider} from 'react-redux'
 import thunk from 'redux-thunk';
 import {composeWithDevTools} from 'redux-devtools-extension'; //devToolsEnhancer,
@@ -35,11 +34,9 @@ let store = createStore(reducers, composeWithDevTools(
     applyMiddleware(...middleware)
 ));
 
-const Ch1 = Form.create()(BaseFrame);
-
 ReactDOM.render(
     <Provider store={store}>
-        <Ch1/>
+        <BaseFrame/>
     </Provider>,
     document.getElementById('root'));
 registerServiceWorker();

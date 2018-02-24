@@ -7,25 +7,14 @@ import ShowList from "../component/user/ShowList"
 import ShowInfo from "../component/user/ShowInfo"
 import ChooseSeat from "../component/user/ChooseSeat"
 import PayOrder from '../component/user/PayOrder'
-import {getByJwt} from "../redux/auth/actions";
+import _ from "lodash";
 
-export const route = (props) => {
-    let itemKey = props.itemKey;
+export const mainComponent = (props) => {
+    let itemKey = _.isEmpty(props.itemKey)? 'Main': props.itemKey;
     if (itemKey.indexOf("#") !== -1) {
         itemKey = props.itemKey.substring(0, props.itemKey.indexOf("#"))
     }
-    getByJwt().then(userData => props.loginWithDispatch(userData.data.value))
-        .catch(err => console.log(err));
-    if (RouteTable[props.role][itemKey].needAuthed) {
-        if (!props.isAuthed) {
-            alert("你需要登录才能继续");
-            return <Main/>
-        } else {
-            return RouteTable[props.role][itemKey].component
-        }
-    } else {
-        return RouteTable[props.role][itemKey].component
-    }
+    return RouteTable[props.role][itemKey].component
 };
 
 export const RouteTable = {

@@ -48,7 +48,7 @@ class ShowInfo extends Component {
 
     onChooseTheaterClick = (publicInfoId) => {
         this.props.findById(publicInfoId).then(() => {
-            this.props.route(RouteTable.CUSTOMER.ChooseSeat.path + `#${publicInfoId}`)
+            this.props.route(RouteTable.CUSTOMER.ChooseSeat.path + `#${publicInfoId}`, this.props.isAuthed)
         })
     };
 
@@ -62,7 +62,7 @@ class ShowInfo extends Component {
             <Divider dashed>抢票</Divider>
             <AreaCascader placeholder={'选择区域，默认全选'} defaultArea={null} level={1} onChange={this.onRegionCodeChange}/>
             <Tabs defaultActiveKey="1">
-                {Array.from(moment.rangeFromInterval('d', 14).by('days')).map((date, index) =>
+                {Array.from(moment.rangeFromInterval('d', 80).by('days')).map((date, index) =>
                     <Tabs.TabPane tab={date.format("YYYY-MM-DD")} key={index}>
                         <List itemLayout="horizontal"
                               dataSource={this.props.publicInfos.filter(info => moment(info.schedule).isSame(date, 'd') && (this.state.regionCode === -1 || (!_.isEmpty(this.state.theaters.get(info.theaterId)) && this.state.theaters.get(info.theaterId).regionId === this.state.regionCode)))}
@@ -83,7 +83,7 @@ const
         return {
             findAllPublicInfoByShowId: (showId) => dispatch(findAllPublicInfoByShowId(showId)),
             findById: (id) => dispatch(findById(id)),
-            route: (path) => dispatch(route(path))
+            route: (path, isAuthed) => dispatch(route(path, isAuthed))
         }
     };
 
@@ -92,6 +92,7 @@ const
         return {
             selectedShow: state.showReducer.selectedShow,
             publicInfos: state.publicInfoReducer.publicInfos,
+            isAuthed: state.loginReducer.isAuthed,
         }
     };
 

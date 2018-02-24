@@ -76,7 +76,7 @@ public class MongoScheduler {
     @Scheduled(fixedRate = 60000)
     private void scanDistributeTicket() {
         publicInfoService.findAllByHasBeenDistributed(false)
-                .filter(p -> p.getSchedule() - System.currentTimeMillis() <= 3 * 7 * 24 * 3600 * 1000/*OrderLogic.TWO_WEEKS_MILLS*/)
+                .filter(p -> p.getSchedule() - System.currentTimeMillis() <= OrderLogic.TWO_WEEKS_MILLS)
                 .collectList().block()
                 .forEach(p -> orderLogic.distributeTicket(p.getId()));
     }

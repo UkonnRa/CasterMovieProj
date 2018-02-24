@@ -1,19 +1,18 @@
 import React, {Component} from 'react';
-import {Breadcrumb, Input, Layout} from 'antd';
+import {Breadcrumb, Layout} from 'antd';
 import LoginForm from './component/LoginForm'
 import FrameSider from './component/frame/FrameSider'
 import AvatarAffix from './component/frame/AvatarAffix'
 import Main from './component/user/Main'
-
+import {route} from "./redux/ui/actions";
 import {fadeModal, showModal} from './redux/ui/baseFrame/actions'
 import {connect} from 'react-redux'
-import {route, RouteTable} from "./route";
+import {mainComponent, RouteTable} from "./route";
 import {getCurrentUser} from "./redux/auth/actions";
-import {LOGIN} from "./redux/auth/types";
-
+import {Role} from "./model/user";
+import _ from 'lodash'
 
 const {Header, Content, Footer} = Layout;
-const Search = Input.Search;
 
 class App extends Component {
     constructor(props) {
@@ -33,6 +32,14 @@ class App extends Component {
         }
     };
 
+    componentWillMount = () => {
+        if (_.isEmpty(this.props.itemKey)) {
+            this.props.route(RouteTable[_.isEmpty(this.props.role) ? Role.CUSTOMER : this.props.role].Main.path, this.props.isAuthed)
+        } else {
+            this.props.route(this.props.itemKey, this.props.isAuthed)
+        }
+    };
+
     render = () => {
         return (
             <Layout style={{minHeight: '100vh'}}>
@@ -47,30 +54,23 @@ class App extends Component {
                     <Content style={{margin: '0 16px', marginTop: 80}}>
                         <Breadcrumb style={{margin: '0 0 16px'}}>
                             {
-                                this.props.itemKey.indexOf("#") === -1 ?
-                                    <Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey].text}</Breadcrumb.Item> :
-                                    <Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey.split("#")[0]].text}</Breadcrumb.Item>
+                                    this.props.itemKey.indexOf("#") === -1 ?
+                                        <Breadcrumb.Item>{RouteTable[this.props.role][_.isEmpty(this.props.itemKey)? 'Main': this.props.itemKey].text}</Breadcrumb.Item> :
+                                        <Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey.split("#")[0]].text}</Breadcrumb.Item>
                             }
                         </Breadcrumb>
                         <div style={{padding: 24, background: '#fff', textAlign: 'center'}}>
 
-                            {route(this.props)}
+                            {mainComponent(this.props)}
 
                             <AvatarAffix style={{position: 'fixed', top: '90%', left: '90%'}}
                                          onAvatarClick={this.onAvatarClick}/>
                         </div>
                     </Content>
 
-                    <Header style={{width: '100vw', position: 'fixed'}}>
-                        <Search
-                            style={{position: 'fixed', top: '15px', left: '80%', width: '15vw'}}
-                            placeholder="input search text"
-                            onSearch={value => console.log(value)}
-                            enterButton
-                        />
-                    </Header>
+                    <Header style={{width: '100vw', position: 'fixed'}}/>
                     <Footer style={{textAlign: 'center'}}>
-                        Ant Design ©2016 Created by Ant UED
+                        CasterKKK 2018
                     </Footer>
                 </Layout>
             </Layout>
@@ -93,7 +93,7 @@ const mapDispatchToProps = (dispatch) => {
         showModal: () => dispatch(showModal()),
         fadeModal: () => dispatch(fadeModal()),
         getCurrentUser: () => dispatch(getCurrentUser()),
-        loginWithDispatch: (value) => dispatch({type: LOGIN, user: value}),
+        route: (key, isAuthed, role = Role.CUSTOMER) => dispatch(route(key, isAuthed, role))
     }
 };
 

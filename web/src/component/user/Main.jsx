@@ -15,7 +15,7 @@ class Main extends Component {
     };
 
     onShowItemClick = (showId) => {
-        this.props.selectShow(showId).then(() => this.props.route(RouteTable[Role.CUSTOMER].ShowInfo.path + `#${showId}`))
+        this.props.selectShow(showId).then(() => this.props.route(RouteTable[Role.CUSTOMER].ShowInfo.path + `#${showId}`, this.props.isAuthed))
     };
 
     render() {
@@ -48,13 +48,14 @@ const mapDispatchToProps = (dispatch) => {
     return {
         findAllByGenreInAndStartTime: (elems) => dispatch(findAllByGenreInAndStartTime(elems)),
         selectShow: (showId) => dispatch(selectShow(showId)),
-        route: (key) => dispatch(route(key)),
+        route: (key, isAuthed) => dispatch(route(key,isAuthed)),
     }
 };
 
 const mapStateToProps = (state) => {
     return {
-        shows: state.showReducer.shows
+        shows: state.showReducer.shows,
+        isAuthed: state.loginReducer.isAuthed,
     }
 };
 

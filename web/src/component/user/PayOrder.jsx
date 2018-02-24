@@ -35,7 +35,7 @@ class PayOrder extends Component {
 
         if (theater) {
             let disc = theater.discounts[this.props.user.level];
-            this.setState({levelDiscount: (disc === null? 1.0: disc)})
+            this.setState({levelDiscount: (_.isEmpty(disc)? 1.0: disc)})
         }
         else alert('cannot find theater')
     };
@@ -71,12 +71,12 @@ class PayOrder extends Component {
                 Authorization: `Bearer ${localStorage.getItem("jwt")}`
             }
         });
-        if (order.data && order.data.value.orderState === OrderState.READY) {
+        if (order.data.value && order.data.value.orderState === OrderState.READY) {
             alert("ok");
-            this.props.route(`${RouteTable.CUSTOMER.ShowList.path}`);
+            this.props.route(`${RouteTable.CUSTOMER.ShowList.path}`, this.props.isAuthed);
             this.props.getCurrentUser()
         } else {
-            alert("failed!")
+            alert(`订单支付失败：${order.data.message}`)
         }
     };
 
@@ -99,7 +99,7 @@ class PayOrder extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        route: (key) => dispatch(route(key)),
+        route: (key, isAuthed) => dispatch(route(key, isAuthed)),
         findAllByUserId: (userId) => dispatch(findAllByUserId(userId)),
         getCurrentUser: () => dispatch(getCurrentUser()),
     }
@@ -110,6 +110,7 @@ const mapStateToProps = state => {
         selectedOrder: state.orderReducer.selectedOrder,
         user: state.loginReducer.user,
         couponInfos: state.couponInfoReducer.couponInfos,
+        isAuthed: state.loginReducer.isAuthed,
     }
 };
 

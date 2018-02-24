@@ -1,9 +1,7 @@
 import {NOW_ROUTER} from "./types";
-import {RouteTable} from "../../route";
-import {Role} from "../../model/user";
 
 const initState = {
-    key: RouteTable[Role.CUSTOMER].Main.path
+    key: ""
 };
 
 export const routeReducer = (state = initState, action = {}) => {

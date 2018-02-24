@@ -12,7 +12,7 @@ public interface OrderLogic {
     int MIN_FULL_RETRIEVE_DAY = 7;
     long TWO_WEEKS_MILLS = 2 * 7 * 24 * 3600 * 1000;
 
-    Result<UserOrder> newOrder(String userId, String publicInfoId, List<Integer> seats);
+    Result<UserOrder> newOrder(String userId, String publicInfoId, List<Integer> seats, String couponInfoId);
 
     Result<UserOrder> checkIn(String theaterId, String orderId);
 

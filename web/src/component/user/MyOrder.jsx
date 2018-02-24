@@ -35,7 +35,7 @@ class MyOrder extends Component {
         if (!_.isEmpty(targetOrder) && targetOrder.orderState === OrderState.UNPAID) {
             return [<a onClick={async () => {
                 await this.props.findOrderById(id);
-                this.props.route(`${RouteTable.CUSTOMER.PayOrder.path}#${id}`)
+                this.props.route(`${RouteTable.CUSTOMER.PayOrder.path}#${id}`, this.props.isAuthed)
             }}>前去付款</a>]
         }
     };
@@ -76,13 +76,14 @@ const mapStateToProps = state => {
     return {
         orders: state.orderReducer.orders,
         userId: state.loginReducer.user.id,
+        isAuthed: state.loginReducer.isAuthed,
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         findAllByUserId: (userId) => dispatch(findAllByUserId(userId)),
-        route: (key) => dispatch(route(key)),
+        route: (key, isAuthed) => dispatch(route(key, isAuthed)),
         findOrderById: (orderId) => dispatch(findById(orderId)),
     }
 };
