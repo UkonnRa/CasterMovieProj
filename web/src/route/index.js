@@ -8,9 +8,18 @@ import ShowInfo from "../component/user/ShowInfo"
 import ChooseSeat from "../component/user/ChooseSeat"
 import PayOrder from '../component/user/PayOrder'
 import _ from "lodash";
+import CheckIn from '../component/theater/CheckIn'
+import MyPublicInfos from '../component/theater/MyPublicInfos'
+import MyTheaterFinance from '../component/theater/MyTheaterFinance'
+import MyTheaterInfo from '../component/theater/MyTheaterInfo'
+import MyTheaterOrders from '../component/theater/MyTheaterOrders'
+import NewPublicInfo from '../component/theater/NewPublicInfo'
+import SellTicket from '../component/theater/SellTicket'
+import TheaterShowList from '../component/theater/TheaterShowList'
+
 
 export const mainComponent = (props) => {
-    let itemKey = _.isEmpty(props.itemKey)? 'Main': props.itemKey;
+    let itemKey = _.isEmpty(props.itemKey) ? 'Main' : props.itemKey;
     if (itemKey.indexOf("#") !== -1) {
         itemKey = props.itemKey.substring(0, props.itemKey.indexOf("#"))
     }
@@ -63,6 +72,61 @@ export const RouteTable = {
             text: "支付订单",
             needAuthed: true,
             component: <PayOrder/>
+        }
+    },
+    THEATER: {
+        Main: {
+            path: "Main",
+            text: "主页",
+            component: <Main/>,
+        },
+        NewPublicInfo: {
+            path: "NewPublicInfo",
+            text: "发布计划",
+            needAuthed: true,
+            component: <NewPublicInfo/>,
+        },
+        SellTicket: {
+            path: "SellTicket",
+            text: "售票",
+            needAuthed: true,
+            component: <SellTicket/>,
+        },
+        CheckIn: {
+            path: "CheckIn",
+            text: "检票",
+            needAuthed: true,
+            component: <CheckIn/>,
+        },
+        MyPublicInfos: {
+            path: "MyPublicInfos",
+            text: "剧院计划",
+            needAuthed: true,
+            component: <MyPublicInfos/>,
+        },
+        MyTheaterInfo: {
+            path: "MyTheaterInfo",
+            text: "剧院信息",
+            needAuthed: true,
+            component: <MyTheaterInfo/>,
+        },
+        MyTheaterOrders: {
+            path: "MyTheaterOrders",
+            text: "剧院订单",
+            needAuthed: true,
+            component: <MyTheaterOrders/>,
+        },
+        MyTheaterFinance: {
+            path: "MyTheaterFinance",
+            text: "剧院财务",
+            needAuthed: true,
+            component: <MyTheaterFinance/>,
+        },
+        TheaterShowList: {
+            path: "TheaterShowList",
+            text: "剧集信息",
+            needAuthed: true,
+            component: <TheaterShowList/>
         }
     }
 };

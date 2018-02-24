@@ -1,19 +1,31 @@
 import axios from 'axios'
 import {setAuthToken} from './util/setAuthToken'
 import {GET_CURRENT_USER, LOGIN, LOGOUT} from './types'
-import jwt from 'jsonwebtoken'
+import _jwt from 'jsonwebtoken'
 import {Api} from "../../api";
 import {Role} from "../../model/user";
 
 export const getByJwt = () => {
     if (localStorage.getItem("jwt")) {
-        return axios.get(Api.user.getByJwt, {
-            params: {jwt: localStorage.getItem("jwt")},
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                Authorization: `Bearer ${localStorage.getItem("jwt")}`
-            }
-        })
+        const res = _jwt.decode(localStorage.getItem("jwt"));
+        console.log(res);
+        if (res.role === Role.CUSTOMER) {
+            return axios.get(Api.user.getByJwt, {
+                params: {jwt: localStorage.getItem("jwt")},
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                }
+            })
+        } else if (res.role === Role.THEATER) {
+            return axios.get(Api.theater.findById, {
+                params: {id: res.username},
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                }
+            })
+        }
     }
     else return Promise.resolve({data: {message: "jwt不存在，请登录后重试"}})
 };

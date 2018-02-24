@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Divider, List, Tabs} from 'antd'
 import {connect} from 'react-redux'
-import {AreaCascader, AreaSelect} from 'react-area-linkage';
+import {AreaCascader} from 'react-area-linkage';
 import {Genre} from "../../model/show";
 import {findAllPublicInfoByShowId, findById} from "../../redux/publicInfo/actions";
 import {route} from "../../redux/ui/actions";

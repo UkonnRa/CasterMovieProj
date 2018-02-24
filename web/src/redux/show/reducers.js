@@ -1,4 +1,4 @@
-import {FIND_ALL_BY_GENRE_IN_AND_START_TIME, SELECT_SHOW} from './types'
+import {FIND_ALL_SHOWS_BY_GENRE_IN, FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME, SELECT_SHOW} from './types'
 
 const initState = {
     shows: [],
@@ -7,10 +7,12 @@ const initState = {
 
 export function showReducer(state = initState, action = {}) {
     switch (action.type) {
-        case FIND_ALL_BY_GENRE_IN_AND_START_TIME:
+        case FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME:
             return {...state, shows: action.shows};
         case SELECT_SHOW:
             return {...state, selectedShow: action.selectedShow};
+        case FIND_ALL_SHOWS_BY_GENRE_IN:
+            return {...state, shows: action.shows};
         default:
             return state
     }

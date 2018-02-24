@@ -1,4 +1,4 @@
-import {FIND_ALL_BY_GENRE_IN_AND_START_TIME, SELECT_SHOW} from "./types";
+import {FIND_ALL_SHOWS_BY_GENRE_IN, FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME, SELECT_SHOW} from "./types";
 import axios from "axios";
 import {Api} from '../../api'
 import qs from 'query-string'
@@ -12,7 +12,7 @@ export const findAllByGenreInAndStartTime = ({genreList = [], startTime}) => {
                 'Content-Type': 'application/json;charset=utf-8',
             }
         }).then(resp => {
-            if (resp.data) dispatch({type: FIND_ALL_BY_GENRE_IN_AND_START_TIME, shows: resp.data.value})
+            if (resp.data.value) dispatch({type: FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME, shows: resp.data.value})
         })
     }
 };
@@ -29,3 +29,16 @@ export const selectShow = (showId) => {
         })
     }
 };
+
+export const findAllShowsByGenreIn = ({genreList = []}) => dispatch =>
+    axios.get(Api.show.findAllByGenreIn, {
+        params: {"genreList": genreList},
+        paramsSerializer: params => qs.stringify(params, {arrayFormat: 'repeat'}),
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            Authorization: `Bearer ${localStorage.getItem("jwt")}`
+        }
+    }).then(resp => {
+        if (resp.data.value) dispatch({type: FIND_ALL_SHOWS_BY_GENRE_IN, shows: resp.data.value});
+        else console.log(`ERROR: ${resp.data.message}`)
+    });

@@ -5,11 +5,11 @@ import {Form, Icon, Input, InputNumber, Modal, Radio, Tooltip} from 'antd';
 import axios from 'axios'
 import {Api} from "../api";
 import {Role} from "../model/user";
-import {AreaCascader, AreaSelect} from 'react-area-linkage';
+import {AreaCascader} from 'react-area-linkage';
 import _ from "lodash";
 
 const LoginForm = Form.create()(
-    class FormInner extends Component {
+    class extends Component {
         constructor(props) {
             super(props);
             this.state = {
@@ -17,6 +17,7 @@ const LoginForm = Form.create()(
                 confirmDirty: false,
                 seatPerLineDirty: false,
                 registerType: Role.CUSTOMER,
+                loginType: Role.CUSTOMER,
             }
         }
 
@@ -25,7 +26,7 @@ const LoginForm = Form.create()(
 
             form.validateFields((err, values) => {
                 if (err) return;
-                login(values).then((res) => {
+                login({...values, role: this.state.loginType}).then((res) => {
                     console.log(res);
                     form.resetFields();
                     onCancel()
@@ -204,7 +205,9 @@ const LoginForm = Form.create()(
                                     {validator: this.checkSeatNumber}]
                             })(<InputNumber min={0} onBlur={this.handleSeatPerLineBlur}/>)}
                         </Form.Item>
-                    </Form>
+                    </Form>;
+                default:
+                    return null
             }
         };
 
@@ -220,6 +223,10 @@ const LoginForm = Form.create()(
                     cancelText="取消"
                     onCancel={onCancel}
                     onOk={this.onLoginOk}>
+                    <Radio.Group onChange={(e) => this.setState({loginType: e.target.value})} value={this.state.loginType}>
+                        <Radio value={Role.CUSTOMER}>用户</Radio>
+                        <Radio value={Role.THEATER}>剧院</Radio>
+                    </Radio.Group>
                     <Form layout="vertical">
                         <Form.Item label="用户名">
                             {getFieldDecorator('username', {

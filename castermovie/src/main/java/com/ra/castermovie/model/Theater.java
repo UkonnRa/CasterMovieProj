@@ -4,6 +4,7 @@ package com.ra.castermovie.model;
 import com.ra.castermovie.model.common.Condition;
 import com.ra.castermovie.model.theater.State;
 import com.ra.castermovie.model.user.Level;
+import com.ra.castermovie.model.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ public class Theater {
     private Condition condition;
     @NotNull(message = "Theater::condition must not be null")
     private State state;
+    @NotNull(message = "Theater::role must not be null")
+    private Role role;
     @NotNull(message = "Theater::password must not be null")
     private String password;
     @NotNull(message = "Theater::name must not be null")
@@ -46,6 +49,7 @@ public class Theater {
         this.id = id;
         this.condition = Condition.EXISTING;
         this.state = State.WAITING;
+        this.role = Role.THEATER;
         this.password = password;
         this.name = name;
         this.regionId = regionId;

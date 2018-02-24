@@ -11,36 +11,39 @@ import {route} from "../../redux/ui/actions";
 class Main extends Component {
 
     componentWillMount = () => {
-        this.props.findAllByGenreInAndStartTime({genreList: Array.from(Genre.keys()),startTime: Date.now()})
+        this.props.findAllByGenreInAndStartTime({genreList: Array.from(Genre.keys()), startTime: Date.now()})
     };
 
     onShowItemClick = (showId) => {
         this.props.selectShow(showId).then(() => this.props.route(RouteTable[Role.CUSTOMER].ShowInfo.path + `#${showId}`, this.props.isAuthed))
     };
 
-    render() {
-
-        return (
-            _.chunk(this.props.shows, 4).map((showRow, index) => {
-                return (
-                    <div>
-                    <Row style={{margin: "0 0 16px"}} key={index} gutter={16}>
-                        {showRow.map((show, innerIndex) => {
-                            return (
-                                <Col key={innerIndex} span={6}>
-                                    <Card key={innerIndex} title={<a onClick={() => this.onShowItemClick(show.id)}>{show.name}</a>}>
+    component = () => {
+        switch (this.props.role) {
+            case Role.CUSTOMER:
+                return _.chunk(this.props.shows, 4).map((showRow, index) => {
+                    return <div>
+                        <Row style={{margin: "0 0 16px"}} key={index} gutter={16}>
+                            {showRow.map((show, innerIndex) => {
+                                return <Col key={innerIndex} span={6}>
+                                    <Card key={innerIndex} title={<a
+                                        onClick={() => this.onShowItemClick(show.id)}>{show.name}</a>}>
                                         <p>种类：{Genre.get(show.genre)}</p>
                                         <p>时长：{show.duration}</p>
                                     </Card>
-                                </Col>
-                            )
-                        })}
-                    </Row>
+                                </Col>})}
+                        </Row>
                     </div>
-                )
-            })
-        )
-    }
+
+                });
+            case Role.THEATER:
+                return <div>
+
+                </div>
+        }
+    };
+
+    render = () => this.component()
 
 }
 
@@ -48,7 +51,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         findAllByGenreInAndStartTime: (elems) => dispatch(findAllByGenreInAndStartTime(elems)),
         selectShow: (showId) => dispatch(selectShow(showId)),
-        route: (key, isAuthed) => dispatch(route(key,isAuthed)),
+        route: (key, isAuthed, role = Role.CUSTOMER) => dispatch(route(key, isAuthed, role)),
     }
 };
 
@@ -56,6 +59,7 @@ const mapStateToProps = (state) => {
     return {
         shows: state.showReducer.shows,
         isAuthed: state.loginReducer.isAuthed,
+        role: state.loginReducer.user.role,
     }
 };
 

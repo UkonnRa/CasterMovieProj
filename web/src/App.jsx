@@ -54,9 +54,9 @@ class App extends Component {
                     <Content style={{margin: '0 16px', marginTop: 80}}>
                         <Breadcrumb style={{margin: '0 0 16px'}}>
                             {
-                                    this.props.itemKey.indexOf("#") === -1 ?
-                                        <Breadcrumb.Item>{RouteTable[this.props.role][_.isEmpty(this.props.itemKey)? 'Main': this.props.itemKey].text}</Breadcrumb.Item> :
-                                        <Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey.split("#")[0]].text}</Breadcrumb.Item>
+                                        this.props.itemKey.indexOf("#") === -1 ?
+                                            <Breadcrumb.Item>{RouteTable[this.props.role][_.isEmpty(this.props.itemKey) ? 'Main' : this.props.itemKey].text}</Breadcrumb.Item> :
+                                            <Breadcrumb.Item>{RouteTable[this.props.role][this.props.itemKey.split("#")[0]].text}</Breadcrumb.Item>
                             }
                         </Breadcrumb>
                         <div style={{padding: 24, background: '#fff', textAlign: 'center'}}>

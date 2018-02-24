@@ -1,15 +1,14 @@
 import React, {Component} from 'react'
-import {DatePicker, Input, List, Pagination, Tag} from 'antd'
+import {Input, List, Pagination, Tag} from 'antd'
 import {connect} from 'react-redux'
-import {findAllByGenreInAndStartTime, selectShow} from "../../redux/show/actions";
+import {findAllShowsByGenreIn, selectShow} from "../../redux/show/actions";
 import {route} from "../../redux/ui/actions";
 import {Genre} from "../../model/show";
 import _ from "lodash";
 import {RouteTable} from "../../route";
-import {Role} from "../../model/user";
 import moment from "moment";
 
-class ShowList extends Component {
+class TheaterShowList extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -18,7 +17,6 @@ class ShowList extends Component {
             end: this.pagination.pageSize,
             currPage: 1,
             keyword: "",
-            startTime: Date.now()
         }
     }
 
@@ -43,21 +41,11 @@ class ShowList extends Component {
             end: this.pagination.pageSize,
             currPage: 1
         });
-        this.props.findAllByGenreInAndStartTime({genreList: nextSelectedGenres, startTime: this.state.startTime})
-    };
-
-    onDateChange = (date) => {
-        this.setState({
-            startTime: Number(date),
-            start: 0,
-            end: this.pagination.pageSize,
-            currPage: 1
-        });
-        this.props.findAllByGenreInAndStartTime({genreList: this.state.selectedGenres, startTime: Number(date)})
+        this.props.findAllShowsByGenreIn({genreList: nextSelectedGenres})
     };
 
     onShowItemClick = (showId) => {
-        this.props.selectShow(showId).then(() => this.props.route(`${RouteTable[Role.CUSTOMER].ShowInfo.path}#${showId}`, this.props.isAuthed))
+        this.props.selectShow(showId).then(() => this.props.route(`${RouteTable[this.props.user.role].NewPublicInfo.path}#${showId}`, this.props.isAuthed, this.props.user.role))
     };
 
     render() {
@@ -76,7 +64,6 @@ class ShowList extends Component {
                 }
             )}
             <br/>
-            <DatePicker onChange={this.onDateChange}/>
             <br/>
             <Input.Search
                 placeholder="剧集名称"
@@ -89,9 +76,9 @@ class ShowList extends Component {
             <List
                 dataSource={resultShow.slice(this.state.start, this.state.end)}
                 renderItem={item => (
-                    <List.Item key={item.id}>
+                    <List.Item key={item.id} actions={[<a onClick={() => this.onShowItemClick(item.id)}>发布计划</a>]}>
                         <List.Item.Meta
-                            title={<a onClick={() => this.onShowItemClick(item.id)}>{item.name}</a>}
+                            title={item.name}
                             description={Genre.get(item.genre)}/>
                         时长：{moment.utc(moment.duration(item.duration, 's').asMilliseconds()).format("HH:mm:ss")}
                     </List.Item>
@@ -106,17 +93,17 @@ class ShowList extends Component {
 const mapStateToProps = state => {
     return {
         shows: state.showReducer.shows,
-        userId: state.loginReducer.user.id,
+        user: state.loginReducer.user,
         isAuthed: state.loginReducer.isAuthed,
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        findAllByGenreInAndStartTime: (value) => dispatch(findAllByGenreInAndStartTime(value)),
+        findAllShowsByGenreIn: (value) => dispatch(findAllShowsByGenreIn(value)),
         selectShow: (showId) => dispatch(selectShow(showId)),
-        route: (key, isAuthed) => dispatch(route(key, isAuthed)),
+        route: (key, isAuthed, role) => dispatch(route(key, isAuthed, role)),
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShowList)
+export default connect(mapStateToProps, mapDispatchToProps)(TheaterShowList)

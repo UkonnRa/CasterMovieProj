@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Icon, Layout, Menu} from 'antd';
 import {collapseSide, expandSide} from "../../redux/ui/frameSider/actions";
 import {route} from "../../redux/ui/actions";
-import {SiderMap} from "../../model/user"
+import {Role, SiderMap} from "../../model/user"
 import {connect} from "react-redux";
 
 const {Sider} = Layout;
@@ -15,7 +15,10 @@ class FrameSider extends Component {
     };
 
     onItemClick = (item) => {
-        this.props.route(item.key, this.props.isAuthed)
+        console.log(item.key);
+        console.log(this.props.isAuthed);
+        console.log(this.props.userRole);
+        this.props.route(item.key, this.props.isAuthed, this.props.userRole)
     };
 
     menuItem = () =>
@@ -33,7 +36,7 @@ class FrameSider extends Component {
                 return <Menu.SubMenu key={item.text} title={title}>
                     {this.parseMapToComp(item.item)}
                 </Menu.SubMenu>
-            }
+            } else return null
         })
     };
 
@@ -64,7 +67,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         collapseSide: () => dispatch(collapseSide()),
         expandSide: () => dispatch(expandSide()),
-        route: (item, isAuthed) => dispatch(route(item, isAuthed))
+        route: (item, isAuthed, role = Role.CUSTOMER) => dispatch(route(item, isAuthed, role))
     }
 };
 
