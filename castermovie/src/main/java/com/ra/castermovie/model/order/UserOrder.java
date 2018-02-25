@@ -30,7 +30,7 @@ public class UserOrder {
         this.theaterName = theater.getName();
         this.theaterId = theater.getId();
         this.showName = show.getName();
-        this.username = me.getUsername();
+        this.username = me == null ? null : me.getUsername();
         this.payUsername = payUser == null? null: payUser.getUsername();
         this.originalCost = order.getOriginalCost();
         this.actualCost = order.getActualCost();

@@ -12,7 +12,7 @@ import com.ra.castermovie.util.HttpRestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
-@RestController
+@Component
 public class OrderLogicImpl implements OrderLogic {
     private final OrderService orderService;
     private final PublicInfoService publicInfoService;
@@ -51,20 +51,22 @@ public class OrderLogicImpl implements OrderLogic {
 
     @Override
     public synchronized Result<UserOrder> newOrder(String userId, String publicInfoId, List<Integer> seats, String coupnInfoId) {
-        if (seats.contains(null)) {
-            if(seats.size() > 20) return Result.fail("未选座的用户每单最多可买20张");
-            return newOrder(userId, publicInfoId, null, null, seats, coupnInfoId);
+        User user = null;
+        if (userId != null) {
+            user = userService.findById(userId).block();
+            if (user == null) return Result.fail("该用户不存在");
         }
         if (!seats.contains(null) && seats.size() > 6) return Result.fail("选座的用户每单最多可买6张");
 
-        User user = userService.findById(userId).block();
-        if (user == null) return Result.fail("该用户不存在");
         PublicInfo publicInfo = publicInfoService.findById(publicInfoId).block();
         if (publicInfo == null) return Result.fail("该剧集信息不存在");
 
         Theater theater = theaterService.findById(publicInfo.getTheaterId()).block();
         if (theater == null) return Result.fail("该剧院不存在");
-
+        if (seats.contains(null)) {
+            if (seats.size() > 20) return Result.fail("未选座的用户每单最多可买20张");
+            return newOrder(userId, publicInfoId, null, null, seats, coupnInfoId);
+        }
         Map<Integer, Double> priceTable = publicInfo.getPriceTable();
         List<Integer> keyList = new ArrayList<>(priceTable.keySet());
         Collections.sort(keyList);
@@ -80,7 +82,12 @@ public class OrderLogicImpl implements OrderLogic {
             double disc = priceTable.getOrDefault(keyList.get(i), 1.0);
             return (int) (publicInfo.getBasePrice() * disc);
         }).sum();
-        int actualCost = (int) (theater.getDiscounts().getOrDefault(user.getLevel(), 1.0) * originalCost);
+        int actualCost;
+        if (user == null) {
+            actualCost = originalCost;
+        } else {
+            actualCost = (int) (theater.getDiscounts().getOrDefault(user.getLevel(), 1.0) * originalCost);
+        }
         return newOrder(userId, publicInfoId, originalCost, actualCost, seats, coupnInfoId);
     }
 
@@ -337,8 +344,26 @@ public class OrderLogicImpl implements OrderLogic {
         return order == null ? Result.fail("订单不存在") : Result.succeed(order);
     }
 
+    @Override
+    public Result<UserOrder> orderOffline(String userId, String publicInfoId, List<Integer> seats) {
+        Result<UserOrder> userOrder = newOrder(userId, publicInfoId, seats, null);
+        if (userOrder.ifFailed()) return userOrder;
+        Order order = orderService.findById(userOrder.getValue().getId()).block();
+        if (order == null) return Result.fail("订单不存在");
+        order.setOrderState(OrderState.READY);
+        order.setPayUserId(userId);
+        UserOrder result = orderToUserOrder(orderService.save(order));
+        if (result == null) return Result.fail("数据库异常");
+        else return Result.succeed(result);
+    }
+
+    @Override
+    public Result<List<UserOrder>> findAllByTheaterId(String theaterId) {
+        return Result.succeed(orderToUserOrder(publicInfoService.findAllByTheaterId(theaterId).flatMap(info -> orderService.findAllByPublicInfoId(info.getId()))));
+    }
+
     private UserOrder mapper(Order o) {
-        User me = userService.findById(o.getUserId()).block();
+        User me = o.getUserId() == null ? null : userService.findById(o.getUserId()).block();
         User pay = o.getPayUserId() == null ? null : userService.findById(o.getPayUserId()).block();
         CouponInfo info = o.getUsedCouponInfoId() == null ? null : couponInfoService.findById(o.getUsedCouponInfoId()).block();
         Coupon coupon = info == null ? null : couponService.findById(info.getCouponId()).block();

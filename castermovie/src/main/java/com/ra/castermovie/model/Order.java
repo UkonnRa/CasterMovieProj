@@ -21,7 +21,6 @@ public class Order {
     private String id;
     @NotNull(message = "Order::condition must not be null")
     private Condition condition;
-    @NotNull(message = "Order::userId must not be null")
     private String userId;
     private String payUserId;
     @NotNull(message = "Order::publicInfoId must not be null")

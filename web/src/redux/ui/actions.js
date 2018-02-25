@@ -10,6 +10,7 @@ export const route = (key, isAuthed, role = Role.CUSTOMER) => (dispatch) => {
         itemKey = itemKey.substring(0, itemKey.indexOf("#"))
     }
 
+    console.log(RouteTable[role], itemKey);
     if (RouteTable[role][itemKey].needAuthed) {
         if (isAuthed) {
             if (RouteTable[role][itemKey]) {

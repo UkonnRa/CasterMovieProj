@@ -24,4 +24,9 @@ public class PublicInfoLogicImpl implements PublicInfoLogic {
         PublicInfo info = publicInfoService.findById(id).block();
         return info == null? Result.fail("该公示信息不存在"): Result.succeed(info);
     }
+
+    @Override
+    public Result<List<PublicInfo>> findAllByTheaterId(String theaterId) {
+        return Result.succeed(publicInfoService.findAllByTheaterId(theaterId).collectList().block());
+    }
 }

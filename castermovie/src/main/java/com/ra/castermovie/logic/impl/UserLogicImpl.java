@@ -138,4 +138,11 @@ public class UserLogicImpl implements UserLogic {
         }
 
     }
+
+    @Override
+    public Result<User> findById(String userId) {
+        User u = userService.findById(userId).block();
+        if (u == null) return Result.fail("用户不存在");
+        else return Result.succeed(u);
+    }
 }

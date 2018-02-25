@@ -2,17 +2,10 @@ package com.ra.castermovie.logic.impl;
 
 import com.ra.castermovie.logic.TheaterLogic;
 import com.ra.castermovie.logic.common.Result;
-import com.ra.castermovie.model.PublicInfo;
-import com.ra.castermovie.model.Region;
-import com.ra.castermovie.model.Show;
-import com.ra.castermovie.model.Theater;
+import com.ra.castermovie.model.*;
 import com.ra.castermovie.model.common.Genre;
-import com.ra.castermovie.model.theater.State;
-import com.ra.castermovie.service.PublicInfoService;
-import com.ra.castermovie.service.RegionService;
-import com.ra.castermovie.service.ShowService;
-import com.ra.castermovie.service.TheaterService;
-import com.ra.castermovie.util.HttpRestUtil;
+import com.ra.castermovie.model.theater.UserTheater;
+import com.ra.castermovie.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
@@ -28,21 +21,23 @@ public class TheaterLogicImpl implements TheaterLogic {
     private final PublicInfoService publicInfoService;
     private final ShowService showService;
     private final RegionService regionService;
+    private final RequestInfoService requestInfoService;
 
     @Value("${casterpay.new-user}")
     private String newUserUrl;
 
     @Autowired
-    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RegionService regionService) {
+    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RegionService regionService, RequestInfoService requestInfoService) {
         this.theaterService = theaterService;
         this.publicInfoService = publicInfoService;
         this.showService = showService;
         this.regionService = regionService;
+        this.requestInfoService = requestInfoService;
     }
 
     @Override
-    public synchronized Result<Theater> register(String password, String name, int regionId, String location, int seatNumber, int seatPerLine) {
-        Region region = regionService.findById(regionId).block();
+    public synchronized Result<RequestInfo> register(UserTheater theater) {
+        Region region = regionService.findById(theater.getRegionId()).block();
         if (region == null) return Result.fail("地区信息不存在");
         Theater t;
         String id;
@@ -51,35 +46,24 @@ public class TheaterLogicImpl implements TheaterLogic {
             id = id.substring(id.length() - 7);
             t = theaterService.findById(id).block();
         } while (t != null);
-        t = theaterService.save(new Theater(id, password, name, regionId, location, seatNumber, seatPerLine)).block();
-        return t == null ? Result.fail("数据库错误，剧院信息保存失败") : Result.succeed(t);
+
+        RequestInfo info = requestInfoService.save(new RequestInfo(id, com.ra.castermovie.model.requestinfo.State.CREATING, theater)).block();
+        if (info == null) return Result.fail("无法发布请求信息");
+        else return Result.succeed(info);
     }
 
     @Override
-    public synchronized Result<Theater> validate(String theaterId, int initMoney) {
-        Theater theater = theaterService.findById(theaterId).block();
-        if (theater == null) return Result.fail("该剧院不存在");
-        theater.setState(State.FINISHED);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", theaterId);
-        map.put("role", "THEATER");
-        map.put("initMoney", initMoney);
-        HttpRestUtil.httpPost(newUserUrl, map, Result.class);
-
-        return update(theaterId, theater);
-    }
-
-    @Override
-    public Result<Theater> update(String id, Theater theater) {
-        Theater t = theaterService.update(id, theater).block();
-        return t == null ? Result.fail("数据库错误，剧院信息更新失败") : Result.succeed(t);
+    public Result<RequestInfo> update(String id, UserTheater userTheater) {
+        Theater theater = theaterService.findById(id).block();
+        if (theater == null) return Result.fail("剧院不存在");
+        Theater afterUpdate = userTheater.toTheater(theater);
+        RequestInfo info = requestInfoService.save(new RequestInfo(id, com.ra.castermovie.model.requestinfo.State.UPDATING, userTheater)).block();
+        return info == null ? Result.fail("无法发布请求信息") : Result.succeed(info);
     }
 
     @Override
     public Result<Theater> newPublicInfo(String theaterId, String showId, List<Instant> schedules, Integer basePrice, Map<Integer, Double> priceTable) {
         Theater t = theaterService.findById(theaterId).block();
-        if (t == null || t.getState() != State.FINISHED) return Result.fail("剧院不存在");
         Show show = showService.findById(showId).block();
         if (show == null) return Result.fail("该电影不存在");
         List<String> publicInfos = t.getPublicInfos();
@@ -89,7 +73,8 @@ public class TheaterLogicImpl implements TheaterLogic {
         List<PublicInfo> saveResult = schedules.stream().map(s -> publicInfoService.save(new PublicInfo(theaterId, showId, s.toEpochMilli(), basePrice, priceTable, Arrays.asList(booleans))).block()).collect(Collectors.toList());
         publicInfos.addAll(saveResult.stream().map(PublicInfo::getId).collect(Collectors.toList()));
         t.setPublicInfos(publicInfos);
-        return update(theaterId, t);
+        Theater result = theaterService.update(theaterId, t).block();
+        return result == null ? Result.fail("剧院信息无法保存") : Result.succeed(result);
     }
 
     @Override
@@ -109,12 +94,12 @@ public class TheaterLogicImpl implements TheaterLogic {
 
     @Override
     public Result<List<Theater>> findAllTheater(int regionId) {
-        return Result.succeed(theaterService.findAllByRegionId(regionId).collectList().block().stream().filter(u -> u.getState() == State.FINISHED).collect(Collectors.toList()));
+        return Result.succeed(theaterService.findAllByRegionId(regionId).collectList().block());
     }
 
     @Override
     public Result<Theater> findById(String id) {
         Theater t = theaterService.findById(id).block();
-        return t == null? Result.fail("剧院不存在"): Result.succeed(t);
+        return t == null ? Result.fail("剧院不存在") : Result.succeed(t);
     }
 }

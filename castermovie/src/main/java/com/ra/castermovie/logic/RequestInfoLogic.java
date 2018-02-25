@@ -5,6 +5,9 @@ import com.ra.castermovie.model.RequestInfo;
 
 import java.util.List;
 
-public interface TicketsManagerLogic {
+public interface RequestInfoLogic {
+
+    Result<RequestInfo> handle(String requestInfoId, boolean isPositive);
+
     Result<List<RequestInfo>> findAllRequestInfo(String theaterId);
 }

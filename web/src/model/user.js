@@ -2,6 +2,10 @@ import {RouteTable} from "../route";
 
 export const Role = {CUSTOMER: "CUSTOMER", THEATER: "THEATER", TICKETS: "TICKETS"};
 
+export const Level = {
+    LEVEL1: "LEVEL1", LEVEL2: "LEVEL2", LEVEL3: "LEVEL3", LEVEL4: "LEVEL4", LEVEL5: "LEVEL5"
+};
+
 export const SiderMap = {
     [Role.CUSTOMER]: [
         {
@@ -48,12 +52,6 @@ export const SiderMap = {
             icon: "bars",
             key: RouteTable[Role.THEATER].TheaterShowList.path,
             text: RouteTable[Role.THEATER].TheaterShowList.text
-        },
-        {
-            type: "item",
-            icon: "pay-circle-o",
-            key: RouteTable[Role.THEATER].SellTicket.path,
-            text: RouteTable[Role.THEATER].SellTicket.text
         },
         {
             type: "item",

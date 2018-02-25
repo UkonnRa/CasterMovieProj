@@ -2,7 +2,7 @@ package com.ra.castermovie.model;
 
 
 import com.ra.castermovie.model.common.Condition;
-import com.ra.castermovie.model.theater.State;
+import com.ra.castermovie.model.theater.UserTheater;
 import com.ra.castermovie.model.user.Level;
 import com.ra.castermovie.model.user.Role;
 import lombok.AllArgsConstructor;
@@ -27,8 +27,6 @@ public class Theater {
     @NotNull(message = "Theater::condition must not be null")
     private Condition condition;
     @NotNull(message = "Theater::condition must not be null")
-    private State state;
-    @NotNull(message = "Theater::role must not be null")
     private Role role;
     @NotNull(message = "Theater::password must not be null")
     private String password;
@@ -43,12 +41,12 @@ public class Theater {
     @NotNull(message = "Theater::seatPerLine must not be null")
     private Integer seatPerLine;
     private List<String> publicInfos;
+    @NotNull(message = "Theater::discounts must not be null")
     private Map<Level, Double> discounts;
 
-    public Theater(String id, String password, String name, Integer regionId, String location, Integer seatNumber, Integer seatPerLine) {
+    public Theater(String id, String password, String name, Integer regionId, String location, Integer seatNumber, Integer seatPerLine, Map<Level, Double> discounts) {
         this.id = id;
         this.condition = Condition.EXISTING;
-        this.state = State.WAITING;
         this.role = Role.THEATER;
         this.password = password;
         this.name = name;
@@ -57,6 +55,20 @@ public class Theater {
         this.seatNumber = seatNumber;
         this.seatPerLine = seatPerLine;
         this.publicInfos = Collections.emptyList();
-        this.discounts = Collections.emptyMap();
+        this.discounts = discounts;
+    }
+
+    public Theater(String id, UserTheater userTheater) {
+        this.id = id;
+        this.condition = Condition.EXISTING;
+        this.role = Role.THEATER;
+        this.password = userTheater.getPassword();
+        this.name = userTheater.getName();
+        this.regionId = userTheater.getRegionId();
+        this.location = userTheater.getLocation();
+        this.seatNumber = userTheater.getSeatNumber();
+        this.seatPerLine = userTheater.getSeatPerLine();
+        this.publicInfos = Collections.emptyList();
+        this.discounts = userTheater.getDiscounts();
     }
 }

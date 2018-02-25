@@ -25,4 +25,8 @@ public interface OrderLogic {
     Result<List<UserOrder>> findAllByUserId(String userId);
 
     Result<UserOrder> findById(String id);
+
+    Result<UserOrder> orderOffline(String userId, String publicInfoId, List<Integer> seats);
+
+    Result<List<UserOrder>> findAllByTheaterId(String theaterId);
 }

@@ -60,8 +60,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 throw new BadCredentialsException("用户不存在");
             } else if (!theater.getId().equals(name) || !theater.getPassword().equals(password)) {
                 throw new BadCredentialsException("用户名或密码错误");
-            } else if (theater.getState().equals(com.ra.castermovie.model.theater.State.WAITING)) {
-                throw new BadCredentialsException("用户处于`待验证`状态， 无法登录");
             }
         }
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();

@@ -220,9 +220,6 @@ const ComponentTimeRangeForm = Form.create()(class extends Component {
 });
 
 class NewPublicInfo extends Component {
-    constructor(props) {
-        super(props)
-    }
 
     render = () => <div>
         <p>剧集名称：{this.props.selectedShow.name}</p>

@@ -46,8 +46,7 @@ class App extends Component {
                 {!this.props.isAuthed ? (
                     <LoginForm
                         visible={this.props.modalVisible}
-                        onCancel={this.handleCancel}
-                    />) : null}
+                        onCancel={this.handleCancel}/>) : null}
                 <FrameSider/>
                 <Layout>
 

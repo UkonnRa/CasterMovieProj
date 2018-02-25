@@ -2,6 +2,7 @@ package com.ra.castermovie.controller;
 
 import com.ra.castermovie.controller.vo.order.CheckInVO;
 import com.ra.castermovie.controller.vo.order.NewOrderVO;
+import com.ra.castermovie.controller.vo.order.OrderOfflineVO;
 import com.ra.castermovie.controller.vo.order.PayOrderVO;
 import com.ra.castermovie.logic.OrderLogic;
 import com.ra.castermovie.logic.common.Result;
@@ -55,5 +56,15 @@ public class OrderController {
     @PostMapping(value = "distributeTicket", consumes = MediaType.ALL_VALUE)
     Result<Map<String, List<String>>> distributeTicket(@RequestParam String publicInfoId) {
         return orderLogic.distributeTicket(publicInfoId);
+    }
+
+    @PostMapping(value = "orderOffline", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Result<UserOrder> orderOffline(@RequestBody OrderOfflineVO vo) {
+        return orderLogic.orderOffline(vo.getUserId(), vo.getPublicInfoId(), vo.getSeats());
+    }
+
+    @GetMapping(value = "findAllByTheaterId", consumes = MediaType.ALL_VALUE)
+    public Result<List<UserOrder>> findAllByTheaterId(@RequestParam String theaterId) {
+        return orderLogic.findAllByTheaterId(theaterId);
     }
 }

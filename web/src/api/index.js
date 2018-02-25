@@ -8,7 +8,8 @@ export const Api = {
         cancelUser: `${HTTP_HEADER}/user/cancelUser`,
         update: `${HTTP_HEADER}/user/update`,
         getByJwt: `${HTTP_HEADER}/user/getByJwt`,
-        login: `${HTTP_HEADER}/user/login`
+        login: `${HTTP_HEADER}/user/login`,
+        findById: `${HTTP_HEADER}/user/findById`,
     },
     ticketManager: {
         findAllRequestInfo: `${HTTP_HEADER}/ticket/findAllRequestInfo`,
@@ -16,7 +17,6 @@ export const Api = {
     },
     theater: {
         register: `${HTTP_HEADER}/theater/register`,
-        validate: `${HTTP_HEADER}/theater/validate`,
         update: `${HTTP_HEADER}/theater/update`,
         newPublicInfo: `${HTTP_HEADER}/theater/newPublicInfo`,
         findAllShowPlaying: `${HTTP_HEADER}/theater/findAllShowPlaying`,
@@ -36,10 +36,13 @@ export const Api = {
         retrieveOrder: `${HTTP_HEADER}/order/retrieveOrder`,
         findAllByUserId: `${HTTP_HEADER}/order/findAllByUserId`,
         findById: `${HTTP_HEADER}/order/findById`,
+        orderOffline: `${HTTP_HEADER}/order/orderOffline`,
+        findAllByTheaterId: `${HTTP_HEADER}/order/findAllByTheaterId`,
     },
     publicInfo: {
         findAllByShowId: `${HTTP_HEADER}/publicInfo/findAllByShowId`,
         findById: `${HTTP_HEADER}/publicInfo/findById`,
+        findAllByTheaterId: `${HTTP_HEADER}/publicInfo/findAllByTheaterId`,
     },
     couponInfo: {
         getCoupon: `${HTTP_HEADER}/couponInfo/getCoupon`,

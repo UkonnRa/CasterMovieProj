@@ -2,14 +2,13 @@ import React, {Component} from 'react';
 import {login} from '../redux/auth/actions'
 import {connect} from 'react-redux'
 import {Form, Icon, Input, InputNumber, Modal, Radio, Tooltip} from 'antd';
-import axios from 'axios'
-import {Api} from "../api";
-import {Role} from "../model/user";
+import {Level, Role} from "../model/user";
 import {AreaCascader} from 'react-area-linkage';
 import _ from "lodash";
+import {Api} from "../api";
+import axios from 'axios'
 
-const LoginForm = Form.create()(
-    class extends Component {
+const LoginForm = Form.create()(class extends Component {
         constructor(props) {
             super(props);
             this.state = {
@@ -39,6 +38,7 @@ const LoginForm = Form.create()(
 
             form.validateFields(async (err, values) => {
                 if (err) return;
+                console.log(values);
                 if (this.state.registerType === Role.CUSTOMER) {
                     const result = await axios.post(Api.user.register, values, {
                         headers: {'Content-Type': 'application/json;charset=utf-8'}
@@ -182,7 +182,8 @@ const LoginForm = Form.create()(
                             {getFieldDecorator('regionId', {
                                 rules: [{type: 'array', required: true, message: '请选择场馆地点'}],
                             })(
-                                <AreaCascader placeholder={'请选择场馆地点'} defaultArea={null} level={1}
+                                <AreaCascader defaultArea={['440000', '440300', '440305']}
+                                              placeholder={'请选择场馆地点'} level={1}
                                               onChange={this.onRegionCodeChange}/>
                             )}
                         </Form.Item>
@@ -205,6 +206,16 @@ const LoginForm = Form.create()(
                                     {validator: this.checkSeatNumber}]
                             })(<InputNumber min={0} onBlur={this.handleSeatPerLineBlur}/>)}
                         </Form.Item>
+                        {Object.keys(Level).map((level, index) => {
+                            return (<Form.Item key={index} label={index === 0 ? (<span>顾客等级折扣
+                                    <Tooltip title="顾客不同等级可获得的相应折扣">
+                                        <Icon type="question-circle-o"/>
+                                    </Tooltip></span>) : null}>
+                                {level}：{getFieldDecorator(`discounts[${index}]`, {
+                                rules: [{required: true, message: '请输入该等级对应的折扣'}]
+                            })(<InputNumber min={0} step={0.01}/>)}
+                            </Form.Item>)
+                        })}
                     </Form>;
                 default:
                     return null
@@ -223,7 +234,8 @@ const LoginForm = Form.create()(
                     cancelText="取消"
                     onCancel={onCancel}
                     onOk={this.onLoginOk}>
-                    <Radio.Group onChange={(e) => this.setState({loginType: e.target.value})} value={this.state.loginType}>
+                    <Radio.Group onChange={(e) => this.setState({loginType: e.target.value})}
+                                 value={this.state.loginType}>
                         <Radio value={Role.CUSTOMER}>用户</Radio>
                         <Radio value={Role.THEATER}>剧院</Radio>
                     </Radio.Group>

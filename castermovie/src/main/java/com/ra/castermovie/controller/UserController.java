@@ -22,11 +22,6 @@ public class UserController {
         return userLogic.register(vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail());
     }
 
-//    @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    Result<User> login(@RequestBody LoginVO vo) {
-//        return userLogic.login(vo.getUsername(), vo.getPassword());
-//    }
-
     @PostMapping(value = "validate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<User> validate(@RequestBody ValidateVO vo) {
         return userLogic.validate(vo.getId());
@@ -52,4 +47,8 @@ public class UserController {
         return userLogic.getByJwt(jwt);
     }
 
+    @GetMapping(value = "findById", consumes = MediaType.ALL_VALUE)
+    Result<User> findById(@RequestParam String userId) {
+        return userLogic.findById(userId);
+    }
 }

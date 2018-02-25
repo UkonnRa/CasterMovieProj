@@ -1,10 +1,14 @@
 package com.ra.castermovie.controller;
 
-import com.ra.castermovie.controller.vo.theater.*;
+import com.ra.castermovie.controller.vo.theater.FindAllShowPlayingVO;
+import com.ra.castermovie.controller.vo.theater.NewPublicInfoVO;
+import com.ra.castermovie.controller.vo.theater.UpdateVO;
 import com.ra.castermovie.logic.TheaterLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.PublicInfo;
+import com.ra.castermovie.model.RequestInfo;
 import com.ra.castermovie.model.Theater;
+import com.ra.castermovie.model.theater.UserTheater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
@@ -20,18 +24,13 @@ public class TheaterController {
     private TheaterLogic theaterLogic;
 
     @PostMapping(value = "register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<Theater> register(@RequestBody RegisterVO vo) {
-        return theaterLogic.register(vo.getPassword(), vo.getName(), vo.getRegionId(), vo.getLocation(), vo.getSeatNumber(), vo.getSeatPerLine());
-    }
-
-    @PostMapping(value = "validate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<Theater> validate(@RequestBody ValidateVO vo) {
-        return theaterLogic.validate(vo.getTheaterId(), vo.getInitMoney());
+    Result<RequestInfo> register(@RequestBody UserTheater vo) {
+        return theaterLogic.register(vo);
     }
 
     @PostMapping(value = "update", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<Theater> update(@RequestBody UpdateVO vo) {
-        return theaterLogic.update(vo.getId(), vo.getTheater());
+    Result<RequestInfo> update(@RequestBody UpdateVO vo) {
+        return theaterLogic.update(vo.getId(), vo.getUserTheater());
     }
 
     @PostMapping(value = "newPublicInfo", consumes = MediaType.APPLICATION_JSON_VALUE)

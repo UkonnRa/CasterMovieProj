@@ -9,4 +9,6 @@ public interface PublicInfoLogic {
     Result<List<PublicInfo>> findAllByShowId(String showId);
 
     Result<PublicInfo> findById(String id);
+
+    Result<List<PublicInfo>> findAllByTheaterId(String theaterId);
 }

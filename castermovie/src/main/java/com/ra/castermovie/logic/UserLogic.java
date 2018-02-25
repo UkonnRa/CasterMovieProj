@@ -20,4 +20,6 @@ public interface UserLogic {
     Result<User> recharge(String id, Integer money);
 
     Result<User> getByJwt(String jwt);
+
+    Result<User> findById(String userId);
 }

@@ -5,7 +5,6 @@ import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.PublicInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,4 +28,9 @@ public class PublicInfoController {
         return publicInfoLogic.findById(id);
     }
 
+    @GetMapping(value = "findAllByTheaterId", consumes = MediaType.ALL_VALUE)
+    Result<List<PublicInfo>> findAllByTheaterId(@RequestParam String theaterId) {
+        return publicInfoLogic.findAllByTheaterId(theaterId);
+    }
 }
+
