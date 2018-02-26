@@ -4,35 +4,43 @@ import com.ra.castermovie.logic.TheaterLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.*;
 import com.ra.castermovie.model.common.Genre;
+import com.ra.castermovie.model.order.OrderState;
 import com.ra.castermovie.model.theater.UserTheater;
 import com.ra.castermovie.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class TheaterLogicImpl implements TheaterLogic {
     private final TheaterService theaterService;
     private final PublicInfoService publicInfoService;
     private final ShowService showService;
     private final RegionService regionService;
     private final RequestInfoService requestInfoService;
+    private final OrderService orderService;
 
     @Value("${casterpay.new-user}")
     private String newUserUrl;
 
     @Autowired
-    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RegionService regionService, RequestInfoService requestInfoService) {
+    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RegionService regionService, RequestInfoService requestInfoService, OrderService orderService) {
         this.theaterService = theaterService;
         this.publicInfoService = publicInfoService;
         this.showService = showService;
         this.regionService = regionService;
         this.requestInfoService = requestInfoService;
+        this.orderService = orderService;
     }
 
     @Override
@@ -102,4 +110,78 @@ public class TheaterLogicImpl implements TheaterLogic {
         Theater t = theaterService.findById(id).block();
         return t == null ? Result.fail("剧院不存在") : Result.succeed(t);
     }
+
+    @Override
+    public Result<Map<String, Integer>> bigFiveTotal(String theaterId) {
+        Map<String, Integer> result = orderService.findAll()
+                .filter(o -> (o.getOrderState() == OrderState.READY || o.getOrderState() == OrderState.FINISHED) && o.getUserId() != null)
+                .groupBy(Order::getUserId)
+                .flatMap(g -> g.count().map(len -> Pair.of(g.key(), len.intValue())))
+                .sort(Comparator.comparingInt(Pair::getSecond))
+                .take(5).collectMap(Pair::getFirst, Pair::getSecond).block();
+        return Result.succeed(result);
+    }
+
+    @Override
+    public Result<Map<OrderState, Integer>> orderStatesTotal(String theaterId) {
+        return Result.succeed(
+                orderService.findAllByTheaterId(theaterId).groupBy(Order::getOrderState)
+                        .flatMap(g -> g.count().map(len -> Pair.of(g.key(), len.intValue())))
+                        .collectMap(Pair::getFirst, Pair::getSecond).block()
+        );
+    }
+
+    private Result<Integer> _grossIncomeMonthly(YearMonth yearMonth, String theaterId) {
+        try {
+            return Result.succeed(orderService
+                    .findAllByTheaterId(theaterId)
+                    .filter(o -> (o.getOrderState() == OrderState.READY || o.getOrderState() == OrderState.FINISHED)
+                            && YearMonth.from(Instant.ofEpochMilli(o.getCreateTime()).atZone(ZoneId.systemDefault()).toLocalDate()).equals(yearMonth))
+                    .map(Order::getActualCost).reduce((i, j) -> i + j).blockOptional().orElse(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail(e.getMessage());
+        }
+    }
+
+    @Override
+    public Result<Integer> grossIncomeMonthly(String yearMonthString, String theaterId) {
+        YearMonth yearMonth = YearMonth.parse(yearMonthString);
+        return _grossIncomeMonthly(yearMonth, theaterId);
+    }
+
+    @Override
+    public Result<Map<String, Integer>> grossIncomeMonthlyRange(List<String> yearMonths, String theaterId) {
+        if (yearMonths.size() != 2) return Result.fail("范围设定失败");
+        YearMonth startDate = YearMonth.parse(yearMonths.get(0));
+        YearMonth endDate = YearMonth.parse(yearMonths.get(1));
+        if (!startDate.isBefore(endDate)) {
+            YearMonth temp = startDate;
+            startDate = endDate;
+            endDate = temp;
+        }
+        List<YearMonth> list = new LinkedList<>();
+        while (startDate.isBefore(endDate)) {
+            list.add(startDate);
+            startDate = startDate.plusMonths(1);
+        }
+
+
+        Map<String, Integer> map = new HashMap<>();
+
+        for (YearMonth ym : list) {
+            log.info("year month: {}", ym);
+            Result<Integer> result = _grossIncomeMonthly(ym, theaterId);
+            log.info("{}: {}", ym.format(DateTimeFormatter.ofPattern("yyyy-MM")), result.getValue());
+            if (result.ifSuccessful()) {
+                map.put(ym.format(DateTimeFormatter.ofPattern("yyyy-MM")), result.getValue());
+            } else {
+                return Result.fail(result.getMessage());
+            }
+        }
+
+        return Result.succeed(map);
+    }
+
+
 }

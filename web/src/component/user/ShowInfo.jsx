@@ -18,7 +18,7 @@ class ShowInfo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            regionCode: 440305,
+            regionId: 440305,
             theaters: new Map()
         }
     }
@@ -42,8 +42,8 @@ class ShowInfo extends Component {
             })
     };
 
-    onRegionCodeChange = (code) => {
-        this.setState({regionCode: !_.isEmpty(code) ? Number(_.last(code)) : -1})
+    onRegionIdChange = (code) => {
+        this.setState({regionId: !_.isEmpty(code) ? Number(_.last(code)) : -1})
     };
 
     onChooseTheaterClick = (publicInfoId) => {
@@ -60,12 +60,12 @@ class ShowInfo extends Component {
             时长：{this.props.selectedShow.duration}
             <br/>
             <Divider dashed>抢票</Divider>
-            <AreaCascader placeholder={'选择区域，默认全选'} defaultArea={null} level={1} onChange={this.onRegionCodeChange}/>
+            <AreaCascader placeholder={'选择区域，默认全选'} defaultArea={null} level={1} onChange={this.onRegionIdChange}/>
             <Tabs defaultActiveKey="1">
                 {Array.from(moment.rangeFromInterval('d', 80).by('days')).map((date, index) =>
                     <Tabs.TabPane tab={date.format("YYYY-MM-DD")} key={index}>
                         <List itemLayout="horizontal"
-                              dataSource={this.props.publicInfos.filter(info => moment(info.schedule).isSame(date, 'd') && (this.state.regionCode === -1 || (!_.isEmpty(this.state.theaters.get(info.theaterId)) && this.state.theaters.get(info.theaterId).regionId === this.state.regionCode)))}
+                              dataSource={this.props.publicInfos.filter(info => moment(info.schedule).isSame(date, 'd') && (this.state.regionId === -1 || (!_.isEmpty(this.state.theaters.get(info.theaterId)) && this.state.theaters.get(info.theaterId).regionId === this.state.regionId)))}
                               renderItem={item => (
                                   <List.Item actions={[<a onClick={() => this.onChooseTheaterClick(item.id)}>选择</a>]}>
                                       <List.Item.Meta

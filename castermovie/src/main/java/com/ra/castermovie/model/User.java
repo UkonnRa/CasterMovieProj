@@ -23,6 +23,8 @@ public class User {
     private String id;
     @NotNull(message = "User::condition must not be null")
     private Condition condition;
+    @NotNull(message = "User::timestamp must not be null")
+    private Long timestamp;
     @NotNull(message = "User::name must not be null")
     private String name;
     @NotNull(message = "User::username must not be null")
@@ -47,6 +49,7 @@ public class User {
     public User(String name, String username, String password, String email, Role role) {
         this.id = UUID.randomUUID().toString();
         this.condition = Condition.EXISTING;
+        this.timestamp = System.currentTimeMillis();
         this.name = name;
         this.username = username;
         this.password = password;

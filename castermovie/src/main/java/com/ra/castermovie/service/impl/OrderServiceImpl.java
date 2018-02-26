@@ -4,6 +4,7 @@ import com.ra.castermovie.model.Order;
 import com.ra.castermovie.model.common.Condition;
 import com.ra.castermovie.model.order.OrderState;
 import com.ra.castermovie.repo.OrderRepository;
+import com.ra.castermovie.repo.PublicInfoRepository;
 import com.ra.castermovie.service.OrderService;
 import com.ra.castermovie.service.util.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import reactor.core.publisher.Mono;
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private PublicInfoRepository publicInfoRepository;
 
 
     @Override
@@ -30,6 +33,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Flux<Order> findAllByOrderState(OrderState orderState) {
         return Filters.filterDeleted(orderRepository.findAllByOrderState(orderState), Order.class);
+    }
+
+    @Override
+    public Flux<Order> findAllByTheaterId(String theaterId) {
+        return Filters.filterDeleted(publicInfoRepository.findAllByTheaterId(theaterId).flatMap(pi -> orderRepository.findAllByPublicInfoId(pi.getId())), Order.class);
     }
 
     @Override

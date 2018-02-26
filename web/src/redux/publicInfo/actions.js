@@ -19,7 +19,9 @@ export const findById = (id) =>
     dispatch =>
         axios.get(Api.publicInfo.findById, {
             params: {"id": id},
-            'Content-Type': 'application/json;charset=utf-8',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+            }
         }).then(resp => {
             if (resp.data) dispatch({type: FIND_PUBLIC_INFO_BY_ID, selectedPublicInfo: resp.data.value})
         });

@@ -7,6 +7,8 @@ import _ from 'lodash'
 import {Role} from "../../model/user";
 import {RouteTable} from "../../route";
 import {route} from "../../redux/ui/actions";
+import TheaterList from '../tickets/TheaterList'
+import MyPublicInfos from '../theater/MyPublicInfos'
 
 class Main extends Component {
 
@@ -36,10 +38,10 @@ class Main extends Component {
                     </div>
 
                 });
+            case Role.TICKETS:
+                return <TheaterList/>;
             case Role.THEATER:
-                return <div>
-
-                </div>
+                return <MyPublicInfos/>
         }
     };
 

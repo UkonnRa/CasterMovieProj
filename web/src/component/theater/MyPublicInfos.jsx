@@ -56,7 +56,7 @@ class MyPublicInfos extends Component {
                     <p>剧集id：{item.showId}</p>
                     <p>上映时间：{moment(item.schedule).format('YYYY-MM-DD HH:mm:ss')}</p>
                     <p>基础价格：{(item.basePrice / 100).toFixed(2)}元</p>
-                    <p>价格座位表：{JSON.stringify(item.priceTable)}</p>
+                    <p>价格座位表：{JSON.stringify(item.priceTable, null, 2)}</p>
                     <p>销售情况：{`已销售：${item.seatDistribution.filter(i => !i).length}，销售比：${item.seatDistribution.filter(i => !i).length / item.seatDistribution.length}`}</p>
                     <p>是否完成自动配票：{item.hasBeenDistributed ? "是" : "否"}</p>
                 </div>

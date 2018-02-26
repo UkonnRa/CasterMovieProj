@@ -16,6 +16,9 @@ import MyTheaterOrders from '../component/theater/MyTheaterOrders'
 import NewPublicInfo from '../component/theater/NewPublicInfo'
 import SellTicket from '../component/theater/SellTicket'
 import TheaterShowList from '../component/theater/TheaterShowList'
+import Examination from '../component/tickets/Examination'
+import Statistics from '../component/tickets/Statistics'
+import TheaterList from '../component/tickets/TheaterList'
 
 
 export const mainComponent = (props) => {
@@ -78,6 +81,7 @@ export const RouteTable = {
         Main: {
             path: "Main",
             text: "主页",
+            needAuthed: true,
             component: <Main/>,
         },
         NewPublicInfo: {
@@ -127,6 +131,38 @@ export const RouteTable = {
             text: "剧集信息",
             needAuthed: true,
             component: <TheaterShowList/>
+        }
+    },
+    TICKETS: {
+        Main: {
+            path: "Main",
+            text: "主页",
+            needAuthed: true,
+            component: <Main/>,
+        },
+        MyTheaterFinance: {
+            path: "MyTheaterFinance",
+            text: "剧院财务",
+            needAuthed: true,
+            component: <MyTheaterFinance/>,
+        },
+        Examination: {
+            path: "Examination",
+            text: "审批请求",
+            needAuthed: true,
+            component: <Examination/>
+        },
+        Statistics: {
+            path: "Statistics",
+            text: "统计信息",
+            needAuthed: true,
+            component: <Statistics/>
+        },
+        TheaterList: {
+            path: "TheaterList",
+            text: "剧院列表",
+            needAuthed: true,
+            component: <TheaterList/>
         }
     }
 };

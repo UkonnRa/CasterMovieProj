@@ -47,7 +47,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         if (role == Role.CUSTOMER || role == Role.TICKETS) {
             User user = userService.findByUsername(name).block();
-            if (user == null || user.getRole() != Role.CUSTOMER) {
+            if (user == null || (user.getRole() != Role.CUSTOMER && user.getRole() != Role.TICKETS)) {
                 throw new BadCredentialsException("用户不存在");
             } else if (!user.getUsername().equals(name) || !user.getPassword().equals(password)) {
                 throw new BadCredentialsException("用户名或密码错误");

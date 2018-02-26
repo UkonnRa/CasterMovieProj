@@ -14,6 +14,7 @@ import {showReducer} from "./redux/show/reducers";
 import {routeReducer} from "./redux/ui/reducers";
 import {couponInfoReducer} from "./redux/couponInfo/reducers";
 import {publicInfoReducer} from "./redux/publicInfo/reducers";
+import {theaterReducer} from "./redux/theater/reducers";
 import registerServiceWorker from './registerServiceWorker';
 
 const middleware = [thunk];
@@ -28,6 +29,7 @@ const reducers = combineReducers({
     routeReducer,
     couponInfoReducer,
     publicInfoReducer,
+    theaterReducer,
 });
 
 let store = createStore(reducers, composeWithDevTools(

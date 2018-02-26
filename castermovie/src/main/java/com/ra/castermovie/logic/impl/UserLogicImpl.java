@@ -104,6 +104,7 @@ public class UserLogicImpl implements UserLogic {
         if (u == null) return Result.fail("该用户不存在");
         else {
             u.setState(State.REMOVED);
+            u.setTimestamp(System.currentTimeMillis());
             return update(id, u);
         }
     }

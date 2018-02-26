@@ -60,7 +60,7 @@ class MyTheaterOrders extends Component {
                     <p>应付价格：{(item.originalCost / 100).toFixed(2)}元</p>
                     <p>实付价格：{(item.actual / 100).toFixed(2)}元</p>
                     <p>订单生成时间：{moment(item.createTime).format("YYYY-MM-DD HH:mm:ss")}</p>
-                    <p>预定座位：{JSON.stringify(item.seats)}</p>
+                    <p>预定座位：{JSON.stringify(item.seats, null, 2)}</p>
                     <p>是否完成自动配票：{item.hasBeenDistributed ? "是" : "否"}</p>
                     <p>优惠券名称：{item.couponName ? item.couponName : "[无优惠券信息]"}</p>
                 </div>

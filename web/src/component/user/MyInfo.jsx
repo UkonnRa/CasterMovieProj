@@ -1,9 +1,11 @@
 import React, {Component} from 'react'
-import {Button, Divider, Icon, Input} from 'antd'
+import {Button, Divider, Icon, Input, Modal} from 'antd'
 import {connect} from "react-redux";
 import {getCurrentUser, logout, update} from "../../redux/auth/actions";
 import {RouteTable} from "../../route";
 import {route} from "../../redux/ui/actions";
+import {Api} from "../../api";
+import axios from 'axios'
 
 class MyInfo extends Component {
     constructor(props) {
@@ -49,7 +51,40 @@ class MyInfo extends Component {
         }).catch(err => alert(err))
     };
 
+    showDeleteConfirm = () => {
+        const {id} = this.props.user;
+        const {isAuthed, logout, route} = this.props;
+        Modal.confirm({
+            title: '你确定要删除该用户么，删除后不可恢复',
+            content: '删除该用户会删除您所有的财务、订单记录，您确定要删除么？',
+            okText: '确认',
+            okType: 'danger',
+            cancelText: '取消',
+            onOk() {
+                axios.post(Api.user.cancelUser,
+                    {"id": id},
+                    {
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                            Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                        }
+                    })
+                    .then(userData => {
+                        console.log(userData);
+                        if (userData.data.value) {
+                            logout();
+                            route(RouteTable.CUSTOMER.Main.path, isAuthed);
+                            alert("该用户已删除，马上跳转至登录界面")
+                        } else {
+                            alert(userData.data.message)
+                        }
+                    }).catch(err => alert(err))
 
+            },
+            onCancel() {
+            },
+        });
+    };
     render() {
         const {name} = this.state;
         const suffix = name ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
@@ -57,18 +92,17 @@ class MyInfo extends Component {
         return (
             <div>
                 <Divider>用户信息</Divider>
-                用户名： {this.props.user.username}
-                <Button style={{border: 'none'}}
-                        onClick={() => this.setState({changePassword: true})}>修改密码</Button>
-                <br/>
+                <p>用户名： {this.props.user.username}<Button style={{border: 'none'}}
+                                                          onClick={() => this.setState({changePassword: !this.state.changePassword})}>{this.state.changePassword ? "取消修改" : "修改密码"}</Button>
+                </p>
                 {!this.state.changePassword ? null :
-                    <div>
+                    <p>
                         <Input
                             placeholder="输入密码"
-                            onPressEnter={this.onFinishNewPassword}/>
-                        <br/>
-                    </div>}
-                昵称：{
+                            onPressEnter={this.onFinishNewPassword}
+                            onBlur={this.onFinishNewPassword}/>
+                    </p>}
+                <p>昵称：{
                 !this.state.changeName ? this.props.user.name :
                     <Input
                         placeholder="输入昵称"
@@ -77,17 +111,17 @@ class MyInfo extends Component {
                         value={name}
                         onChange={this.onChangeName}
                         ref={node => this.nameInput = node}
-                        onPressEnter={this.onFinishNewName}/>
+                        onPressEnter={this.onFinishNewName}
+                        onBlur={this.onFinishNewName}
+                    />
             } <Button style={{border: 'none'}}
-                      onClick={() => this.setState({changeName: true})}>修改昵称</Button>
-                <br/>
-                E-Mail：{this.props.user.email}
-                <br/>
-                消费金额：{this.props.user.paid}
-                <br/>
-                积分：{this.props.user.point}
-                <br/>
-                等级：{this.props.user.level}
+                      onClick={() => this.setState({changeName: !this.state.changeName})}>{this.state.changeName ? "取消修改" : "修改昵称"}</Button>
+                </p>
+                <p>E-Mail：{this.props.user.email}</p>
+                <p>消费金额：{this.props.user.paid}</p>
+                <p>积分：{this.props.user.point}</p>
+                <p>等级：{this.props.user.level}</p>
+                <Button type="danger" onClick={this.showDeleteConfirm}>删除用户</Button>
             </div>
         )
     }

@@ -7,6 +7,26 @@ export const Level = {
 };
 
 export const SiderMap = {
+    [Role.TICKETS]: [
+        {
+            type: "item",
+            icon: "desktop",
+            key: RouteTable[Role.TICKETS].Main.path,
+            text: RouteTable[Role.TICKETS].Main.text,
+        },
+        {
+            type: "item",
+            icon: "check",
+            key: RouteTable[Role.TICKETS].Examination.path,
+            text: RouteTable[Role.TICKETS].Examination.text,
+        },
+        {
+            type: "item",
+            icon: "line-chart",
+            key: RouteTable[Role.TICKETS].Statistics.path,
+            text: RouteTable[Role.TICKETS].Statistics.text,
+        },
+    ],
     [Role.CUSTOMER]: [
         {
             type: "item",

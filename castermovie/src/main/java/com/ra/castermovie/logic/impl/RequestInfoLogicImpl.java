@@ -65,8 +65,8 @@ public class RequestInfoLogicImpl implements RequestInfoLogic {
     }
 
     @Override
-    public Result<List<RequestInfo>> findAllRequestInfo(String theaterId) {
-        List<RequestInfo> list = requestInfoService.findAllByTheaterId(theaterId).collectList().block();
+    public Result<List<RequestInfo>> findAllRequestInfo() {
+        List<RequestInfo> list = requestInfoService.findAll().collectList().block();
         return Result.succeed(list);
     }
 }

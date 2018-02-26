@@ -25,7 +25,9 @@ public class Order {
     private String payUserId;
     @NotNull(message = "Order::publicInfoId must not be null")
     private String publicInfoId;
+    @NotNull(message = "Order::originalCost must not be null")
     private Integer originalCost;
+    @NotNull(message = "Order::actualCost must not be null")
     private Integer actualCost;
     @NotNull(message = "Order::createTime must not be null")
     private Long createTime;

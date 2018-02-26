@@ -11,9 +11,11 @@ export const Api = {
         login: `${HTTP_HEADER}/user/login`,
         findById: `${HTTP_HEADER}/user/findById`,
     },
-    ticketManager: {
-        findAllRequestInfo: `${HTTP_HEADER}/ticket/findAllRequestInfo`,
-        recharge: `${HTTP_HEADER}/ticket/recharge`,
+    ticketsManager: {
+        userRegisterNumberMonthly: `${HTTP_HEADER}/tickets/userRegisterNumberMonthly`,
+        userCancelNumberMonthly: `${HTTP_HEADER}/tickets/userCancelNumberMonthly`,
+        userExistingNumber: `${HTTP_HEADER}/tickets/userExistingNumber`,
+        ticketsGrossIncomeMonthly: `${HTTP_HEADER}/tickets/ticketsGrossIncomeMonthly`,
     },
     theater: {
         register: `${HTTP_HEADER}/theater/register`,
@@ -22,6 +24,10 @@ export const Api = {
         findAllShowPlaying: `${HTTP_HEADER}/theater/findAllShowPlaying`,
         findAllTheater: `${HTTP_HEADER}/theater/findAllTheater`,
         findById: `${HTTP_HEADER}/theater/findById`,
+        bigFiveTotal: `${HTTP_HEADER}/theater/bigFiveTotal`,
+        orderStatesTotal: `${HTTP_HEADER}/theater/orderStatesTotal`,
+        grossIncomeMonthly: `${HTTP_HEADER}/theater/grossIncomeMonthly`,
+        grossIncomeMonthlyRange: `${HTTP_HEADER}/theater/grossIncomeMonthlyRange`,
     },
     show: {
         newShow: `${HTTP_HEADER}/show/newShow`,
@@ -53,5 +59,9 @@ export const Api = {
         update: `${HTTP_HEADER}/coupon/update`,
         findAllByTheaterId: `${HTTP_HEADER}/coupon/findAllByTheaterId`,
         findAllByTheaterIdAndName: `${HTTP_HEADER}/coupon/findAllByTheaterIdAndName`,
-    }
+    },
+    requestInfo: {
+        handle: `${HTTP_HEADER}/requestInfo/handle`,
+        findAllRequestInfo: `${HTTP_HEADER}/requestInfo/findAllRequestInfo`,
+    },
 };

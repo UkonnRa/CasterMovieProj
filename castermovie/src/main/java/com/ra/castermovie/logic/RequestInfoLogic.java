@@ -9,5 +9,5 @@ public interface RequestInfoLogic {
 
     Result<RequestInfo> handle(String requestInfoId, boolean isPositive);
 
-    Result<List<RequestInfo>> findAllRequestInfo(String theaterId);
+    Result<List<RequestInfo>> findAllRequestInfo();
 }

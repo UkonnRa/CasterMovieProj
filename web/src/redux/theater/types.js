@@ -1,0 +1,1 @@
+export const SELECT_THEATER = "SELECT_THEATER";
