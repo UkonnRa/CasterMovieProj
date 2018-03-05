@@ -1,5 +1,6 @@
 package com.ra.casterpay.controller;
 
+import com.ra.casterpay.controller.vo.GiveMoneyToTheaterVO;
 import com.ra.casterpay.controller.vo.PayOrderVO;
 import com.ra.casterpay.controller.vo.RechargeVO;
 import com.ra.casterpay.controller.vo.RetrieveVO;
@@ -42,5 +43,9 @@ public class PayController {
         return result;
     }
 
+    @PostMapping(value = "giveMoneyToTheater", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    Result<String> giveMoneyToTheater(@RequestBody GiveMoneyToTheaterVO vo) {
+        return payLogic.giveMoneyToTheater(vo.getTheaterId(), vo.getMoney());
+    }
 
 }

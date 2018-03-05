@@ -2,24 +2,25 @@ package com.ra.castermovie.logic.impl;
 
 import com.ra.castermovie.logic.TicketsManagerLogic;
 import com.ra.castermovie.logic.common.Result;
+import com.ra.castermovie.model.Order;
 import com.ra.castermovie.model.User;
 import com.ra.castermovie.model.order.OrderState;
 import com.ra.castermovie.model.user.State;
 import com.ra.castermovie.service.OrderService;
 import com.ra.castermovie.service.UserService;
+import com.ra.castermovie.util.HttpRestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,9 @@ public class TicketsManagerLogicImpl implements TicketsManagerLogic {
     private UserService userService;
     @Autowired
     private OrderService orderService;
+
+    @Value("${casterpay.give-money-to-theater}")
+    private String giveMonetToTheaterUrl;
 
     private Predicate<User> _pred(YearMonth ym) {
         return u -> ym.equals(YearMonth.from(Instant.ofEpochMilli(u.getTimestamp()).atZone(ZoneId.systemDefault()).toLocalDate()));
@@ -113,7 +117,31 @@ public class TicketsManagerLogicImpl implements TicketsManagerLogic {
                 .collectMap(Pair::getFirst, Pair::getSecond).block();
 
         return Result.succeed(list.stream().collect(Collectors.toMap(date -> date, date -> rx.getOrDefault(date, 0))));
+    }
 
+    @Override
+    public Result<Integer> giveMoneyToTheater(String theaterId) {
+        Flux<Order> orders = orderService.findAllByTheaterId(theaterId).filter(o -> !o.getHasBeenGivenToTheater());
+        int money = orders.map(o -> {
+                    if (o.getActualCost() != null) return o.getActualCost();
+                    return 0;
+                }).reduce(0, (a, b) -> a + b).blockOptional().orElse(0);
+
+        if (money == 0) return Result.fail("款项已结清，无需分配");
+
+        Map<String, Object> map = new HashMap<String, Object>() {{
+            put("theaterId", theaterId);
+            put("money", money * theaterAbandonRate);
+        }};
+        Result result = HttpRestUtil.httpPost(giveMonetToTheaterUrl, map, Result.class);
+        if (result.ifSuccessful()) {
+            orders.collectList().block().forEach(o -> {
+                o.setHasBeenGivenToTheater(true);
+                Order resultOrder = orderService.update(o.getId(), o).block();
+            });
+            return Result.succeed(money);
+        }
+        return Result.fail(result.getMessage());
     }
 
     private YearMonth milliToYearMonth(long milli) {

@@ -1,9 +1,26 @@
 import {RouteTable} from "../route";
+import {Tag} from 'antd'
+import React from 'react'
 
 export const Role = {CUSTOMER: "CUSTOMER", THEATER: "THEATER", TICKETS: "TICKETS"};
 
 export const Level = {
-    LEVEL1: "LEVEL1", LEVEL2: "LEVEL2", LEVEL3: "LEVEL3", LEVEL4: "LEVEL4", LEVEL5: "LEVEL5"
+    LEVEL1: {
+        text: "LEVEL1",
+        tag: <Tag color="blue">LEVEL1</Tag>,
+    }, LEVEL2: {
+        text: "LEVEL2",
+        tag: <Tag color="green">LEVEL2</Tag>,
+    }, LEVEL3: {
+        text: "LEVEL3",
+        tag: <Tag color="red">LEVEL3</Tag>,
+    }, LEVEL4: {
+        text: "LEVEL4",
+        tag: <Tag color="purple">LEVEL4</Tag>,
+    }, LEVEL5: {
+        text: "LEVEL5",
+        tag: <Tag color="gold">LEVEL5</Tag>,
+    }
 };
 
 export const SiderMap = {

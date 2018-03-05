@@ -6,6 +6,7 @@ import {RouteTable} from "../../route";
 import {route} from "../../redux/ui/actions";
 import {Api} from "../../api";
 import axios from 'axios'
+import {Level} from "../../model/user";
 
 class MyInfo extends Component {
     constructor(props) {
@@ -120,7 +121,7 @@ class MyInfo extends Component {
                 <p>E-Mail：{this.props.user.email}</p>
                 <p>消费金额：{this.props.user.paid}</p>
                 <p>积分：{this.props.user.point}</p>
-                <p>等级：{this.props.user.level}</p>
+                <p>等级：{Level[this.props.user.level].tag}</p>
                 <Button type="danger" onClick={this.showDeleteConfirm}>删除用户</Button>
             </div>
         )

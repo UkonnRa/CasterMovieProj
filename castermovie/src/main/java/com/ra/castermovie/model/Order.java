@@ -35,6 +35,8 @@ public class Order {
     private OrderState orderState;
     @NotNull(message = "Order::seat must not be null")
     private List<Integer> seats;
+    @NotNull(message = "Order::hasBeenGivenToTheater must not be null")
+    private Boolean hasBeenGivenToTheater;
     private String usedCouponInfoId;
 
     public Order(String userId, String publicInfoId, Integer originalCost, Integer actualCost, List<Integer> seats, String usedCouponInfoId) {
@@ -48,6 +50,7 @@ public class Order {
         this.createTime = System.currentTimeMillis();
         this.orderState = OrderState.UNPAID;
         this.seats = seats;
+        this.hasBeenGivenToTheater = false;
         this.usedCouponInfoId = usedCouponInfoId;
     }
 }

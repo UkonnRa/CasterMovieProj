@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface TicketsManagerLogic {
+    double theaterAbandonRate = 0.10;
+
     Result<Map<String, Integer>> userRegisterNumberMonthly(List<String> range);
 
     Result<Map<String, Integer>> userCancelNumberMonthly(List<String> range);
@@ -13,4 +15,6 @@ public interface TicketsManagerLogic {
     Result<Integer> userExistingNumber();
 
     Result<Map<String, Integer>> ticketsGrossIncomeMonthly(List<String> range);
+
+    Result<Integer> giveMoneyToTheater(String theaterId);
 }

@@ -1,13 +1,12 @@
 package com.ra.castermovie.controller;
 
+import com.ra.castermovie.controller.vo.ticketmanager.GiveMoneyVO;
 import com.ra.castermovie.logic.TicketsManagerLogic;
 import com.ra.castermovie.logic.common.Result;
+import com.ra.castermovie.model.Theater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,11 @@ public class TicketsManagerController {
     @GetMapping(value = "ticketsGrossIncomeMonthly", consumes = MediaType.ALL_VALUE)
     Result<Map<String, Integer>> ticketsGrossIncomeMonthly(@RequestParam List<String> range) {
         return ticketsManagerLogic.ticketsGrossIncomeMonthly(range);
+    }
+
+    @PostMapping(value = "giveMoneyToTheater", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    Result<Integer>  giveMoneyToTheater(@RequestBody GiveMoneyVO vo) {
+        return ticketsManagerLogic.giveMoneyToTheater(vo.getTheaterId());
     }
 
 

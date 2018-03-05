@@ -16,6 +16,7 @@ export const Api = {
         userCancelNumberMonthly: `${HTTP_HEADER}/tickets/userCancelNumberMonthly`,
         userExistingNumber: `${HTTP_HEADER}/tickets/userExistingNumber`,
         ticketsGrossIncomeMonthly: `${HTTP_HEADER}/tickets/ticketsGrossIncomeMonthly`,
+        giveMoneyToTheater: `${HTTP_HEADER}/tickets/giveMoneyToTheater`,
     },
     theater: {
         register: `${HTTP_HEADER}/theater/register`,

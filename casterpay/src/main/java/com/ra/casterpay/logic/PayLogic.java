@@ -10,4 +10,6 @@ public interface PayLogic {
     Result<String> retrieveOrder(String orderId, double discount);
 
     Result<String> recharge(String userId, Integer money);
+
+    Result<String> giveMoneyToTheater(String theaterId, Integer money);
 }

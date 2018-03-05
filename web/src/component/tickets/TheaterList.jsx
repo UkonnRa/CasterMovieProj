@@ -75,6 +75,21 @@ class TheaterList extends Component {
         }).catch(err => console.log(err))
     };
 
+    giveMoneyToTheater = (theaterId) => {
+        axios.post(Api.ticketsManager.giveMoneyToTheater, {
+            theaterId: theaterId
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+            }
+        }).then(moneyData => {
+            if (moneyData.data.value)
+                alert(`款项结算完毕，共${(moneyData.data.value / 100).toFixed(2)}元`)
+            else alert(moneyData.data.message)
+        })
+    }
+
     render() {
         const {theaterList} = this.state;
         return <div>
@@ -83,7 +98,7 @@ class TheaterList extends Component {
             <List
                 dataSource={theaterList.slice(this.state.start, this.state.end)}
                 renderItem={item => (
-                    <List.Item key={item.id}>
+                    <List.Item key={item.id} actions={[<a onClick={() => this.giveMoneyToTheater(item.id)}>分配票款</a>]}>
                         <List.Item.Meta
                             title={<a onClick={() => this.onTheaterItemClick(item.id)}>{item.name}</a>}
                             description={item.location}/>

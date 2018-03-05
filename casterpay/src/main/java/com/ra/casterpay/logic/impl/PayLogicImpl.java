@@ -42,12 +42,15 @@ public class PayLogicImpl implements PayLogic {
             return info == null ? Result.fail("数据库异常，无法记录转账信息") : Result.fail("用户余额不足");
         }
 
-        Result<User> theaterResult = giveMoney(user, theater, orderId, (int) (money * PayLogic.theaterGainRate), State.PAY_OK);
-        Result<User> ticketsResult = giveMoney(user, tickets, orderId, (int) (money * (1 - PayLogic.theaterGainRate)), State.PAY_OK);
+        Result<User> theaterResult = giveMoney(user, theater, orderId, money, State.PAY_OK);
+        if (theaterResult.ifSuccessful()) return Result.succeed(orderId);
+        else return Result.fail(theaterResult.getMessage());
+//        Result<User> theaterResult = giveMoney(user, theater, orderId, (int) (money * PayLogic.theaterGainRate), State.PAY_OK);
+//        Result<User> ticketsResult = giveMoney(user, tickets, orderId, (int) (money * (1 - PayLogic.theaterGainRate)), State.PAY_OK);
 
-        if (theaterResult.ifSuccessful() && ticketsResult.ifSuccessful()) return Result.succeed(orderId);
-        else
-            return Result.fail(Stream.of(theaterResult.getMessage(), ticketsResult.getMessage()).filter(s -> !s.equals("")).reduce((u, v) -> u + "&&" + v).get());
+//        if (theaterResult.ifSuccessful() && ticketsResult.ifSuccessful()) return Result.succeed(orderId);
+//        else
+//            return Result.fail(Stream.of(theaterResult.getMessage(), ticketsResult.getMessage()).filter(s -> !s.equals("")).reduce((u, v) -> u + "&&" + v).get());
     }
 
     @Override
@@ -93,6 +96,16 @@ public class PayLogicImpl implements PayLogic {
         Result<User> giveResult = giveMoney(tickets, user, "", money, State.RETRIEVE_OK);
 
         return giveResult.ifSuccessful() ? Result.succeed(userService.findById(userId).block().getId()) : Result.fail(giveResult.getMessage());
+    }
+
+    @Override
+    public Result<String> giveMoneyToTheater(String theaterId, Integer money) {
+        User ticket = userService.findAllByRole(Role.TICKETS).blockFirst();
+        User theater = userService.findById(theaterId).block();
+
+       Result<User> userResult = giveMoney(ticket, theater, "", money, State.GIVE_TO_THEATER_OK);
+       if (userResult.ifSuccessful()) return Result.succeed(theaterId);
+       else return Result.fail(userResult.getMessage());
     }
 
     private synchronized Result<User> giveMoney(User fromUser, User toUser, String orderId, Integer money, State state) {
