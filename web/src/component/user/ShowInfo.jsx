@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Divider, List, Tabs} from 'antd'
+import {Card, Divider, List, Modal, Select, Tabs} from 'antd'
 import {connect} from 'react-redux'
 import {AreaCascader} from 'react-area-linkage';
 import {Genre} from "../../model/show";
@@ -11,16 +11,69 @@ import axios from 'axios'
 import {Api} from "../../api";
 import _ from 'lodash'
 import {RouteTable} from "../../route";
+import {ExpiredType} from "../../model/coupon";
 
 const moment = extendMoment(Moment);
 
-class ShowInfo extends Component {
+class TheaterInfo extends Component {
+    componentWillMount = () => {
+        const {theater} = this.props
+
+        axios.get(Api.coupon.findAllByTheaterId, {
+            data: {theaterId: theater.id},
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                Authorization: `Bearer ${localStorage.getItem("jwt")}`
+            }
+        }).then(couponsData => {
+            if (couponsData.data.value) {
+                this.setState({coupons: couponsData.data.value})
+            } else {
+                console.log(couponsData.data.message)
+            }
+        }).catch(err => console.log(err))
+    }
+    render = () => Modal.info({
+        title: this.props.theater.name,
+        content: (
+            <div>
+                <p>地点：{this.props.theater.location}</p>
+                <p>座位总数：{this.props.theater.seatNumber}</p>
+                <p><Select>
+                    {this.state.coupons.map(coupon => {
+                        return <Select.Option value={coupon.id}>
+                            <Card>
+                                <p>名称：{coupon.name}</p>
+                                <p>折扣：{coupon.discount}</p>
+                                <p>失效类型：{ExpiredType[coupon.expiredType].text}</p>
+                                <p>失效时间：{
+                                    coupon.expiredType === ExpiredType.TIME_PERIOD.name ?
+                                        moment.utc(moment.duration(coupon.expiredTime, 's').asMilliseconds()).format("HH:mm:ss") :
+                                        moment(coupon.expiredTime).format("YYYY-MM-DD")
+                                }</p>
+                            </Card>
+                        </Select.Option>
+                    })}
+                </Select>
+                </p>
+            </div>
+        ),
+        onOk() {
+        },
+    });
+
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
-            regionId: 440305,
-            theaters: new Map()
+            coupons: []
         }
+    }
+}
+
+
+class ShowInfo extends Component {
+    selectCoupon = (couponId) => {
+
     }
 
     componentWillMount = () => {
@@ -51,6 +104,93 @@ class ShowInfo extends Component {
             this.props.route(RouteTable.CUSTOMER.ChooseSeat.path + `#${publicInfoId}`, this.props.isAuthed)
         })
     };
+    info = (theaterId) => {
+        const self = this
+        console.log(theaterId)
+        axios.get(Api.theater.findById, {
+            params: {id: theaterId},
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                Authorization: `Bearer ${localStorage.getItem("jwt")}`
+            }
+        }).then(theaterData => {
+            if (theaterData.data.value) {
+                this.setState({selectedTheater: theaterData.data.value})
+            } else {
+                console.log(theaterData.data.message)
+            }
+        }).then(() => axios.get(Api.coupon.findAllByTheaterId, {
+            params: {theaterId: this.state.selectedTheater.id},
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                Authorization: `Bearer ${localStorage.getItem("jwt")}`
+            }
+        }).then(couponsData => {
+            if (couponsData.data.value) {
+                const coupons = couponsData.data.value
+                Modal.info({
+                    title: this.state.selectedTheater.name,
+                    content: (
+                        <div>
+                            <p>地点：{this.state.selectedTheater.location}</p>
+                            <p>座位总数：{this.state.selectedTheater.seatNumber}</p>
+                            <div><Select style={{width: 250}}
+                                         onChange={(value) => this.setState({selectedCoupon: value})}>
+                                {coupons.map(coupon => {
+                                    return <Select.Option value={coupon.id} title={coupon.name}>
+                                        <Card>
+                                            <p>名称：{coupon.name}</p>
+                                            <p>折扣：{coupon.discount}</p>
+                                            <p>失效类型：{ExpiredType[coupon.expiredType].text}</p>
+                                            <p>失效时间：{
+                                                coupon.expiredType === ExpiredType.TIME_PERIOD.name ?
+                                                    moment.utc(moment.duration(coupon.expiredTime, 's').asMilliseconds()).format("HH:mm:ss") :
+                                                    moment(coupon.expiredTime).format("YYYY-MM-DD")
+                                            }</p>
+                                        </Card>
+                                    </Select.Option>
+                                })}
+                            </Select>
+                            </div>
+                        </div>
+                    ),
+                    onOk() {
+                        console.log(self.props)
+                        axios.post(Api.couponInfo.getCoupon,
+                            {
+                                userId: self.props.user.id,
+                                couponId: self.state.selectedCoupon,
+                            }, {
+                                headers: {
+                                    'Content-Type': 'application/json;charset=utf-8',
+                                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                                }
+                            }).then(couponInfoData => {
+                            if (couponInfoData.data.value) {
+                                alert(`优惠券获取成功`)
+                            } else {
+                                alert(`优惠券获取失败，${couponInfoData.data.message}`)
+                            }
+                        })
+                    },
+                });
+            } else {
+                console.log(couponsData.data.message)
+            }
+        }).catch(err => console.log(err)))
+
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            regionId: 440305,
+            theaters: new Map(),
+            theaterModalShow: false,
+            selectedTheater: {},
+            selectedCoupon: "",
+        }
+    }
 
     render() {
         return <div>
@@ -69,8 +209,10 @@ class ShowInfo extends Component {
                               renderItem={item => (
                                   <List.Item actions={[<a onClick={() => this.onChooseTheaterClick(item.id)}>选择</a>]}>
                                       <List.Item.Meta
-                                          title={<a>{this.state.theaters.get(item.theaterId).name}</a>}
+                                          title={<a
+                                              onClick={() => this.info(item.theaterId)}>{this.state.theaters.get(item.theaterId).name}</a>}
                                           description={`从${(item.basePrice / 100).toFixed(2)}元起`}/>
+                                      时间：{moment(item.schedule).format("HH:mm:ss")}
                                   </List.Item>)}/>
                     </Tabs.TabPane>)}
             </Tabs>
@@ -93,6 +235,7 @@ const
             selectedShow: state.showReducer.selectedShow,
             publicInfos: state.publicInfoReducer.publicInfos,
             isAuthed: state.loginReducer.isAuthed,
+            user: state.loginReducer.user,
         }
     };
 
