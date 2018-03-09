@@ -45,7 +45,7 @@ class MyOrder extends Component {
             <div>
                 <Divider>订单</Divider>
                 <List
-                    dataSource={this.props.orders.slice(this.state.start, this.state.end)}
+                    dataSource={this.props.orders.sort((a, b) => - a.createTime + b.createTime).slice(this.state.start, this.state.end)}
                     renderItem={item => (
                         <List.Item key={item.id} actions={this.setListItemActions(item.id)}>
                             <List.Item.Meta

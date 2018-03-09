@@ -135,7 +135,8 @@ class ShowInfo extends Component {
                             <p>地点：{this.state.selectedTheater.location}</p>
                             <p>座位总数：{this.state.selectedTheater.seatNumber}</p>
                             <div><Select style={{width: 250}}
-                                         onChange={(value) => this.setState({selectedCoupon: value})}>
+                                         onChange={(value) => this.setState({selectedCoupon: value})}
+                                         optionLabelProp={"title"}>
                                 {coupons.map(coupon => {
                                     return <Select.Option value={coupon.id} title={coupon.name}>
                                         <Card>
