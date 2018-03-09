@@ -9,6 +9,7 @@ import {RouteTable} from "../../route";
 import {route} from "../../redux/ui/actions";
 import TheaterList from '../tickets/TheaterList'
 import MyPublicInfos from '../theater/MyPublicInfos'
+import moment from 'moment'
 
 class Main extends Component {
 
@@ -31,7 +32,7 @@ class Main extends Component {
                                     <Card key={innerIndex} title={<a
                                         onClick={() => this.onShowItemClick(show.id)}>{show.name}</a>}>
                                         <p>种类：{Genre.get(show.genre)}</p>
-                                        <p>时长：{show.duration}</p>
+                                        <p>时长：{moment.utc(moment.duration(show.duration, 's').asMilliseconds()).format("HH:mm:ss")}</p>
                                     </Card>
                                 </Col>})}
                         </Row>

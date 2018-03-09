@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Button, Divider, Icon, Input, Modal} from 'antd'
+import {Button, Divider, Icon, Input, InputNumber, Modal} from 'antd'
 import {connect} from "react-redux";
 import {getCurrentUser, logout, update} from "../../redux/auth/actions";
 import {RouteTable} from "../../route";
@@ -15,6 +15,7 @@ class MyInfo extends Component {
             changeName: false,
             changePassword: false,
             name: "",
+            money: 0,
         }
     }
 
@@ -52,6 +53,37 @@ class MyInfo extends Component {
         }).catch(err => alert(err))
     };
 
+    showRecharge = () => Modal.confirm({
+        title: "充值",
+        content: <div><InputNumber ref={node => this.recharge = node} min={0} step={0.1}
+                                 onChange={v => this.setState({money: Number(v) * 100})}/>元</div>,
+        okText: "确认",
+        cancelText: "取消",
+        onOk: () => {
+            console.log(this.state.money)
+            axios.post(Api.user.recharge,
+                {id: this.props.user.id, money: this.state.money},
+                {
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8',
+                        Authorization: `Bearer ${localStorage.getItem("jwt")}`
+
+                    }
+                }
+            )
+                .then(userData => {
+                    if (userData.data.value) {
+                        alert("充值成功")
+                    } else {
+                        alert(`充值失败，${userData.data.message}`)
+                    }
+                }).catch(err => alert(err))
+        },
+        onCancel: () => {
+        }
+    })
+
+
     showDeleteConfirm = () => {
         const {id} = this.props.user;
         const {isAuthed, logout, route} = this.props;
@@ -86,6 +118,7 @@ class MyInfo extends Component {
             },
         });
     };
+
     render() {
         const {name} = this.state;
         const suffix = name ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
@@ -104,22 +137,23 @@ class MyInfo extends Component {
                             onBlur={this.onFinishNewPassword}/>
                     </p>}
                 <p>昵称：{
-                !this.state.changeName ? this.props.user.name :
-                    <Input
-                        placeholder="输入昵称"
-                        prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
-                        suffix={suffix}
-                        value={name}
-                        onChange={this.onChangeName}
-                        ref={node => this.nameInput = node}
-                        onPressEnter={this.onFinishNewName}
-                        onBlur={this.onFinishNewName}
-                    />
-            } <Button style={{border: 'none'}}
-                      onClick={() => this.setState({changeName: !this.state.changeName})}>{this.state.changeName ? "取消修改" : "修改昵称"}</Button>
+                    !this.state.changeName ? this.props.user.name :
+                        <Input
+                            placeholder="输入昵称"
+                            prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                            suffix={suffix}
+                            value={name}
+                            onChange={this.onChangeName}
+                            ref={node => this.nameInput = node}
+                            onPressEnter={this.onFinishNewName}
+                            onBlur={this.onFinishNewName}
+                            style={{width: "200 px"}}
+                        />
+                } <Button style={{border: 'none'}}
+                          onClick={() => this.setState({changeName: !this.state.changeName})}>{this.state.changeName ? "取消修改" : "修改昵称"}</Button>
                 </p>
                 <p>E-Mail：{this.props.user.email}</p>
-                <p>消费金额：{this.props.user.paid}</p>
+                <p>消费金额：{this.props.user.paid}<Button onClick={this.showRecharge}>充值</Button></p>
                 <p>积分：{this.props.user.point}</p>
                 <p>等级：{Level[this.props.user.level].tag}</p>
                 <Button type="danger" onClick={this.showDeleteConfirm}>删除用户</Button>

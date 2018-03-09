@@ -1,9 +1,6 @@
 package com.ra.castermovie.controller;
 
-import com.ra.castermovie.controller.vo.user.CancelUserVO;
-import com.ra.castermovie.controller.vo.user.RegisterVO;
-import com.ra.castermovie.controller.vo.user.UpdateVO;
-import com.ra.castermovie.controller.vo.user.ValidateVO;
+import com.ra.castermovie.controller.vo.user.*;
 import com.ra.castermovie.logic.UserLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.User;
@@ -40,6 +37,11 @@ public class UserController {
     @PostMapping(value = "update", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<User> update(@RequestBody UpdateVO vo) {
         return userLogic.update(vo.getId(), new User(vo.getId(), vo.getCondition(), vo.getTimestamp(), vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail(), vo.getRole(), vo.getState(), vo.getPaid(), vo.getLevel(), vo.getPoint()));
+    }
+
+    @PostMapping(value = "recharge", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Result<User> recharge(@RequestBody RechargeVO vo) {
+        return userLogic.recharge(vo.getId(), vo.getMoney());
     }
 
     @GetMapping(value = "getByJwt", consumes = MediaType.ALL_VALUE)

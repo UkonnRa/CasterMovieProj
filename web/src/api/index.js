@@ -10,6 +10,7 @@ export const Api = {
         getByJwt: `${HTTP_HEADER}/user/getByJwt`,
         login: `${HTTP_HEADER}/user/login`,
         findById: `${HTTP_HEADER}/user/findById`,
+        recharge: `${HTTP_HEADER}/user/recharge`,
     },
     ticketsManager: {
         userRegisterNumberMonthly: `${HTTP_HEADER}/tickets/userRegisterNumberMonthly`,
