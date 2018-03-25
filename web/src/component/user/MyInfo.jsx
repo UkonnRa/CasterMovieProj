@@ -48,8 +48,8 @@ class MyInfo extends Component {
         }).then(() => {
             alert("修改成功，请用新密码登陆");
             this.setState({changePassword: false});
-            this.props.logout();
             this.props.route(RouteTable.CUSTOMER.Main.path, this.props.isAuthed)
+            this.props.logout();
         }).catch(err => alert(err))
     };
 
@@ -133,6 +133,7 @@ class MyInfo extends Component {
                     <p>
                         <Input
                             placeholder="输入密码"
+                            type="password"
                             onPressEnter={this.onFinishNewPassword}
                             onBlur={this.onFinishNewPassword}/>
                     </p>}

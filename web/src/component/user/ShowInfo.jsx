@@ -156,23 +156,25 @@ class ShowInfo extends Component {
                         </div>
                     ),
                     onOk() {
-                        console.log(self.props)
-                        axios.post(Api.couponInfo.getCoupon,
-                            {
-                                userId: self.props.user.id,
-                                couponId: self.state.selectedCoupon,
-                            }, {
-                                headers: {
-                                    'Content-Type': 'application/json;charset=utf-8',
-                                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                        if (!_.isEmpty(self.state.selectedCoupon)) {
+                            console.log(self.props)
+                            axios.post(Api.couponInfo.getCoupon,
+                                {
+                                    userId: self.props.user.id,
+                                    couponId: self.state.selectedCoupon,
+                                }, {
+                                    headers: {
+                                        'Content-Type': 'application/json;charset=utf-8',
+                                        Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                                    }
+                                }).then(couponInfoData => {
+                                if (couponInfoData.data.value) {
+                                    alert(`优惠券获取成功`)
+                                } else {
+                                    alert(`优惠券获取失败，${couponInfoData.data.message}`)
                                 }
-                            }).then(couponInfoData => {
-                            if (couponInfoData.data.value) {
-                                alert(`优惠券获取成功`)
-                            } else {
-                                alert(`优惠券获取失败，${couponInfoData.data.message}`)
-                            }
-                        })
+                            })
+                        }
                     },
                 });
             } else {

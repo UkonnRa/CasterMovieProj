@@ -123,7 +123,7 @@ class ChooseSeat extends Component {
             }).then(resp => {
             if (resp.data.value) {
                 alert("预定完成，该订单将于开演前两周配票并自动扣款，请保持账户余额充足");
-                this.props.route(RouteTable.CUSTOMER.ShowList, this.props.isAuthed)
+                this.props.route(RouteTable.CUSTOMER.ShowList.path, this.props.isAuthed)
             } else {
                 alert(resp.data.message)
             }

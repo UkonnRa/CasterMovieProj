@@ -28,7 +28,7 @@ class Examination extends Component {
         });
         console.log(requestInfosData);
         if (requestInfosData.data.value) {
-            this.setState({requestInfos: requestInfosData.data.value})
+            this.setState({requestInfos: requestInfosData.data.value.sort((a, b) => b.timestamp - a.timestamp)})
         } else {
             console.log(requestInfosData.data.message)
         }

@@ -1,11 +1,13 @@
 import React, {Component} from 'react'
-import {Divider, List, Pagination} from 'antd'
+import {Divider, List, Pagination, Modal} from 'antd'
 import {connect} from 'react-redux'
 import {findAllByUserId, findById} from "../../redux/order/actions";
 import _ from 'lodash'
 import {OrderState} from "../../model/order";
 import {route} from "../../redux/ui/actions";
 import {RouteTable} from "../../route";
+import axios from "axios";
+import {Api} from "../../api";
 
 
 class MyOrder extends Component {
@@ -32,11 +34,37 @@ class MyOrder extends Component {
     setListItemActions = (id) => {
         const targetOrder = this.props.orders.find(o => o.id === id);
         console.log(targetOrder);
-        if (!_.isEmpty(targetOrder) && targetOrder.orderState === OrderState.UNPAID) {
-            return [<a onClick={async () => {
-                await this.props.findOrderById(id);
-                this.props.route(`${RouteTable.CUSTOMER.PayOrder.path}#${id}`, this.props.isAuthed)
-            }}>前去付款</a>]
+        if (!_.isEmpty(targetOrder)) {
+            if (targetOrder.orderState === OrderState.UNPAID) {
+                return [<a onClick={async () => {
+                    await this.props.findOrderById(id);
+                    this.props.route(`${RouteTable.CUSTOMER.PayOrder.path}#${id}`, this.props.isAuthed)
+                }}>前去付款</a>]
+            } else if (targetOrder.orderState === OrderState.READY || targetOrder.orderState === OrderState.UNPAID) {
+                return [<a onClick={async () => {
+                    Modal.confirm({
+                        title: '确定退票么？',
+                        content: '该操作不可恢复',
+                        cancelText: "取消",
+                        okText: "确定",
+                        onOk: async() => {
+                            const retrieveData = await axios.post(Api.order.retrieveOrder, {orderId: id}, {
+                                headers: {
+                                    'Content-Type': 'application/json;charset=utf-8',
+                                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                                }
+                            })
+                            if (retrieveData.data.value) {
+                                alert("退票成功")
+                                this.props.findAllByUserId(this.props.userId)
+                            } else {
+                                alert(retrieveData.data.message)
+                            }
+                        },
+                        onCancel() {},
+                    });
+                }}>退票</a>]
+            }
         }
     };
 

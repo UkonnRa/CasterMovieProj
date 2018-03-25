@@ -64,7 +64,7 @@ public class OrderLogicImpl implements OrderLogic {
         Theater theater = theaterService.findById(publicInfo.getTheaterId()).block();
         if (theater == null) return Result.fail("该剧院不存在");
         if (seats.contains(null)) {
-            if (seats.size() > 20) return Result.fail("未选座的用户每单最多可买20张");
+            if (seats.size() > 12) return Result.fail("未选座的用户每单最多可买12张");
             return newOrder(userId, publicInfoId, null, null, seats, coupnInfoId);
         }
         Map<Integer, Double> priceTable = publicInfo.getPriceTable();
@@ -75,7 +75,7 @@ public class OrderLogicImpl implements OrderLogic {
             if (keyList.get(keyList.size() - 1) <= seat) {
                 i = keyList.size() - 1;
             } else {
-                for (; i < keyList.size(); i++) {
+                for (; i < keyList.size() - 1; i++) {
                     if (keyList.get(i) <= seat && seat < keyList.get(i + 1)) break;
                 }
             }
@@ -97,6 +97,8 @@ public class OrderLogicImpl implements OrderLogic {
         if (order == null) return Result.fail("订单不存在");
         PublicInfo publicInfo = publicInfoService.findById(order.getPublicInfoId()).block();
         if (publicInfo == null) return Result.fail("剧集信息不存在");
+        User payUser = userService.findById(order.getPayUserId()).block();
+        if (payUser == null) return Result.fail("付款用户不存在");
 
         if (!publicInfo.getTheaterId().equals(theaterId)) return Result.fail("该订单不属于该剧场");
         if (order.getSeats().contains(null)) return Result.fail("该订单未配票，不能check in");
@@ -104,7 +106,17 @@ public class OrderLogicImpl implements OrderLogic {
 
         order.setOrderState(OrderState.FINISHED);
         UserOrder result = orderToUserOrder(orderService.update(orderId, order));
-        return result == null ? Result.fail("入场失败，请重试") : Result.succeed(result);
+        if(result == null) return Result.fail("入场失败，请重试");
+
+        payUser.setPoint(payUser.getPoint() + order.getActualCost());
+        payUser.setPaid(payUser.getPaid() + order.getActualCost());
+        payUser.setLevel(IntStream.range(0, Level.values().length - 1)
+                .filter(i -> Level.values()[i].minPaid <= payUser.getPaid() && payUser.getPaid() < Level.values()[i + 1].minPaid)
+                .mapToObj(i -> Level.values()[i])
+                .collect(Collectors.toList()).get(0)
+        );
+        User resultUpdate = userService.update(payUser.getId(), payUser).block();
+        return resultUpdate == null? Result.fail("无法保存用户数据"): Result.succeed(result);
     }
 
     private synchronized Result<UserOrder> newOrder(String userId, String publicInfoId, Integer originalCost, Integer actualCost, List<Integer> seats, String couponInfoId) {
@@ -117,7 +129,7 @@ public class OrderLogicImpl implements OrderLogic {
                 return Result.fail("开演前两周内禁止出售配坐票");
             }
             Collections.fill(seats, null);
-            Order o = new Order(userId, publicInfoId, originalCost, actualCost, seats,  couponInfoId);
+            Order o = new Order(userId, publicInfoId, originalCost == null? 0: originalCost, actualCost == null? 0: actualCost, seats,  couponInfoId);
             o.setOrderState(OrderState.WAITING_DISTRI);
             UserOrder result = orderToUserOrder(orderService.save(o));
             return result == null ? Result.fail("数据库异常，请重试") : Result.succeed(result);
@@ -148,11 +160,9 @@ public class OrderLogicImpl implements OrderLogic {
         if (order == null) return Result.fail("订单不存在");
         PublicInfo p = publicInfoService.findById(order.getPublicInfoId()).block();
         if (order == null) return Result.fail("剧集信息不存在");
-        User payUser = userService.findById(userId).block();
-        if (payUser == null) return Result.fail("付款用户不存在");
         double couponDiscount = 1.0;
 
-        for (String id : Arrays.asList(couponInfoId)) {
+        for (String id : Collections.singletonList(couponInfoId)) {
             if (id != null) {
                 CouponInfo selectedCoupon = couponInfoService.findById(id).block();
                 if (selectedCoupon == null) return Result.fail("该优惠券信息不存在");
@@ -194,18 +204,8 @@ public class OrderLogicImpl implements OrderLogic {
             if (backOrder == null) return Result.fail("订单不存在");
             backOrder.setOrderState(OrderState.READY);
             UserOrder backResult = orderToUserOrder(orderService.update(backOrderId, backOrder));
-            payUser = userService.findById(userId).block();
-            if (payUser == null) return Result.fail("付款用户不存在");
-            payUser.setPoint(payUser.getPoint() + backOrder.getActualCost());
-            payUser.setPaid(payUser.getPaid() + backOrder.getActualCost());
-            User finalPayUser = payUser;
-            payUser.setLevel(IntStream.range(0, Level.values().length - 1)
-                    .filter(i -> Level.values()[i].minPaid <= finalPayUser.getPaid() && finalPayUser.getPaid() < Level.values()[i + 1].minPaid)
-                    .mapToObj(i -> Level.values()[i])
-                    .collect(Collectors.toList()).get(0)
-            );
-            User resultUpdate = userService.update(payUser.getId(), payUser).block();
-            return resultUpdate == null || backResult == null ? Result.fail("保存订单失败") : Result.succeed(backResult);
+
+            return backResult == null ? Result.fail("保存订单失败") : Result.succeed(backResult);
         }
 
         return Result.fail(backMessage);

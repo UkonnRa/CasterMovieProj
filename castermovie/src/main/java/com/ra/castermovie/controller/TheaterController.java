@@ -2,6 +2,7 @@ package com.ra.castermovie.controller;
 
 import com.ra.castermovie.controller.vo.theater.FindAllShowPlayingVO;
 import com.ra.castermovie.controller.vo.theater.NewPublicInfoVO;
+import com.ra.castermovie.controller.vo.theater.RegisterVO;
 import com.ra.castermovie.controller.vo.theater.UpdateVO;
 import com.ra.castermovie.logic.TheaterLogic;
 import com.ra.castermovie.logic.common.Result;
@@ -9,7 +10,6 @@ import com.ra.castermovie.model.PublicInfo;
 import com.ra.castermovie.model.RequestInfo;
 import com.ra.castermovie.model.Theater;
 import com.ra.castermovie.model.order.OrderState;
-import com.ra.castermovie.model.theater.UserTheater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
@@ -26,8 +26,8 @@ public class TheaterController {
     private TheaterLogic theaterLogic;
 
     @PostMapping(value = "register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<RequestInfo> register(@RequestBody UserTheater vo) {
-        return theaterLogic.register(vo);
+    Result<RequestInfo> register(@RequestBody RegisterVO vo) {
+        return theaterLogic.register(vo.toUserTheater());
     }
 
     @PostMapping(value = "update", consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -23,6 +23,7 @@ const UpdateForm = Form.create()(
             const {onCancel, form} = this.props;
 
             form.validateFields(async (err, values) => {
+                console.log(values)
                 if (err) return;
                 let discounts = {};
                 Object.keys(Level).forEach((level, index) => discounts[level] = values.discounts[index]);
@@ -126,10 +127,9 @@ const UpdateForm = Form.create()(
                     </Form.Item>
                     <Form.Item label="场馆区域">
                         {getFieldDecorator('regionId', {
-                            defaultArea: ['440000', '440300', '440305'],
+                            initialValue: ['440000', '440300', '440305'],
                             rules: [{type: 'array', required: true, message: '请选择场馆地点'}],
-                        })(<AreaCascader placeholder={'请选择场馆地点'} level={1}
-                                         onChange={this.onRegionCodeChange}/>)}
+                        })(<AreaCascader placeholder={'请选择场馆地点'} level={1}/>)}
                     </Form.Item>
                     <Form.Item label="具体地址">
                         {getFieldDecorator('location', {

@@ -1,9 +1,6 @@
 package com.ra.castermovie.controller;
 
-import com.ra.castermovie.controller.vo.order.CheckInVO;
-import com.ra.castermovie.controller.vo.order.NewOrderVO;
-import com.ra.castermovie.controller.vo.order.OrderOfflineVO;
-import com.ra.castermovie.controller.vo.order.PayOrderVO;
+import com.ra.castermovie.controller.vo.order.*;
 import com.ra.castermovie.logic.OrderLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.order.UserOrder;
@@ -39,8 +36,8 @@ public class OrderController {
     }
 
     @PostMapping(value = "retrieveOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<UserOrder> retrieveOrder(@RequestParam String orderId) {
-        return orderLogic.retrieveOrder(orderId);
+    Result<UserOrder> retrieveOrder(@RequestBody RetrieveOrderVO vo) {
+        return orderLogic.retrieveOrder(vo.getOrderId());
     }
 
     @GetMapping(value = "findAllByUserId", consumes = MediaType.ALL_VALUE)

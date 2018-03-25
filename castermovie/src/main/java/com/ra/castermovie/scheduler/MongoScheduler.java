@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MongoScheduler {
-    private static final long MIN15 = 15 * 60 * 1000;
+    private static final long MIN3 = 3 * 60 * 1000;
     private final OrderService orderService;
     private final PublicInfoService publicInfoService;
     private final OrderLogic orderLogic;
@@ -35,7 +35,7 @@ public class MongoScheduler {
     private void scanExpiredUnpaidOrder() {
         orderService.findAllByOrderState(OrderState.UNPAID)
                 .collectList().block()
-                .stream().filter(o -> System.currentTimeMillis() - o.getCreateTime() > MIN15)
+                .stream().filter(o -> System.currentTimeMillis() - o.getCreateTime() > MIN3)
                 .forEach(o -> orderLogic.retrieveOrder(o.getId()));
     }
 

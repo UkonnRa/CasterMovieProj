@@ -20,6 +20,10 @@ class TheaterShowList extends Component {
         }
     }
 
+    componentWillMount = () => {
+        this.props.findAllShowsByGenreIn({genreList: this.state.selectedGenres})
+    }
+
     pagination = {
         pageSize: 3,
         onPageChange: (page, pageSize) => {
