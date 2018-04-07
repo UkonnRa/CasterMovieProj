@@ -154,7 +154,7 @@ class MyInfo extends Component {
                           onClick={() => this.setState({changeName: !this.state.changeName})}>{this.state.changeName ? "取消修改" : "修改昵称"}</Button>
                 </p>
                 <p>E-Mail：{this.props.user.email}</p>
-                <p>消费金额：{this.props.user.paid}<Button onClick={this.showRecharge}>充值</Button></p>
+                <p>消费金额：{(this.props.user.paid / 100).toFixed(2)}元<Button onClick={this.showRecharge}>充值</Button></p>
                 <p>积分：{this.props.user.point}</p>
                 <p>等级：{Level[this.props.user.level].tag}</p>
                 <Button type="danger" onClick={this.showDeleteConfirm}>删除用户</Button>

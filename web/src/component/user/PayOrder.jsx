@@ -84,10 +84,10 @@ class PayOrder extends Component {
         const {id, originalCost, createTime} = this.props.selectedOrder;
         return <div>
             <p>订单编号：{id}</p>
-            <p>订单金额：{originalCost}</p>
+            <p>订单金额：{(originalCost / 100.0).toFixed(2)}元</p>
             <p>等级优惠：{this.state.levelDiscount}</p>
             <span>优惠券：{this.createCouponInfoSelect()}</span>
-            <p>实际应付：{originalCost * this.state.selectedCouponInfo.discount * this.state.levelDiscount}</p>
+            <p>实际应付：{(originalCost * this.state.selectedCouponInfo.discount * this.state.levelDiscount / 100.0).toFixed(2)}元</p>
             <p>座位将为您保持15分钟，超时将自动取消</p>
             <Countdown date={createTime + 15 * 60 * 1000}
                        renderer={this.renderer}/>
