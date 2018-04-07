@@ -43,7 +43,7 @@ const ComponentTimeRangeForm = Form.create()(class extends Component {
             return;
         }
         form.setFieldsValue({
-            dateTimeKeys: seatPriceKeys.filter(key => key !== k),
+            seatPriceKeys: seatPriceKeys.filter(key => key !== k),
         });
     };
 
@@ -170,8 +170,8 @@ const ComponentTimeRangeForm = Form.create()(class extends Component {
                     </Form.Item>
                     <Form.Item
                         {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                        label={index === 0 ? <span>输入折扣
-                                <Tooltip title="该数值表示相对于最低价格，该区间座位的价格的比率">
+                        label={index === 0 ? <span>输入比率
+                                <Tooltip title="该数值表示相对于基础价格，该区间座位的价格的比率">
                                     <Icon type="question-circle-o"/>
                                 </Tooltip>
                             </span> : ''}
@@ -205,9 +205,9 @@ const ComponentTimeRangeForm = Form.create()(class extends Component {
                         <Icon type="plus"/> 添加座位表项
                     </Button>
                 </Form.Item>
-                <Form.Item label={"最低价格"}>
+                <Form.Item label={"基础价格"}>
                     {getFieldDecorator('basePrice', {
-                        rules: [{type: 'number', required: true, message: '请输入最低价格'}],
+                        rules: [{type: 'number', required: true, message: '请输入基础价格'}],
                     })(<InputNumber min={0} step={0.01}/>)}
                     元
                 </Form.Item>

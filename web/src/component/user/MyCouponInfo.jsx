@@ -19,7 +19,7 @@ class MyCouponInfo extends Component {
     };
 
     pagination = {
-        pageSize: 3,
+        pageSize: 5,
         defaultCurrent: 1,
         onChange: (page, pageSize) => {
             this.setState({currPage: page,start: (page - 1) * pageSize, end: _.min([this.props.couponInfos.length, page * pageSize])})

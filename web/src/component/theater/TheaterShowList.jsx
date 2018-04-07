@@ -25,7 +25,7 @@ class TheaterShowList extends Component {
     }
 
     pagination = {
-        pageSize: 3,
+        pageSize: 5,
         onPageChange: (page, pageSize) => {
             this.setState({
                 currPage: page,
