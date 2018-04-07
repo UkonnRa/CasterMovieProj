@@ -14,6 +14,7 @@ import MyTheaterFinance from '../component/theater/MyTheaterFinance'
 import MyTheaterInfo from '../component/theater/MyTheaterInfo'
 import MyTheaterOrders from '../component/theater/MyTheaterOrders'
 import NewPublicInfo from '../component/theater/NewPublicInfo'
+import NewCoupon from '../component/theater/NewCoupon'
 import SellTicket from '../component/theater/SellTicket'
 import TheaterShowList from '../component/theater/TheaterShowList'
 import Examination from '../component/tickets/Examination'
@@ -89,6 +90,12 @@ export const RouteTable = {
             text: "发布计划",
             needAuthed: true,
             component: <NewPublicInfo/>,
+        },
+        NewCoupon: {
+            path: "NewCoupon",
+            text: "发布优惠券",
+            needAuthed: true,
+            component: <NewCoupon/>,
         },
         SellTicket: {
             path: "SellTicket",

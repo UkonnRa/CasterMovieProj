@@ -91,6 +91,12 @@ export const SiderMap = {
             text: RouteTable[Role.THEATER].TheaterShowList.text
         },
         {
+            type: 'item',
+            icon: "pay-circle-o",
+            key: RouteTable[Role.THEATER].NewCoupon.path,
+            text: RouteTable[Role.THEATER].NewCoupon.text,
+        },
+        {
             type: "item",
             icon: "notification",
             key: RouteTable[Role.THEATER].CheckIn.path,
