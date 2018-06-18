@@ -1,0 +1,3 @@
+export const PREPARE_SIGN_UP = 'PREPARE_SIGN_UP';
+export const PREPARE_SIGN_IN = 'PREPARE_SIGN_IN';
+export const HIDE_ENTRY_FORM = 'HIDE_ENTRY_FORM';
