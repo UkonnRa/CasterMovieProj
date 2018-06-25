@@ -26,7 +26,6 @@ public class TheaterLogicImpl implements TheaterLogic {
     private final TheaterService theaterService;
     private final PublicInfoService publicInfoService;
     private final ShowService showService;
-    private final RegionService regionService;
     private final RequestInfoService requestInfoService;
     private final OrderService orderService;
 
@@ -34,19 +33,16 @@ public class TheaterLogicImpl implements TheaterLogic {
     private String newUserUrl;
 
     @Autowired
-    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RegionService regionService, RequestInfoService requestInfoService, OrderService orderService) {
+    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RequestInfoService requestInfoService, OrderService orderService) {
         this.theaterService = theaterService;
         this.publicInfoService = publicInfoService;
         this.showService = showService;
-        this.regionService = regionService;
         this.requestInfoService = requestInfoService;
         this.orderService = orderService;
     }
 
     @Override
     public synchronized Result<RequestInfo> register(UserTheater theater) {
-        Region region = regionService.findById(theater.getRegionId()).block();
-        if (region == null) return Result.fail("地区信息不存在");
         Theater t;
         String id;
         do {
@@ -78,7 +74,7 @@ public class TheaterLogicImpl implements TheaterLogic {
         if (publicInfos == null) publicInfos = new ArrayList<>();
         Boolean[] booleans = new Boolean[t.getSeatNumber()];
         Arrays.fill(booleans, true);
-        List<PublicInfo> saveResult = schedules.stream().map(s -> publicInfoService.save(new PublicInfo(theaterId, showId, s.toEpochMilli(), basePrice, priceTable, Arrays.asList(booleans))).block()).collect(Collectors.toList());
+        List<PublicInfo> saveResult = schedules.stream().map(s -> publicInfoService.save(new PublicInfo(theaterId, showId, s.toEpochMilli(), basePrice, Arrays.asList(booleans))).block()).collect(Collectors.toList());
         publicInfos.addAll(saveResult.stream().map(PublicInfo::getId).collect(Collectors.toList()));
         t.setPublicInfos(publicInfos);
         Theater result = theaterService.update(theaterId, t).block();

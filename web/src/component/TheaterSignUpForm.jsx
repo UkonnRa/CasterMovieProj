@@ -11,6 +11,8 @@ import {
     message
 } from 'antd';
 import { Level } from '../model/user';
+import 'react-area-linkage/dist/index.css'; // v2 or higher
+import {pcaa} from "area-data";
 import { AreaCascader } from 'react-area-linkage';
 import _ from 'lodash';
 import { Api } from '../api';
@@ -224,6 +226,7 @@ class TheaterSignUpForm extends React.Component {
                         ]
                     })(
                         <AreaCascader
+                            data={pcaa}
                             id="region"
                             defaultArea={['440000', '440300', '440305']}
                             placeholder={'场馆地点'}

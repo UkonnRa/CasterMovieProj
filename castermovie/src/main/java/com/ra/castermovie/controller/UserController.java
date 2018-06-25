@@ -4,6 +4,7 @@ import com.ra.castermovie.controller.vo.user.*;
 import com.ra.castermovie.logic.UserLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.User;
+import com.ra.castermovie.model.common.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +17,7 @@ public class UserController {
 
     @PostMapping(value = "register", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<User> register(@RequestBody RegisterVO vo) {
-        return userLogic.register(vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail());
-    }
-
-    @PostMapping(value = "validate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Result<User> validate(@RequestBody ValidateVO vo) {
-        return userLogic.validate(vo.getId());
-    }
-
-    @GetMapping(value = "validateCheck/{bString}", consumes = MediaType.ALL_VALUE)
-    Result<User> validateCheck(@PathVariable String bString) {
-        return userLogic.validateCheck(bString);
+        return userLogic.register(vo.getUsername(), vo.getPassword(), vo.getEmail());
     }
 
     @PostMapping(value = "cancelUser", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -36,7 +27,7 @@ public class UserController {
 
     @PostMapping(value = "update", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<User> update(@RequestBody UpdateVO vo) {
-        return userLogic.update(vo.getId(), new User(vo.getId(), vo.getCondition(), vo.getTimestamp(), vo.getName(), vo.getUsername(), vo.getPassword(), vo.getEmail(), vo.getRole(), vo.getState(), vo.getPaid(), vo.getLevel(), vo.getPoint()));
+        return userLogic.update(vo.getEmail(), new User(vo.getEmail(), Condition.EXISTING, System.currentTimeMillis(), vo.getUsername(), vo.getPassword(), vo.getRole(), vo.getState(), vo.getPaid(), vo.getLevel(), vo.getPoint()));
     }
 
     @PostMapping(value = "recharge", consumes = MediaType.APPLICATION_JSON_VALUE)

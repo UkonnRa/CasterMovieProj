@@ -38,7 +38,7 @@ public class RequestInfoLogicImpl implements RequestInfoLogic {
                     map.put("initMoney", 0);
                     Result http = HttpRestUtil.httpPost(newUserUrl, map, Result.class);
                     if (http.ifFailed()) return Result.fail(http.getMessage());
-                    if (theaterService.save(new Theater(info.getTheaterId(), info.getTheaterInfo())).block() == null)
+                    if (theaterService.save(new Theater(info.getTheaterInfo())).block() == null)
                         return Result.fail("剧院信息无法保存");
                     info.setState(State.FINISHED);
                 } else {

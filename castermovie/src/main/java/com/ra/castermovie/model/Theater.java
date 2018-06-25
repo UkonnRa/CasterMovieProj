@@ -20,9 +20,9 @@ import java.util.Map;
 @NoArgsConstructor
 @Data
 @Document(collection = "theater")
-// id is a seven-digit string
 public class Theater {
     @Id
+    // id is email
     private String id;
     @NotNull(message = "Theater::condition must not be null")
     private Condition condition;
@@ -58,8 +58,8 @@ public class Theater {
         this.discounts = discounts;
     }
 
-    public Theater(String id, UserTheater userTheater) {
-        this.id = id;
+    public Theater(UserTheater userTheater) {
+        this.id = userTheater.getId();
         this.condition = Condition.EXISTING;
         this.role = Role.THEATER;
         this.password = userTheater.getPassword();

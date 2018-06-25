@@ -16,11 +16,6 @@ public class TheaterServiceImpl implements TheaterService {
     private TheaterRepository theaterRepository;
 
     @Override
-    public Flux<Theater> findAllByName(String name) {
-        return Filters.filterDeleted(theaterRepository.findAllByName(name), Theater.class);
-    }
-
-    @Override
     public Flux<Theater> findAllByRegionId(Integer regionId) {
         return Filters.filterDeleted(theaterRepository.findAllByRegionId(regionId), Theater.class);
     }

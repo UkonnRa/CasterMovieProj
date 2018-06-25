@@ -20,13 +20,5 @@ public interface UserService {
 
     Flux<User> deleteAllById(Flux<String> ids);
 
-    Mono<User> deleteByUsername(String username);
-
-    Mono<User> findByUsername(String username);
-
-    Flux<User> findAllByName(String name);
-
-    Flux<User> findAllByEmail(String email);
-
     Flux<User> findAllByState(State state);
 }

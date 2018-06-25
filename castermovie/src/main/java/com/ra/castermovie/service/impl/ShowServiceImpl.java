@@ -25,11 +25,6 @@ public class ShowServiceImpl implements ShowService {
     private PublicInfoRepository publicInfoRepository;
 
     @Override
-    public Flux<Show> findAllByName(String name) {
-        return Filters.filterDeleted(showRepository.findAllByName(name), Show.class);
-    }
-
-    @Override
     public Flux<Show> findAllByGenreIn(List<Genre> genreList) {
         return Filters.filterDeleted(showRepository.findAllByGenreIn(genreList), Show.class);
     }

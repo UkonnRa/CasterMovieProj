@@ -119,31 +119,6 @@ public class TicketsManagerLogicImpl implements TicketsManagerLogic {
         return Result.succeed(list.stream().collect(Collectors.toMap(date -> date, date -> rx.getOrDefault(date, 0))));
     }
 
-    @Override
-    public Result<Integer> giveMoneyToTheater(String theaterId) {
-        Flux<Order> orders = orderService.findAllByTheaterId(theaterId).filter(o -> !o.getHasBeenGivenToTheater());
-        int money = orders.map(o -> {
-                    if (o.getActualCost() != null) return o.getActualCost();
-                    return 0;
-                }).reduce(0, (a, b) -> a + b).blockOptional().orElse(0);
-
-        if (money == 0) return Result.fail("款项已结清，无需分配");
-
-        Map<String, Object> map = new HashMap<String, Object>() {{
-            put("theaterId", theaterId);
-            put("money", money * theaterAbandonRate);
-        }};
-        Result result = HttpRestUtil.httpPost(giveMonetToTheaterUrl, map, Result.class);
-        if (result.ifSuccessful()) {
-            orders.collectList().block().forEach(o -> {
-                o.setHasBeenGivenToTheater(true);
-                Order resultOrder = orderService.update(o.getId(), o).block();
-            });
-            return Result.succeed(money);
-        }
-        return Result.fail(result.getMessage());
-    }
-
     private YearMonth milliToYearMonth(long milli) {
         return YearMonth.from(Instant.ofEpochMilli(milli).atZone(ZoneId.systemDefault()).toLocalDate());
     }

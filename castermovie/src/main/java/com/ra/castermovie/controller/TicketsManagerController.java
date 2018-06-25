@@ -37,10 +37,5 @@ public class TicketsManagerController {
         return ticketsManagerLogic.ticketsGrossIncomeMonthly(range);
     }
 
-    @PostMapping(value = "giveMoneyToTheater", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    Result<Integer>  giveMoneyToTheater(@RequestBody GiveMoneyVO vo) {
-        return ticketsManagerLogic.giveMoneyToTheater(vo.getTheaterId());
-    }
-
 
 }

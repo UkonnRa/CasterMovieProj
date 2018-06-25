@@ -27,7 +27,7 @@ public class TokenAuthenticationService {
         // 生成JWT
         String JWT = Jwts.builder()
                 .claim("role", role)
-                .claim("username", username)
+                .claim("email", username)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
@@ -52,12 +52,10 @@ public class TokenAuthenticationService {
             Claims claims = Jwts.parser()
                     // 验签
                     .setSigningKey(SECRET)
-                    // 去掉 Bearer
                     .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
                     .getBody();
 
-            // 拿用户名
-            String user = claims.get("username", String.class);
+            String user = claims.get("email", String.class);
 
             // 得到 权限（角色）
             List<GrantedAuthority> authorities =  AuthorityUtils.createAuthorityList(claims.get("role", String.class));

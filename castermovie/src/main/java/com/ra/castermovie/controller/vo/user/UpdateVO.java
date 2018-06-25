@@ -12,10 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateVO {
-    private String id;
-    private Condition condition;
-    private Long timestamp;
-    private String name;
     private String username;
     private String password;
     private String email;
