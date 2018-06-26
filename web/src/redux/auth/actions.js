@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { setAuthToken } from './util/setAuthToken';
-import { GET_CURRENT_USER, LOGIN, LOGOUT } from './types';
+import {setAuthToken} from './util/setAuthToken';
+import {GET_CURRENT_USER, LOGIN, LOGOUT} from './types';
 import _jwt from 'jsonwebtoken';
-import { Api } from '../../api';
-import { Role } from '../../model/user';
+import {Api} from '../../api';
+import {Role} from '../../model/user';
 
 export const getByJwt = () => {
     if (localStorage.getItem('jwt')) {
@@ -17,8 +17,9 @@ export const getByJwt = () => {
                 }
             });
         } else if (res.role === Role.THEATER) {
+            console.log(res);
             return axios.get(Api.theater.findById, {
-                params: { id: res.username },
+                params: { id: res.email },
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
                     Authorization: `Bearer ${localStorage.getItem('jwt')}`
@@ -27,7 +28,7 @@ export const getByJwt = () => {
         }
     } else
         return Promise.resolve({
-            data: { message: 'jwt不存在，请登录后重试' }
+            data: { message: '请登录' }
         });
 };
 
@@ -41,13 +42,13 @@ export const getCurrentUser = () => dispatch => {
     });
 };
 
-export function login({ username, password, role = Role.CUSTOMER }) {
+export function login({ email, password, role = Role.CUSTOMER }) {
     return dispatch =>
         axios({
             method: 'post',
             url: Api.user.login,
             data: {
-                username: username,
+                email: email,
                 password: password,
                 role: role
             },
@@ -55,6 +56,7 @@ export function login({ username, password, role = Role.CUSTOMER }) {
                 'Content-Type': 'application/json;charset=utf-8'
             }
         }).then(resp => {
+            console.log("login() ===> " + resp);
             if (resp.data.value) {
                 const token = resp.data.value;
                 setAuthToken(token);
@@ -64,7 +66,7 @@ export function login({ username, password, role = Role.CUSTOMER }) {
                         dispatch({ type: LOGIN, user: resp.data.value });
                         return resp;
                     })
-                    .catch(err => console.log(`===》 ${err}`));
+                    .catch(err => console.log(`===> ${err}`));
             } else {
                 return Promise.reject(`登录失败：${resp.data.message}`);
             }

@@ -19,8 +19,10 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -65,25 +67,8 @@ public class OrderLogicImpl implements OrderLogic {
 
         Theater theater = theaterService.findById(publicInfo.getTheaterId()).block();
         if (theater == null) return Result.fail("该剧院不存在");
-        if (seats.contains(null)) {
-            if (seats.size() > 12) return Result.fail("未选座的用户每单最多可买12张");
-            return newOrder(userId, publicInfoId, null, null, seats, coupnInfoId);
-        }
-        Map<Integer, Double> priceTable = publicInfo.getPriceTable();
-        List<Integer> keyList = new ArrayList<>(priceTable.keySet());
-        Collections.sort(keyList);
-        int originalCost = seats.stream().mapToInt(seat -> {
-            int i = 0;
-            if (keyList.get(keyList.size() - 1) <= seat) {
-                i = keyList.size() - 1;
-            } else {
-                for (; i < keyList.size() - 1; i++) {
-                    if (keyList.get(i) <= seat && seat < keyList.get(i + 1)) break;
-                }
-            }
-            double disc = priceTable.getOrDefault(keyList.get(i), 1.0);
-            return (int) (publicInfo.getBasePrice() * disc);
-        }).sum();
+
+        int originalCost = publicInfo.getBasePrice() * seats.size();
         int actualCost;
         if (user == null) {
             actualCost = originalCost;
@@ -126,16 +111,7 @@ public class OrderLogicImpl implements OrderLogic {
         if (p == null) return Result.fail("剧集信息不存在");
 
         List<Boolean> distri = p.getSeatDistribution();
-        if (seats.contains(null)) {
-            if (p.getSchedule() - System.currentTimeMillis() < TWO_WEEKS_MILLS) {
-                return Result.fail("开演前两周内禁止出售配坐票");
-            }
-            Collections.fill(seats, null);
-            Order o = new Order(userId, publicInfoId, originalCost == null? 0: originalCost, actualCost == null? 0: actualCost, seats,  couponInfoId);
-            o.setOrderState(OrderState.WAITING_DISTRI);
-            UserOrder result = orderToUserOrder(orderService.save(o));
-            return result == null ? Result.fail("数据库异常，请重试") : Result.succeed(result);
-        }
+
         Collections.sort(seats);
         if (seats.get(0) < 0 || seats.get(seats.size() - 1) >= distri.size()) return Result.fail("所选座位超出可选值");
         if (seats.stream().map(distri::get).reduce(true, (u, v) -> u && v)) {

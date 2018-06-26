@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Button, DatePicker, Form, Icon, InputNumber, TimePicker, Tooltip} from 'antd'
+import {Button, DatePicker, Form, Icon, InputNumber, TimePicker} from 'antd'
 import {Genre} from "../../model/show";
 import Moment from 'moment';
 import {extendMoment} from 'moment-range';
@@ -36,33 +36,13 @@ const ComponentTimeRangeForm = Form.create()(class extends Component {
         });
     };
 
-    seatPriceRemove = (k) => {
-        const {form} = this.props;
-        const seatPriceKeys = form.getFieldValue('seatPriceKeys');
-        if (seatPriceKeys.length === 1) {
-            return;
-        }
-        form.setFieldsValue({
-            seatPriceKeys: seatPriceKeys.filter(key => key !== k),
-        });
-    };
-
-    seatPriceAdd = () => {
-        const {form} = this.props;
-        const seatPriceKeys = form.getFieldValue('seatPriceKeys');
-        const nextKeys = seatPriceKeys.concat(this.uuid);
-        this.uuid++;
-        form.setFieldsValue({
-            seatPriceKeys: nextKeys,
-        });
-    };
 
     onSubmitClick =  (e) => {
         e.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const {basePrice, dateRange, timePicker, price, seat} = values;
-                if (!dateRange || !timePicker || !price || !seat) {
+                const {basePrice, dateRange, timePicker} = values;
+                if (!dateRange || !timePicker) {
                     alert("请完成信息输入后重试");
                     return
                 }
@@ -70,13 +50,10 @@ const ComponentTimeRangeForm = Form.create()(class extends Component {
                     Array.from(moment.range(moment(`${dateArray[0].format('YYYY-MM-DD')}T${timePicker[index].format('HH:mm:ss')}`, moment.ISO_8601), moment(`${dateArray[1].format('YYYY-MM-DD')}T${timePicker[index].format('HH:mm:ss')}`, moment.ISO_8601)).by('days'))
                 )).map(d => d.valueOf());
                 console.log(this.props.user);
-                let priceTable = {};
-                price.forEach((price, index) => priceTable[seat[index]] = price);
                 let newPublicInfoData = await axios.post(Api.theater.newPublicInfo, {
                         theaterId: this.props.user.id,
                         showId: this.props.selectedShow.id,
                         schedules,
-                        priceTable,
                         basePrice: Number(basePrice * 100)
                     }, {
                         headers: {
@@ -149,47 +126,6 @@ const ComponentTimeRangeForm = Form.create()(class extends Component {
             );
         });
 
-        getFieldDecorator('seatPriceKeys', {initialValue: []});
-        const seatPriceKeys = getFieldValue('seatPriceKeys');
-        const seatPriceFormItems = seatPriceKeys.map((k, index) => {
-            return (
-                <div key={`seatPrice${k}`}>
-                    <Form.Item
-                        {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                        label={index === 0 ? <span>输入座位
-                                <Tooltip title="该数值表示实行相应折扣的最小座位号">
-                                    <Icon type="question-circle-o"/>
-                                </Tooltip>
-                            </span> : ''}
-                        key={`seat${k}`}>
-                        {getFieldDecorator(`seat[${k}]`,
-                            {rules: [{required: true, message: '请输入座位或者删除该项'}]},
-                        )(
-                            <InputNumber min={0}/>
-                        )}
-                    </Form.Item>
-                    <Form.Item
-                        {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                        label={index === 0 ? <span>输入比率
-                                <Tooltip title="该数值表示相对于基础价格，该区间座位的价格的比率">
-                                    <Icon type="question-circle-o"/>
-                                </Tooltip>
-                            </span> : ''}
-                        key={`price${k}`}>
-                        {getFieldDecorator(`price[${k}]`,
-                            {rules: [{required: true, message: '请输入价格或者删除该项'}]},
-                        )(
-                            <InputNumber min={0} step={0.01}/>
-                        )}
-                    </Form.Item>
-                    {seatPriceKeys.length > 1 ? (<Icon
-                        className="dynamic-delete-button"
-                        type="minus-circle-o"
-                        disabled={seatPriceKeys.length === 1}
-                        onClick={() => this.seatPriceRemove(k)}/>) : null}
-                </div>
-            );
-        });
 
         return (
             <Form onSubmit={this.onSubmitClick}>
@@ -197,12 +133,6 @@ const ComponentTimeRangeForm = Form.create()(class extends Component {
                 <Form.Item {...formItemLayoutWithOutLabel}>
                     <Button type="dashed" onClick={this.dateTimeAdd} style={{width: '60%'}}>
                         <Icon type="plus"/> 添加区间
-                    </Button>
-                </Form.Item>
-                {seatPriceFormItems}
-                <Form.Item {...formItemLayoutWithOutLabel}>
-                    <Button type="dashed" onClick={this.seatPriceAdd} style={{width: '60%'}}>
-                        <Icon type="plus"/> 添加座位表项
                     </Button>
                 </Form.Item>
                 <Form.Item label={"基础价格"}>

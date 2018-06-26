@@ -80,6 +80,7 @@ class Examination extends Component {
     };
 
     handle = async (id, isPositive) => {
+        console.log(`isPositive: ${isPositive}`);
         const infoData = await axios.post(Api.requestInfo.handle, {
             requestInfoId: id,
             isPositive: isPositive,

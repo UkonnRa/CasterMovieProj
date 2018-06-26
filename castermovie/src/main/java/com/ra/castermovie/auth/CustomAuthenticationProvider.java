@@ -1,6 +1,5 @@
 package com.ra.castermovie.auth;
 
-import com.google.gson.Gson;
 import com.ra.castermovie.auth.model.GrantedAuthorityImpl;
 import com.ra.castermovie.model.Theater;
 import com.ra.castermovie.model.User;
@@ -35,7 +34,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.info("Authentication: {}", new Gson().toJson(authentication));
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
         Role role;

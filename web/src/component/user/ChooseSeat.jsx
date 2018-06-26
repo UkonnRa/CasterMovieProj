@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import axios from 'axios'
-import {Button, Checkbox, InputNumber, Radio, Select} from 'antd'
+import {Button, Checkbox, Select} from 'antd'
 import moment from 'moment'
 import {Api} from "../../api";
 import _ from 'lodash'
@@ -19,7 +19,6 @@ class ChooseSeat extends Component {
             selectedShow: {},
             selectedTheater: {},
             selectedSeats: [],
-            selectedMode: 'AUTO',
             autoNumber: 0,
             selectedCouponInfo: {discount: 1.0},
         }
@@ -78,17 +77,7 @@ class ChooseSeat extends Component {
         </Select>;
 
     component = () => {
-        if (this.state.selectedMode === 'AUTO') {
-            this.props.findAllByUserId(this.props.user.id);
-            return <div>
-                <InputNumber min={1} max={20} defaultValue={1}
-                             onChange={(e) => this.setState({autoNumber: e})}>座位数</InputNumber>
-                <br/>
-                <span>优惠券：{this.createCouponInfoSelect()}</span>
-                <br/>
-                <Button onClick={this.autoOrder}>自动配票</Button>
-            </div>
-        } else if (this.state.selectedMode === 'MANUAL') {
+
             return <div>
                 <Checkbox.Group onChange={this.onSeatClick}>
                     {_.chunk(this.props.selectedPublicInfo.seatDistribution, this.state.selectedTheater.seatPerLine).map((seatLine, outerIndex) =>
@@ -103,9 +92,7 @@ class ChooseSeat extends Component {
                 </Checkbox.Group>
                 <Button onClick={this.submit}>提交订单</Button>
             </div>
-        } else {
-            return <p>HOW CAN YOU GET THIS!!!</p>
-        }
+
     };
 
     autoOrder = () => {
@@ -136,11 +123,6 @@ class ChooseSeat extends Component {
         剧院：{this.state.selectedTheater.name}
         <br/>
         放映时间：{moment(this.props.selectedPublicInfo.schedule).format("YYYY-MM-DD HH:mm:ss")}
-        <br/>
-        <Radio.Group onChange={(e) => this.setState({selectedMode: e.target.value})} value={this.state.selectedMode}>
-            <Radio value={'AUTO'}>自动配票</Radio>
-            <Radio value={'MANUAL'}>手动选座</Radio>
-        </Radio.Group>
         <br/>
         {this.component()}
     </div>

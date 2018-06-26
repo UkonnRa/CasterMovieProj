@@ -31,11 +31,6 @@ public class PublicInfoServiceImpl implements PublicInfoService {
     }
 
     @Override
-    public Flux<PublicInfo> findAllByHasBeenDistributed(boolean hasBeenDist) {
-        return Filters.filterDeleted(publicInfoRepository.findAllByHasBeenDistributed(hasBeenDist), PublicInfo.class);
-    }
-
-    @Override
     public Flux<PublicInfo> findAll() {
         return Filters.filterDeleted(publicInfoRepository.findAll(), PublicInfo.class);
     }

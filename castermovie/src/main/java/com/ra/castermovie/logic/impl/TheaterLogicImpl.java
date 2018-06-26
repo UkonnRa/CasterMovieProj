@@ -43,16 +43,9 @@ public class TheaterLogicImpl implements TheaterLogic {
 
     @Override
     public synchronized Result<RequestInfo> register(UserTheater theater) {
-        Theater t;
-        String id;
-        do {
-            id = UUID.randomUUID().toString().toLowerCase();
-            id = id.substring(id.length() - 7);
-            t = theaterService.findById(id).block();
-        } while (t != null);
 
-        RequestInfo info = requestInfoService.save(new RequestInfo(id, com.ra.castermovie.model.requestinfo.State.CREATING, theater)).block();
-        if (info == null) return Result.fail("无法发布请求信息");
+        RequestInfo info = requestInfoService.save(new RequestInfo(theater.getId(), com.ra.castermovie.model.requestinfo.State.CREATING, theater)).block();
+        if (info == null) return Result.fail("无法申请剧院");
         else return Result.succeed(info);
     }
 
@@ -60,13 +53,12 @@ public class TheaterLogicImpl implements TheaterLogic {
     public Result<RequestInfo> update(String id, UserTheater userTheater) {
         Theater theater = theaterService.findById(id).block();
         if (theater == null) return Result.fail("剧院不存在");
-        Theater afterUpdate = userTheater.toTheater(theater);
         RequestInfo info = requestInfoService.save(new RequestInfo(id, com.ra.castermovie.model.requestinfo.State.UPDATING, userTheater)).block();
         return info == null ? Result.fail("无法发布请求信息") : Result.succeed(info);
     }
 
     @Override
-    public Result<Theater> newPublicInfo(String theaterId, String showId, List<Instant> schedules, Integer basePrice, Map<Integer, Double> priceTable) {
+    public Result<Theater> newPublicInfo(String theaterId, String showId, List<Instant> schedules, Integer basePrice) {
         Theater t = theaterService.findById(theaterId).block();
         Show show = showService.findById(showId).block();
         if (show == null) return Result.fail("该电影不存在");

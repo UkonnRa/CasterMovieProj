@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -33,10 +32,10 @@ public class PayLogicImpl implements PayLogic {
     public synchronized Result<String> payOrder(String userId, String theaterId, String orderId, Integer money) {
         User user = userService.findById(userId).block();
         User theater = userService.findById(theaterId).block();
-        User tickets = userService.findAllByRole(Role.TICKETS).collectList().block().get(0);
+        User tickets = userService.findById("tickets@tickets.com").block();
         if (user == null) return Result.fail("付款用户不存在");
         if (theater == null) return Result.fail("所选剧院不存在");
-        if (tickets == null) return Result.fail("Tickets官方账户错误");
+        if (tickets == null) return Result.fail("Tickets 官方账户错误");
         if (user.getMoney() < money) {
             PayInfo info = payInfoService.save(new PayInfo(userId, theaterId, orderId, money, State.PAY_FAILED)).block();
             return info == null ? Result.fail("数据库异常，无法记录转账信息") : Result.fail("用户余额不足");
@@ -84,7 +83,7 @@ public class PayLogicImpl implements PayLogic {
     @Override
     public Result<String> recharge(String userId, Integer money) {
         User user = userService.findById(userId).block();
-        User tickets = userService.findAllByRole(Role.TICKETS).collectList().block().get(0);
+        User tickets = userService.findById("tickets@tickets.com").block();
         if (user == null) return Result.fail("用户不存在");
         if (money <= 0) return Result.fail("充值金额应为正数");
         if (tickets == null) return Result.fail("管理员失效，请稍后重试");

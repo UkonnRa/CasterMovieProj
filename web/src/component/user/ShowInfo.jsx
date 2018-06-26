@@ -1,6 +1,10 @@
 import React, {Component} from 'react'
 import {Card, Divider, List, Modal, Select, Tabs} from 'antd'
 import {connect} from 'react-redux'
+
+import 'react-area-linkage/dist/index.css'; // v2 or higher
+import {pcaa} from "area-data";
+
 import {AreaCascader} from 'react-area-linkage';
 import {Genre} from "../../model/show";
 import {findAllPublicInfoByShowId, findById} from "../../redux/publicInfo/actions";
@@ -203,7 +207,7 @@ class ShowInfo extends Component {
             时长：{this.props.selectedShow.duration}
             <br/>
             <Divider dashed>抢票</Divider>
-            <AreaCascader placeholder={'选择区域，默认全选'} defaultArea={null} level={1} onChange={this.onRegionIdChange}/>
+            <AreaCascader data={pcaa} placeholder={'选择区域，默认全选'} defaultArea={null} level={1} onChange={this.onRegionIdChange}/>
             <Tabs defaultActiveKey="1">
                 {Array.from(moment.rangeFromInterval('d', 80).by('days')).map((date, index) =>
                     <Tabs.TabPane tab={date.format("YYYY-MM-DD")} key={index}>

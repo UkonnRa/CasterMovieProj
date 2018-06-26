@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
@@ -17,7 +16,6 @@ public class NewPublicInfoVO {
     private String showId;
     private List<Long> schedules;
     private Integer basePrice;
-    private Map<Integer, Double> priceTable;
 
     public List<Instant> getSchedules() {
         return schedules.stream().map(Instant::ofEpochMilli).collect(Collectors.toList());

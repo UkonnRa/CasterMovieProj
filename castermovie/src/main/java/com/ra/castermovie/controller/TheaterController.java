@@ -37,7 +37,7 @@ public class TheaterController {
 
     @PostMapping(value = "newPublicInfo", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Theater> newPublicInfo(@RequestBody NewPublicInfoVO vo) {
-        return theaterLogic.newPublicInfo(vo.getTheaterId(), vo.getShowId(), vo.getSchedules(), vo.getBasePrice(), vo.getPriceTable());
+        return theaterLogic.newPublicInfo(vo.getTheaterId(), vo.getShowId(), vo.getSchedules(), vo.getBasePrice());
     }
 
     @GetMapping(value = "findAllShowPlaying", consumes = MediaType.ALL_VALUE)

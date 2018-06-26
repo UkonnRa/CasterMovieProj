@@ -1,23 +1,14 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { Role } from '../model/user';
-import {
-    Form,
-    Input,
-    InputNumber,
-    Button,
-    Collapse,
-    Table,
-    message
-} from 'antd';
-import { Level } from '../model/user';
+import {connect} from 'react-redux';
+import {Level, Role} from '../model/user';
+import {Button, Collapse, Form, Input, InputNumber, message, Table} from 'antd';
 import 'react-area-linkage/dist/index.css'; // v2 or higher
 import {pcaa} from "area-data";
-import { AreaCascader } from 'react-area-linkage';
+import {AreaCascader} from 'react-area-linkage';
 import _ from 'lodash';
-import { Api } from '../api';
+import {Api} from '../api';
 import axios from 'axios';
-import { HIDE_ENTRY_FORM } from '../redux/entry/actions';
+import {HIDE_ENTRY_FORM} from '../redux/entry/actions';
 
 class TheaterSignUpForm extends React.Component {
     state = {
@@ -37,8 +28,9 @@ class TheaterSignUpForm extends React.Component {
 
             const args = {
                 role: Role.Theater,
-                name: values.theaterName,
+                email: values.theaterEmail,
                 password: values.theaterPassword,
+                name: values.theaterName,
                 regionId: Number(_.last(values.region)),
                 location: values.location,
                 seatNumber: values.seats,
@@ -154,8 +146,7 @@ class TheaterSignUpForm extends React.Component {
                 <Form.Item
                     label="场馆名称"
                     {...this.itemStatus('theaterName')}
-                    {...this.itemLayout}
-                >
+                    {...this.itemLayout}>
                     {getFieldDecorator('theaterName', {
                         rules: [
                             {
@@ -164,6 +155,24 @@ class TheaterSignUpForm extends React.Component {
                             }
                         ]
                     })(<Input placeholder="场馆名称" />)}
+                </Form.Item>
+
+                <Form.Item
+                    label="场馆邮箱"
+                    {...this.itemStatus('theaterEmail')}
+                    {...this.itemLayout}>
+                    {getFieldDecorator('theaterEmail', {
+                        rules: [
+                            {
+                                type: 'email',
+                                message: '场馆邮箱填写有误，请检查格式'
+                            },
+                            {
+                                required: true,
+                                message: '场馆邮箱不能为空'
+                            }
+                        ]
+                    })(<Input placeholder="场馆邮箱" />)}
                 </Form.Item>
 
                 <Form.Item

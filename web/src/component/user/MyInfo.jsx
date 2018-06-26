@@ -126,7 +126,7 @@ class MyInfo extends Component {
         return (
             <div>
                 <Divider>用户信息</Divider>
-                <p>用户名： {this.props.user.username}<Button style={{border: 'none'}}
+                <p>E-Mail：{this.props.user.id}<Button style={{border: 'none'}}
                                                           onClick={() => this.setState({changePassword: !this.state.changePassword})}>{this.state.changePassword ? "取消修改" : "修改密码"}</Button>
                 </p>
                 {!this.state.changePassword ? null :
@@ -153,7 +153,6 @@ class MyInfo extends Component {
                 } <Button style={{border: 'none'}}
                           onClick={() => this.setState({changeName: !this.state.changeName})}>{this.state.changeName ? "取消修改" : "修改昵称"}</Button>
                 </p>
-                <p>E-Mail：{this.props.user.email}</p>
                 <p>消费金额：{(this.props.user.paid / 100).toFixed(2)}元<Button onClick={this.showRecharge}>充值</Button></p>
                 <p>积分：{this.props.user.point}</p>
                 <p>等级：{Level[this.props.user.level].tag}</p>

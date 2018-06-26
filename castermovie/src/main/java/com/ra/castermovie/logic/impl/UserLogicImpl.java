@@ -34,10 +34,10 @@ public class UserLogicImpl implements UserLogic {
     }
 
     @Override
-    public Result<User> register(String username, String password, String email) {
+    public Result<User> register(String email, String name, String password) {
         User u;
         try {
-            u = userService.save(new User(username, password, email, Role.CUSTOMER)).block();
+            u = userService.save(new User(name, password, email, Role.CUSTOMER)).block();
         } catch (DuplicateKeyException e) {
             e.printStackTrace();
             return Result.fail("email 重复，请重试");
@@ -64,14 +64,20 @@ public class UserLogicImpl implements UserLogic {
         else {
             u.setState(State.REMOVED);
             u.setTimestamp(System.currentTimeMillis());
-            return update(id, u);
+            User user = userService.update(id, u).block();
+            return user == null ? Result.fail("数据库连接失败") : Result.succeed(user);
+
         }
     }
 
     @Override
-    public Result<User> update(String id, User user) {
-        User u = userService.update(id, user).block();
-        return u == null ? Result.fail("数据库连接失败") : Result.succeed(u);
+    public Result<User> update(String email, String name, String password) {
+        User user = userService.findById(email).map(u -> {
+            if (name != null && !name.equals("")) u.setName(name);
+            if (password != null&& !password.equals("")) u.setPassword(password);
+            return userService.update(email, u).block();
+        }).block();
+        return user == null ? Result.fail("数据库连接失败") : Result.succeed(user);
     }
 
     @Override
