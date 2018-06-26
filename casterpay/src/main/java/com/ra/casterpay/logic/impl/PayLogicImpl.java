@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -41,15 +42,15 @@ public class PayLogicImpl implements PayLogic {
             return info == null ? Result.fail("数据库异常，无法记录转账信息") : Result.fail("用户余额不足");
         }
 
-        Result<User> theaterResult = giveMoney(user, theater, orderId, money, State.PAY_OK);
-        if (theaterResult.ifSuccessful()) return Result.succeed(orderId);
-        else return Result.fail(theaterResult.getMessage());
-//        Result<User> theaterResult = giveMoney(user, theater, orderId, (int) (money * PayLogic.theaterGainRate), State.PAY_OK);
-//        Result<User> ticketsResult = giveMoney(user, tickets, orderId, (int) (money * (1 - PayLogic.theaterGainRate)), State.PAY_OK);
+//        Result<User> theaterResult = giveMoney(user, theater, orderId, money, State.PAY_OK);
+//        if (theaterResult.ifSuccessful()) return Result.succeed(orderId);
+//        else return Result.fail(theaterResult.getMessage());
+        Result<User> theaterResult = giveMoney(user, theater, orderId, (int) (money * PayLogic.theaterGainRate), State.PAY_OK);
+        Result<User> ticketsResult = giveMoney(user, tickets, orderId, (int) (money * (1 - PayLogic.theaterGainRate)), State.PAY_OK);
 
-//        if (theaterResult.ifSuccessful() && ticketsResult.ifSuccessful()) return Result.succeed(orderId);
-//        else
-//            return Result.fail(Stream.of(theaterResult.getMessage(), ticketsResult.getMessage()).filter(s -> !s.equals("")).reduce((u, v) -> u + "&&" + v).get());
+        if (theaterResult.ifSuccessful() && ticketsResult.ifSuccessful()) return Result.succeed(orderId);
+        else
+            return Result.fail(Stream.of(theaterResult.getMessage(), ticketsResult.getMessage()).filter(s -> !s.equals("")).reduce((u, v) -> u + "&&" + v).get());
     }
 
     @Override
