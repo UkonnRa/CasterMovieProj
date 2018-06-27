@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {Api} from "../../api";
 import moment from "moment/moment";
-import qs from "query-string";
+import qs from "qs";
 import axios from "axios/index";
 import ReactEcharts from 'echarts-for-react';
 import _ from "lodash";
