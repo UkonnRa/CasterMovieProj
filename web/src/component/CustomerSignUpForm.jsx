@@ -1,9 +1,9 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { Form, Icon, Input, Tooltip, Button, message } from 'antd';
-import { HIDE_ENTRY_FORM } from '../redux/entry/actions';
-import { login } from '../redux/auth/actions';
-import { Api } from '../api';
+import {connect} from 'react-redux';
+import {Button, Form, Icon, Input, message, Tooltip} from 'antd';
+import {HIDE_ENTRY_FORM} from '../redux/entry/actions';
+import {login} from '../redux/auth/actions';
+import {Api} from '../api';
 import axios from 'axios';
 
 class CustomerSignUpForm extends React.Component {
@@ -24,6 +24,8 @@ class CustomerSignUpForm extends React.Component {
                 return;
             }
 
+            console.log(values);
+
             message.loading('正在注册...', 0);
 
             axios
@@ -38,15 +40,15 @@ class CustomerSignUpForm extends React.Component {
                     if (resp.data.value) {
                         this.props.hideEntryForm();
 
-                        message.success(
-                            '注册成功, 我们已将确认邮件发送至您的邮箱！'
-                        );
+                        message.success('注册成功！');
                     } else {
                         message.error(resp.data.message);
                     }
                 })
-                .catch(err =>
-                    message.error('网络连接似乎出了问题，请稍后再试')
+                .catch(err => {
+                        console.log(err);
+                        message.error('网络连接似乎出了问题，请稍后再试');
+                    }
                 );
         });
     };
@@ -87,30 +89,20 @@ class CustomerSignUpForm extends React.Component {
 
         return (
             <Form layout="vertical" onSubmit={this.performSignUp}>
-                <Form.Item label="用户名" {...itemStatus('username')}>
-                    {getFieldDecorator('username', {
-                        rules: [
-                            {
-                                required: true,
-                                message: '用户名不能为空'
-                            }
-                        ]
-                    })(<Input placeholder="用户名" />)}
-                </Form.Item>
 
-                <Form.Item label="E-mail" {...itemStatus('email')}>
+                <Form.Item label="邮箱" {...itemStatus('email')}>
                     {getFieldDecorator('email', {
                         rules: [
                             {
                                 type: 'email',
-                                message: 'E-mail地址填写有误，请检查'
+                                message: '邮箱地址填写有误，请检查格式'
                             },
                             {
                                 required: true,
-                                message: 'E-mail地址不能为空'
+                                message: '邮箱地址不能为空'
                             }
                         ]
-                    })(<Input placeholder="E-mail地址" />)}
+                    })(<Input placeholder="邮箱地址" />)}
                 </Form.Item>
 
                 <Form.Item label="密码" {...itemStatus('password')}>

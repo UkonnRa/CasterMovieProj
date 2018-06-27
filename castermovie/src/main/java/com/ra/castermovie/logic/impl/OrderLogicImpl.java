@@ -16,9 +16,13 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -63,25 +67,8 @@ public class OrderLogicImpl implements OrderLogic {
 
         Theater theater = theaterService.findById(publicInfo.getTheaterId()).block();
         if (theater == null) return Result.fail("该剧院不存在");
-        if (seats.contains(null)) {
-            if (seats.size() > 12) return Result.fail("未选座的用户每单最多可买12张");
-            return newOrder(userId, publicInfoId, null, null, seats, coupnInfoId);
-        }
-        Map<Integer, Double> priceTable = publicInfo.getPriceTable();
-        List<Integer> keyList = new ArrayList<>(priceTable.keySet());
-        Collections.sort(keyList);
-        int originalCost = seats.stream().mapToInt(seat -> {
-            int i = 0;
-            if (keyList.get(keyList.size() - 1) <= seat) {
-                i = keyList.size() - 1;
-            } else {
-                for (; i < keyList.size() - 1; i++) {
-                    if (keyList.get(i) <= seat && seat < keyList.get(i + 1)) break;
-                }
-            }
-            double disc = priceTable.getOrDefault(keyList.get(i), 1.0);
-            return (int) (publicInfo.getBasePrice() * disc);
-        }).sum();
+
+        int originalCost = publicInfo.getBasePrice() * seats.size();
         int actualCost;
         if (user == null) {
             actualCost = originalCost;
@@ -124,16 +111,7 @@ public class OrderLogicImpl implements OrderLogic {
         if (p == null) return Result.fail("剧集信息不存在");
 
         List<Boolean> distri = p.getSeatDistribution();
-        if (seats.contains(null)) {
-            if (p.getSchedule() - System.currentTimeMillis() < TWO_WEEKS_MILLS) {
-                return Result.fail("开演前两周内禁止出售配坐票");
-            }
-            Collections.fill(seats, null);
-            Order o = new Order(userId, publicInfoId, originalCost == null? 0: originalCost, actualCost == null? 0: actualCost, seats,  couponInfoId);
-            o.setOrderState(OrderState.WAITING_DISTRI);
-            UserOrder result = orderToUserOrder(orderService.save(o));
-            return result == null ? Result.fail("数据库异常，请重试") : Result.succeed(result);
-        }
+
         Collections.sort(seats);
         if (seats.get(0) < 0 || seats.get(seats.size() - 1) >= distri.size()) return Result.fail("所选座位超出可选值");
         if (seats.stream().map(distri::get).reduce(true, (u, v) -> u && v)) {
@@ -211,81 +189,6 @@ public class OrderLogicImpl implements OrderLogic {
         return Result.fail(backMessage);
     }
 
-    @Override
-    public synchronized Result<Map<String, List<String>>> distributeTicket(String publicInfoId) {
-        Map<String, List<String>> result = new HashMap<String, List<String>>() {{
-            put(SUCCEED, new ArrayList<>());
-            put(FAILED, new ArrayList<>());
-        }};
-        PublicInfo publicInfo = publicInfoService.findById(publicInfoId).block();
-        if (publicInfo == null) return Result.fail("无法获得public info");
-        Theater theater = theaterService.findById(publicInfo.getTheaterId()).block();
-        if (theater == null) return Result.fail("无法获得剧院信息");
-        List<Boolean> seatDist = publicInfo.getSeatDistribution();
-        List<Integer> unseatIndexes = IntStream.range(0, seatDist.size())
-                .filter(seatDist::get)
-                .boxed().collect(Collectors.toList());
-        List<Integer> newAddedSeats = new ArrayList<>();
-        List<Order> undistri = orderService.findAllByPublicInfoId(publicInfoId)
-                .collectList().block().stream()
-                .filter(o -> o.getSeats().contains(null))
-                .collect(Collectors.toList());
-        for (int i = 0; i < undistri.size(); i++) {
-            Order tempOrder = undistri.get(i);
-            User user = userService.findById(tempOrder.getUserId()).block();
-            if (user == null) return Result.fail("用户信息获取失败");
-
-            int tempSeatSize = tempOrder.getSeats().size();
-            if (tempSeatSize <= unseatIndexes.size()) {
-                newAddedSeats.addAll(unseatIndexes.subList(0, tempSeatSize));
-                tempOrder.setSeats(unseatIndexes.subList(0, tempSeatSize));
-                unseatIndexes = unseatIndexes.subList(tempSeatSize, unseatIndexes.size());
-                List<String> succeed = result.getOrDefault(SUCCEED, new ArrayList<>());
-                succeed.add(tempOrder.getId());
-                result.put(SUCCEED, succeed);
-
-                Map<Integer, Double> priceTable = publicInfo.getPriceTable();
-                List<Integer> keyList = new ArrayList<>(priceTable.keySet());
-                Collections.sort(keyList);
-                int originalCost = tempOrder.getSeats().stream().mapToInt(seat -> {
-                    int ii = 0;
-                    if (keyList.get(keyList.size() - 1) <= seat) {
-                        ii = keyList.size() - 1;
-                    } else {
-                        for (; ii < keyList.size(); ii++) {
-                            if (keyList.get(ii) <= seat && seat < keyList.get(ii + 1)) break;
-                        }
-                    }
-                    double disc = priceTable.getOrDefault(keyList.get(ii), 1.0);
-                    return (int) (publicInfo.getBasePrice() * disc);
-                }).sum();
-                int actualCost = (int) (theater.getDiscounts().getOrDefault(user.getLevel(), 1.0) * originalCost);
-
-                tempOrder.setOriginalCost(originalCost);
-                tempOrder.setActualCost(actualCost);
-                Order afterSetPriceOrder = orderService.update(tempOrder.getId(), tempOrder).block();
-                Result<UserOrder> afterPay = payOrder(afterSetPriceOrder.getUserId(), afterSetPriceOrder.getUsedCouponInfoId(), afterSetPriceOrder.getId());
-                if (afterPay.ifFailed()) {
-                    List<String> failed = result.getOrDefault(FAILED, new ArrayList<>());
-                    failed.add(afterSetPriceOrder.getId());
-                    result.put(FAILED, failed);
-                }
-            } else {
-                List<String> failed = result.getOrDefault(FAILED, new ArrayList<>());
-                failed.add(tempOrder.getId());
-                result.put(FAILED, failed);
-            }
-        }
-
-        newAddedSeats.forEach(i -> seatDist.set(i, false));
-        publicInfo.setSeatDistribution(seatDist);
-        publicInfo.setHasBeenDistributed(true);
-        publicInfoService.update(publicInfoId, publicInfo).block();
-
-        result.get(FAILED).forEach(this::retrieveOrder);
-
-        return Result.succeed(result);
-    }
 
     @Override
     public synchronized Result<UserOrder> retrieveOrder(String orderId) {
@@ -378,6 +281,6 @@ public class OrderLogicImpl implements OrderLogic {
     }
 
     private List<UserOrder> orderToUserOrder(Flux<Order> mono) {
-        return mono.map(this::mapper).collectList().block();
+        return mono.map(this::mapper).collectList().block(Duration.ofMillis(1000));
     }
 }

@@ -4,6 +4,7 @@ import com.ra.castermovie.auth.model.JSONResult;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
+@Slf4j
 public class TokenAuthenticationService {
     private static final long EXPIRATION_TIME = 24 * 3_600_000;     // 1d
     private static final String TOKEN_PREFIX = "Bearer";        // Token前缀
@@ -27,7 +28,7 @@ public class TokenAuthenticationService {
         // 生成JWT
         String JWT = Jwts.builder()
                 .claim("role", role)
-                .claim("username", username)
+                .claim("email", username)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
@@ -46,18 +47,15 @@ public class TokenAuthenticationService {
     public static Authentication getAuthentication(HttpServletRequest request) {
         // 从Header中拿到token
         String token = request.getHeader(HEADER_STRING);
-
         if (token != null) {
             // 解析 Token
             Claims claims = Jwts.parser()
                     // 验签
                     .setSigningKey(SECRET)
-                    // 去掉 Bearer
                     .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
                     .getBody();
 
-            // 拿用户名
-            String user = claims.get("username", String.class);
+            String user = claims.get("email", String.class);
 
             // 得到 权限（角色）
             List<GrantedAuthority> authorities =  AuthorityUtils.createAuthorityList(claims.get("role", String.class));

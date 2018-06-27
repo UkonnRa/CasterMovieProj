@@ -12,6 +12,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserTheater {
+    private String id;
     private String password;
     private String name;
     private Integer regionId;
@@ -21,6 +22,7 @@ public class UserTheater {
     private Map<Level, Double> discounts;
 
     public Theater toTheater(Theater from) {
+        if (this.id != null) from.setId(this.id);
         if (this.password != null) from.setPassword(this.password);
         if (this.name != null) from.setName(this.name);
         if (this.regionId != null) from.setRegionId(this.regionId);

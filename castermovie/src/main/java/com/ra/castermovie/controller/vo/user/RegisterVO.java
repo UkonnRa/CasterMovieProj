@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterVO {
-    private String name;
-    private String username;
-    private String password;
     private String email;
+
+    private String name;
+
+    private String password;
 }

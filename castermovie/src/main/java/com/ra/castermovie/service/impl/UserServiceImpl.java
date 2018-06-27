@@ -17,27 +17,6 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public Flux<User> findAllByName(String name) {
-        return Filters.filterDeleted(
-                userRepository.findAllByName(name),
-                User.class);
-    }
-
-    @Override
-    public Mono<User> findByUsername(String username) {
-        return Filters.filterDeleted(
-                userRepository.findByUsername(username),
-                User.class);
-    }
-
-    @Override
-    public Flux<User> findAllByEmail(String email) {
-        return Filters.filterDeleted(
-                userRepository.findAllByEmail(email),
-                User.class);
-    }
-
-    @Override
     public Flux<User> findAllByState(State state) {
         return Filters.filterDeleted(
                 userRepository.findAllByState(state),
@@ -58,7 +37,6 @@ public class UserServiceImpl implements UserService {
                 User.class);
     }
 
-    // unique index: username
     @Override
     public Mono<User> save(User user) {
         return userRepository.save(user);
@@ -87,13 +65,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public Flux<User> deleteAllById(Flux<String> ids) {
         return ids.flatMap(this::deleteById);
-    }
-
-    @Override
-    public Mono<User> deleteByUsername(String username) {
-        return findByUsername(username).flatMap(u -> {
-            u.setCondition(Condition.DELETED);
-            return update(u.getId(), u);
-        });
     }
 }

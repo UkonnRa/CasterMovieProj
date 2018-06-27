@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {Button, Form, Icon, Input, InputNumber, Modal, Tooltip} from 'antd'
+import 'react-area-linkage/dist/index.css'; // v2 or higher
+import {pcaa} from "area-data";
 import {AreaCascader} from 'react-area-linkage';
 import {Level} from "../../model/user";
 import _ from "lodash";
@@ -129,7 +131,7 @@ const UpdateForm = Form.create()(
                         {getFieldDecorator('regionId', {
                             initialValue: ['440000', '440300', '440305'],
                             rules: [{type: 'array', required: true, message: '请选择场馆地点'}],
-                        })(<AreaCascader placeholder={'请选择场馆地点'} level={1}/>)}
+                        })(<AreaCascader data={pcaa} placeholder={'请选择场馆地点'} level={1}/>)}
                     </Form.Item>
                     <Form.Item label="具体地址">
                         {getFieldDecorator('location', {

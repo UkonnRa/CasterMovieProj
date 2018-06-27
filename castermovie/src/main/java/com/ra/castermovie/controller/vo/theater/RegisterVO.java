@@ -14,6 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterVO {
+    private String email;
     private String password;
     private String name;
     private Integer regionId;
@@ -28,6 +29,7 @@ public class RegisterVO {
             map.put(Level.values()[i], discounts.get(i));
         }
         return new UserTheater(
+                email,
                 password,
                 name,
                 regionId,

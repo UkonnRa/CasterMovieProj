@@ -26,7 +26,6 @@ public class TheaterLogicImpl implements TheaterLogic {
     private final TheaterService theaterService;
     private final PublicInfoService publicInfoService;
     private final ShowService showService;
-    private final RegionService regionService;
     private final RequestInfoService requestInfoService;
     private final OrderService orderService;
 
@@ -34,29 +33,19 @@ public class TheaterLogicImpl implements TheaterLogic {
     private String newUserUrl;
 
     @Autowired
-    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RegionService regionService, RequestInfoService requestInfoService, OrderService orderService) {
+    public TheaterLogicImpl(TheaterService theaterService, PublicInfoService publicInfoService, ShowService showService, RequestInfoService requestInfoService, OrderService orderService) {
         this.theaterService = theaterService;
         this.publicInfoService = publicInfoService;
         this.showService = showService;
-        this.regionService = regionService;
         this.requestInfoService = requestInfoService;
         this.orderService = orderService;
     }
 
     @Override
     public synchronized Result<RequestInfo> register(UserTheater theater) {
-        Region region = regionService.findById(theater.getRegionId()).block();
-        if (region == null) return Result.fail("地区信息不存在");
-        Theater t;
-        String id;
-        do {
-            id = UUID.randomUUID().toString().toLowerCase();
-            id = id.substring(id.length() - 7);
-            t = theaterService.findById(id).block();
-        } while (t != null);
 
-        RequestInfo info = requestInfoService.save(new RequestInfo(id, com.ra.castermovie.model.requestinfo.State.CREATING, theater)).block();
-        if (info == null) return Result.fail("无法发布请求信息");
+        RequestInfo info = requestInfoService.save(new RequestInfo(theater.getId(), com.ra.castermovie.model.requestinfo.State.CREATING, theater)).block();
+        if (info == null) return Result.fail("无法申请剧院");
         else return Result.succeed(info);
     }
 
@@ -64,13 +53,12 @@ public class TheaterLogicImpl implements TheaterLogic {
     public Result<RequestInfo> update(String id, UserTheater userTheater) {
         Theater theater = theaterService.findById(id).block();
         if (theater == null) return Result.fail("剧院不存在");
-        Theater afterUpdate = userTheater.toTheater(theater);
         RequestInfo info = requestInfoService.save(new RequestInfo(id, com.ra.castermovie.model.requestinfo.State.UPDATING, userTheater)).block();
         return info == null ? Result.fail("无法发布请求信息") : Result.succeed(info);
     }
 
     @Override
-    public Result<Theater> newPublicInfo(String theaterId, String showId, List<Instant> schedules, Integer basePrice, Map<Integer, Double> priceTable) {
+    public Result<Theater> newPublicInfo(String theaterId, String showId, List<Instant> schedules, Integer basePrice) {
         Theater t = theaterService.findById(theaterId).block();
         Show show = showService.findById(showId).block();
         if (show == null) return Result.fail("该电影不存在");
@@ -78,7 +66,7 @@ public class TheaterLogicImpl implements TheaterLogic {
         if (publicInfos == null) publicInfos = new ArrayList<>();
         Boolean[] booleans = new Boolean[t.getSeatNumber()];
         Arrays.fill(booleans, true);
-        List<PublicInfo> saveResult = schedules.stream().map(s -> publicInfoService.save(new PublicInfo(theaterId, showId, s.toEpochMilli(), basePrice, priceTable, Arrays.asList(booleans))).block()).collect(Collectors.toList());
+        List<PublicInfo> saveResult = schedules.stream().map(s -> publicInfoService.save(new PublicInfo(theaterId, showId, s.toEpochMilli(), basePrice, Arrays.asList(booleans))).block()).collect(Collectors.toList());
         publicInfos.addAll(saveResult.stream().map(PublicInfo::getId).collect(Collectors.toList()));
         t.setPublicInfos(publicInfos);
         Theater result = theaterService.update(theaterId, t).block();
