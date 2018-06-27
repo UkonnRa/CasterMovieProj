@@ -72,12 +72,4 @@ public class MongoScheduler {
                     couponInfoService.update(info.getId(), info).block();
                 });
     }
-
-    @Scheduled(fixedRate = 60000)
-    private void scanDistributeTicket() {
-        publicInfoService.findAllByHasBeenDistributed(false)
-                .filter(p -> p.getSchedule() - System.currentTimeMillis() <= OrderLogic.TWO_WEEKS_MILLS)
-                .collectList().block()
-                .forEach(p -> orderLogic.distributeTicket(p.getId()));
-    }
 }

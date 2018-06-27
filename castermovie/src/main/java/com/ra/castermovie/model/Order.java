@@ -26,8 +26,10 @@ public class Order {
     @NotNull(message = "Order::publicInfoId must not be null")
     private String publicInfoId;
     @NotNull(message = "Order::originalCost must not be null")
+    // seat cost * user-level's percent
     private Integer originalCost;
     @NotNull(message = "Order::actualCost must not be null")
+    // seat cost * user-level's percent * coupon's percent
     private Integer actualCost;
     @NotNull(message = "Order::createTime must not be null")
     private Long createTime;
@@ -35,8 +37,6 @@ public class Order {
     private OrderState orderState;
     @NotNull(message = "Order::seat must not be null")
     private List<Integer> seats;
-    @NotNull(message = "Order::hasBeenGivenToTheater must not be null")
-    private Boolean hasBeenGivenToTheater;
     private String usedCouponInfoId;
 
     public Order(String userId, String publicInfoId, Integer originalCost, Integer actualCost, List<Integer> seats, String usedCouponInfoId) {
@@ -50,7 +50,6 @@ public class Order {
         this.createTime = System.currentTimeMillis();
         this.orderState = OrderState.UNPAID;
         this.seats = seats;
-        this.hasBeenGivenToTheater = false;
         this.usedCouponInfoId = usedCouponInfoId;
     }
 }

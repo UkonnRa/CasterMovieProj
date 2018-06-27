@@ -1,8 +1,8 @@
 import React from 'react';
-import { login } from '../redux/auth/actions';
-import { connect } from 'react-redux';
-import { HIDE_ENTRY_FORM } from '../redux/entry/actions';
-import { Form, Icon, Input, Button, message } from 'antd';
+import {login} from '../redux/auth/actions';
+import {connect} from 'react-redux';
+import {HIDE_ENTRY_FORM} from '../redux/entry/actions';
+import {Button, Form, Icon, Input, message} from 'antd';
 
 class Login extends React.Component {
     componentDidMount() {
@@ -30,7 +30,10 @@ class Login extends React.Component {
                     message.success(`登录成功! 您好, ${res.data.value.name}。`);
                     this.props.hideEntryForm();
                 })
-                .catch(err => message.error(err));
+                .catch(err => {
+                    console.log(err);
+                    message.error(err);
+                });
         });
     };
 
@@ -55,9 +58,9 @@ class Login extends React.Component {
                 onSubmit={this.performSignin}
                 hideRequiredMark={true}
             >
-                <Form.Item label="用户名" {...itemStatus('username')}>
-                    {getFieldDecorator('username', {
-                        rules: [{ required: true, message: '用户名不能为空' }]
+                <Form.Item label="邮箱" {...itemStatus('email')}>
+                    {getFieldDecorator('email', {
+                        rules: [{ required: true, message: '邮箱不能为空' }]
                     })(
                         <Input
                             prefix={
@@ -66,7 +69,7 @@ class Login extends React.Component {
                                     style={{ color: 'rgba(0,0,0,.25)' }}
                                 />
                             }
-                            placeholder="请输入用户名"
+                            placeholder="请输入邮箱"
                         />
                     )}
                 </Form.Item>

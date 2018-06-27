@@ -15,8 +15,8 @@ public class UserOrder {
     private String theaterName;
     private String theaterId;
     private String showName;
-    private String username;
-    private String payUsername;
+    private String email;
+    private String payEmail;
     private Integer originalCost;
     private Integer actualCost;
     private Long createTime;
@@ -30,8 +30,8 @@ public class UserOrder {
         this.theaterName = theater.getName();
         this.theaterId = theater.getId();
         this.showName = show.getName();
-        this.username = me == null ? null : me.getUsername();
-        this.payUsername = payUser == null? null: payUser.getUsername();
+        this.email = me == null ? null : me.getId();
+        this.payEmail = payUser == null? null: payUser.getId();
         this.originalCost = order.getOriginalCost();
         this.actualCost = order.getActualCost();
         this.createTime = order.getCreateTime();

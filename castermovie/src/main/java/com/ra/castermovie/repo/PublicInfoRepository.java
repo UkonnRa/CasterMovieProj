@@ -9,8 +9,6 @@ public interface PublicInfoRepository extends ReactiveMongoRepository<PublicInfo
 
     Flux<PublicInfo> findAllByShowId(String showId);
 
-    Flux<PublicInfo> findAllBySchedule(Long localDateTime);
-
-    Flux<PublicInfo> findAllByHasBeenDistributed(boolean hasBeenDist);
+    Flux<PublicInfo> findAllBySchedule(Long schedule);
 
 }

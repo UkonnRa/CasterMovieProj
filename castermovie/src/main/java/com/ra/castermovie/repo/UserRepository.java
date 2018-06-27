@@ -9,13 +9,6 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface UserRepository extends ReactiveMongoRepository<User, String> {
-    Mono<User> findByUsername(String username);
-
-    Flux<User> findAllByName(String name);
-
-    Flux<User> findAllByEmail(String email);
 
     Flux<User> findAllByState(State state);
-
-    Mono<User> deleteByUsername(String username);
 }

@@ -6,6 +6,8 @@ import {RouteTable} from "../../route";
 import axios from 'axios'
 import {Api} from "../../api";
 import {selectTheater} from "../../redux/theater/actions";
+import 'react-area-linkage/dist/index.css'; // v2 or higher
+import {pcaa} from "area-data";
 import {AreaCascader} from 'react-area-linkage';
 import {route} from "../../redux/ui/actions";
 
@@ -93,7 +95,7 @@ class TheaterList extends Component {
     render() {
         const {theaterList} = this.state;
         return <div>
-            <AreaCascader placeholder={'选择区域，默认全选'} level={1} onChange={this.onRegionIdChange}/>
+            <AreaCascader data={pcaa} placeholder={'选择区域，默认全选'} level={1} onChange={this.onRegionIdChange}/>
 
             <List
                 dataSource={theaterList.slice(this.state.start, this.state.end)}

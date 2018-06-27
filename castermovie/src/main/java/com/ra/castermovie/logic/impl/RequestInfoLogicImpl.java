@@ -8,6 +8,7 @@ import com.ra.castermovie.model.requestinfo.State;
 import com.ra.castermovie.service.RequestInfoService;
 import com.ra.castermovie.service.TheaterService;
 import com.ra.castermovie.util.HttpRestUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class RequestInfoLogicImpl implements RequestInfoLogic {
     @Autowired
@@ -28,6 +30,7 @@ public class RequestInfoLogicImpl implements RequestInfoLogic {
     @Override
     public Result<RequestInfo> handle(String requestInfoId, boolean isPositive) {
         RequestInfo info = requestInfoService.findById(requestInfoId).block();
+        log.info("RequestInfo info: {}, isPositive: {}", info, isPositive);
         if (info == null) return Result.fail("该请求信息不存在");
         switch (info.getState()) {
             case CREATING:
@@ -38,7 +41,7 @@ public class RequestInfoLogicImpl implements RequestInfoLogic {
                     map.put("initMoney", 0);
                     Result http = HttpRestUtil.httpPost(newUserUrl, map, Result.class);
                     if (http.ifFailed()) return Result.fail(http.getMessage());
-                    if (theaterService.save(new Theater(info.getTheaterId(), info.getTheaterInfo())).block() == null)
+                    if (theaterService.save(new Theater(info.getTheaterInfo())).block() == null)
                         return Result.fail("剧院信息无法保存");
                     info.setState(State.FINISHED);
                 } else {
