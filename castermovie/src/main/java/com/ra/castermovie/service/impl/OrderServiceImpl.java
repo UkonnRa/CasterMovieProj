@@ -7,6 +7,7 @@ import com.ra.castermovie.repo.OrderRepository;
 import com.ra.castermovie.repo.PublicInfoRepository;
 import com.ra.castermovie.service.OrderService;
 import com.ra.castermovie.service.util.Filters;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
@@ -24,7 +26,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Flux<Order> findAllByUserId(String userId) {
-        return Filters.filterDeleted(orderRepository.findAllByUserId(userId), Order.class);
+        return Filters.filterDeleted(orderRepository.findAllByUserId(userId), Order.class).doOnError((err) -> log.info("err in OrderServiceImpl.findAllByUserId: {}", err));
     }
 
     @Override
