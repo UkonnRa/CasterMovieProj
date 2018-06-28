@@ -35,7 +35,6 @@ public class ShowServiceImpl implements ShowService {
         List<Show> shows1 = showRepository.findAllByGenreIn(genreList).collectList().block();
         List<Show> shows2 = shows1.stream().filter(show -> {
             Long maxTime = publicInfoRepository.findAllByShowId(show.getId()).map(PublicInfo::getSchedule).sort().blockLast();
-            log.info("maxTime ===> {}", maxTime);
             maxTime = maxTime == null ? Long.MIN_VALUE : maxTime;
             return startTime < maxTime;
         }).collect(Collectors.toList());
