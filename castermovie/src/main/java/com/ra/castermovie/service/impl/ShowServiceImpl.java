@@ -15,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,15 +37,16 @@ public class ShowServiceImpl implements ShowService {
 
     @Override
     public Flux<Show> findAllByGenreInAndStartTime(List<Genre> genreList, Long startTime) {
-        Flux<Show> shows = Filters.filterDeleted(showRepository.findAllByGenreIn(genreList), Show.class);
-        return shows.filter(show -> {
-            Long maxTime = publicInfoRepository.findAllByShowId(show.getId())
-                    .map(PublicInfo::getSchedule)
-                    .sort(Long::compare)
-                    .blockLast();
+        List<Show> shows1 = showRepository.findAllByGenreIn(genreList).collectList().block();
+        List<Show> shows2 = shows1.stream().filter(show -> {
+            Long maxTime = publicInfoRepository.findAllByShowId(show.getId()).map(PublicInfo::getSchedule).sort().blockLast();
+            log.info("maxTime ===> {}", maxTime);
             maxTime = maxTime == null ? Long.MIN_VALUE : maxTime;
             return startTime < maxTime;
-        });
+        }).collect(Collectors.toList());
+
+
+        return Flux.fromIterable(shows2);
     }
 
     @Override
