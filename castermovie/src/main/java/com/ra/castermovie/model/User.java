@@ -8,11 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +18,8 @@ import java.util.UUID;
 @Document(collection = "user")
 public class User {
     @Id
+    @NotNull(message = "User::id must not be null")
+    // id is email
     private String id;
     @NotNull(message = "User::condition must not be null")
     private Condition condition;
@@ -27,13 +27,8 @@ public class User {
     private Long timestamp;
     @NotNull(message = "User::name must not be null")
     private String name;
-    @NotNull(message = "User::username must not be null")
-    @Indexed(unique = true)
-    private String username;
     @NotNull(message = "User::password must not be null")
     private String password;
-    @NotNull(message = "User::email must not be null")
-    private String email;
     @NotNull(message = "User::role must not be null")
     private Role role;
     @NotNull(message = "User::state must not be null")
@@ -46,16 +41,14 @@ public class User {
     @NotNull(message = "User::point must not be null")
     private Integer point;
 
-    public User(String name, String username, String password, String email, Role role) {
-        this.id = UUID.randomUUID().toString();
+    public User(String name, String password, String email, Role role) {
+        this.id = email;
         this.condition = Condition.EXISTING;
         this.timestamp = System.currentTimeMillis();
         this.name = name;
-        this.username = username;
         this.password = password;
-        this.email = email;
         this.role = role;
-        this.state = State.UNCHECKED;
+        this.state = State.REGISTERED;
         this.paid = 0;
         this.level = Level.LEVEL1;
         this.point = 0;

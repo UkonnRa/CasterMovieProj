@@ -15,6 +15,4 @@ public interface TicketsManagerLogic {
     Result<Integer> userExistingNumber();
 
     Result<Map<String, Integer>> ticketsGrossIncomeMonthly(List<String> range);
-
-    Result<Integer> giveMoneyToTheater(String theaterId);
 }

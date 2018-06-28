@@ -33,24 +33,24 @@ public class PayLogicImpl implements PayLogic {
     public synchronized Result<String> payOrder(String userId, String theaterId, String orderId, Integer money) {
         User user = userService.findById(userId).block();
         User theater = userService.findById(theaterId).block();
-        User tickets = userService.findAllByRole(Role.TICKETS).collectList().block().get(0);
+        User tickets = userService.findById("tickets@tickets.com").block();
         if (user == null) return Result.fail("付款用户不存在");
         if (theater == null) return Result.fail("所选剧院不存在");
-        if (tickets == null) return Result.fail("Tickets官方账户错误");
+        if (tickets == null) return Result.fail("Tickets 官方账户错误");
         if (user.getMoney() < money) {
             PayInfo info = payInfoService.save(new PayInfo(userId, theaterId, orderId, money, State.PAY_FAILED)).block();
             return info == null ? Result.fail("数据库异常，无法记录转账信息") : Result.fail("用户余额不足");
         }
 
-        Result<User> theaterResult = giveMoney(user, theater, orderId, money, State.PAY_OK);
-        if (theaterResult.ifSuccessful()) return Result.succeed(orderId);
-        else return Result.fail(theaterResult.getMessage());
-//        Result<User> theaterResult = giveMoney(user, theater, orderId, (int) (money * PayLogic.theaterGainRate), State.PAY_OK);
-//        Result<User> ticketsResult = giveMoney(user, tickets, orderId, (int) (money * (1 - PayLogic.theaterGainRate)), State.PAY_OK);
+//        Result<User> theaterResult = giveMoney(user, theater, orderId, money, State.PAY_OK);
+//        if (theaterResult.ifSuccessful()) return Result.succeed(orderId);
+//        else return Result.fail(theaterResult.getMessage());
+        Result<User> theaterResult = giveMoney(user, theater, orderId, (int) (money * PayLogic.theaterGainRate), State.PAY_OK);
+        Result<User> ticketsResult = giveMoney(user, tickets, orderId, (int) (money * (1 - PayLogic.theaterGainRate)), State.PAY_OK);
 
-//        if (theaterResult.ifSuccessful() && ticketsResult.ifSuccessful()) return Result.succeed(orderId);
-//        else
-//            return Result.fail(Stream.of(theaterResult.getMessage(), ticketsResult.getMessage()).filter(s -> !s.equals("")).reduce((u, v) -> u + "&&" + v).get());
+        if (theaterResult.ifSuccessful() && ticketsResult.ifSuccessful()) return Result.succeed(orderId);
+        else
+            return Result.fail(Stream.of(theaterResult.getMessage(), ticketsResult.getMessage()).filter(s -> !s.equals("")).reduce((u, v) -> u + "&&" + v).get());
     }
 
     @Override
@@ -84,7 +84,7 @@ public class PayLogicImpl implements PayLogic {
     @Override
     public Result<String> recharge(String userId, Integer money) {
         User user = userService.findById(userId).block();
-        User tickets = userService.findAllByRole(Role.TICKETS).collectList().block().get(0);
+        User tickets = userService.findById("tickets@tickets.com").block();
         if (user == null) return Result.fail("用户不存在");
         if (money <= 0) return Result.fail("充值金额应为正数");
         if (tickets == null) return Result.fail("管理员失效，请稍后重试");

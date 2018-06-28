@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HandleVO {
     private String requestInfoId;
-    private boolean isPositive;
+    private String isPositive;
 }

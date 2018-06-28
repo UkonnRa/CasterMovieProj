@@ -1,6 +1,5 @@
 package com.ra.castermovie.auth;
 
-import com.google.gson.Gson;
 import com.ra.castermovie.auth.model.GrantedAuthorityImpl;
 import com.ra.castermovie.model.Theater;
 import com.ra.castermovie.model.User;
@@ -35,8 +34,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.info("Authentication: {}", new Gson().toJson(authentication));
-        String name = authentication.getName();
+        String email = authentication.getName();
         String password = authentication.getCredentials().toString();
         Role role;
         try {
@@ -46,25 +44,25 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         }
 
         if (role == Role.CUSTOMER || role == Role.TICKETS) {
-            User user = userService.findByUsername(name).block();
+            User user = userService.findById(email).block();
             if (user == null || (user.getRole() != Role.CUSTOMER && user.getRole() != Role.TICKETS)) {
                 throw new BadCredentialsException("用户不存在");
-            } else if (!user.getUsername().equals(name) || !user.getPassword().equals(password)) {
+            } else if (!user.getId().equals(email) || !user.getPassword().equals(password)) {
                 throw new BadCredentialsException("用户名或密码错误");
             } else if (!user.getState().equals(State.REGISTERED)) {
                 throw new BadCredentialsException("用户处于`" + user.getState().tip + "`状态， 无法登录");
             }
         } else if (Role.THEATER == role) {
-            Theater theater = theaterService.findById(name).block();
+            Theater theater = theaterService.findById(email).block();
             if (theater == null) {
                 throw new BadCredentialsException("用户不存在");
-            } else if (!theater.getId().equals(name) || !theater.getPassword().equals(password)) {
+            } else if (!theater.getId().equals(email) || !theater.getPassword().equals(password)) {
                 throw new BadCredentialsException("用户名或密码错误");
             }
         }
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new GrantedAuthorityImpl(role.toString()));
-        return new UsernamePasswordAuthenticationToken(name, password, authorities);
+        return new UsernamePasswordAuthenticationToken(email, password, authorities);
 
     }
 

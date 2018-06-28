@@ -18,7 +18,7 @@ public interface TheaterLogic {
 
     Result<RequestInfo> update(String id, UserTheater theater);
 
-    Result<Theater> newPublicInfo(String theaterId, String showId, List<Instant> schedules, Integer basePrice, Map<Integer, Double> priceTable);
+    Result<Theater> newPublicInfo(String theaterId, String showId, List<Instant> schedules, Integer basePrice);
 
     Result<List<PublicInfo>> findAllShowPlaying(String theaterId, Pair<Instant, Instant> timePair, List<Genre> genreList);
 

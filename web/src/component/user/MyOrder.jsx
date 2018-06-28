@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Divider, List, Pagination, Modal} from 'antd'
+import {Divider, List, Modal, Pagination} from 'antd'
 import {connect} from 'react-redux'
 import {findAllByUserId, findById} from "../../redux/order/actions";
 import _ from 'lodash'
@@ -74,16 +74,18 @@ class MyOrder extends Component {
                 <Divider>订单</Divider>
                 <List
                     dataSource={this.props.orders.sort((a, b) => - a.createTime + b.createTime).slice(this.state.start, this.state.end)}
-                    renderItem={item => (
+                    renderItem={item => {
+                        console.log(item);
+                        return (
                         <List.Item key={item.id} actions={this.setListItemActions(item.id)}>
                             <List.Item.Meta
                                 title={item.showName}
                                 description={new Date(item.startTime).toLocaleString()}/>
                             剧院名称：{item.theaterName}
                             <br/>
-                            付款用户：{item.payUsername}
+                            付款用户：{item.payEmail}
                             <br/>
-                            实际金额：{(item.actualCost / 100.0).toFixed(2)}
+                            实际金额：{(item.originalCost / 100.0).toFixed(2)}
                             <br/>
                             创建时间：{new Date(item.createTime).toLocaleString()}
                             <br/>
@@ -91,7 +93,7 @@ class MyOrder extends Component {
                             <br/>
                             使用优惠券：{item.couponName == null? "[未使用优惠券]": item.couponName}
                         </List.Item>
-                    )}/>
+                    )}}/>
                 <Pagination current={this.state.currPage} total={this.props.orders.length} pageSize={this.pagination.pageSize} onChange={this.pagination.onChange} />
             </div>
         )

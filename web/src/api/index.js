@@ -1,11 +1,9 @@
-const HTTP_HEADER = 'http://106.15.92.114:8080/api/castermovie';
+const HTTP_HEADER = 'http://localhost:8080/api/castermovie';
 
 export const Api = {
     user: {
         register: `${HTTP_HEADER}/user/register`,
-        validate: `${HTTP_HEADER}/user/validate`,
-        validateCheck: `${HTTP_HEADER}/user/validateCheck`,
-        cancelUser: `${HTTP_HEADER}/user/cancelUser`,
+         cancelUser: `${HTTP_HEADER}/user/cancelUser`,
         update: `${HTTP_HEADER}/user/update`,
         getByJwt: `${HTTP_HEADER}/user/getByJwt`,
         login: `${HTTP_HEADER}/user/login`,

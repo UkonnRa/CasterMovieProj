@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ShowService extends BaseService<Show> {
-    Flux<Show> findAllByName(String name);
 
     Flux<Show> findAllByGenreIn(List<Genre> genreList);
 

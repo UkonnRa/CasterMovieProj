@@ -4,7 +4,7 @@ import ReactEcharts from 'echarts-for-react';
 import axios from 'axios'
 import {Api} from "../../api";
 import moment from "moment"
-import qs from "query-string";
+import qs from "qs";
 import {Role} from "../../model/user";
 import _ from 'lodash'
 

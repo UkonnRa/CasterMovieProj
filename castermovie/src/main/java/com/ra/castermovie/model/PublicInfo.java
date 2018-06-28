@@ -32,12 +32,10 @@ public class PublicInfo {
     @NotNull(message = "PublicInfo::basePrice must not be null")
     private Integer basePrice;
     @NotNull(message = "PublicInfo::priceTable must not be null")
-    private Map<Integer, Double> priceTable;
-    @NotNull(message = "PublicInfo::priceTable must not be null")
+    // has this seat been distributed?
     private List<Boolean> seatDistribution;
-    private Boolean hasBeenDistributed;
 
-    public PublicInfo(String theaterId, String showId, Long schedule, Integer basePrice, Map<Integer, Double> priceTable, List<Boolean> seatDistribution) {
+    public PublicInfo(String theaterId, String showId, Long schedule, Integer basePrice, List<Boolean> seatDistribution) {
         this.id = UUID.randomUUID().toString();
         this.condition = Condition.EXISTING;
         this.timestamp = System.currentTimeMillis();
@@ -45,9 +43,7 @@ public class PublicInfo {
         this.showId = showId;
         this.schedule = schedule;
         this.basePrice = basePrice;
-        this.priceTable = priceTable;
         this.seatDistribution = seatDistribution;
-        this.hasBeenDistributed = false;
     }
 
 }
