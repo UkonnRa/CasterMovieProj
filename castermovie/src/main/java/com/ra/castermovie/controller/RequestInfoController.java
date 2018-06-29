@@ -20,7 +20,6 @@ public class RequestInfoController {
 
     @PostMapping(value = "handle", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<RequestInfo> handle(@RequestBody HandleVO vo) {
-        log.info("handle()::HandleVO: {}", vo);
         return requestInfoLogic.handle(vo.getRequestInfoId(), Boolean.parseBoolean(vo.getIsPositive()));
     }
 

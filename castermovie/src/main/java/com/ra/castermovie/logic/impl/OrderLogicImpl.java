@@ -283,7 +283,6 @@ public class OrderLogicImpl implements OrderLogic {
 
     private List<UserOrder> orderToUserOrder(Flux<Order> flux) {
         List<Order> list = flux.collectList().block();
-        log.info("list in OrderLogicImpl: {}", list);
         return list.stream().map(this::mapper).collect(Collectors.toList());
     }
 }
