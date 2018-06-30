@@ -10,4 +10,8 @@ public interface PublicInfoService extends BaseService<PublicInfo> {
     Flux<PublicInfo> findAllByShowId(String showId);
 
     Flux<PublicInfo> findAllBySchedule(Long localDateTime);
+
+    Flux<PublicInfo> findAllByScheduleAfter(Long from);
+
+    Flux<PublicInfo> findAllByScheduleBetween(Long start, Long end);
 }

@@ -23,6 +23,7 @@ public class UserOrder {
     private Long startTime;
     private List<Integer> seats;
     private OrderState orderState;
+    private String poster;
 
     public UserOrder(Order order, User me, User payUser, Show show, Theater theater, PublicInfo publicInfo){
         this.id = order.getId();
@@ -37,5 +38,6 @@ public class UserOrder {
         this.startTime = publicInfo.getSchedule();
         this.seats = order.getSeats();
         this.orderState = order.getOrderState();
+        this.poster = show.getPoster();
     }
 }

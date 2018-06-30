@@ -1,0 +1,10 @@
+/*!* For demo *!*/
+.ant-carousel .slick-slide {
+    height: 160px;
+    line-height: 0;
+}
+
+.ant-carousel .slick-slide img {
+    width: 10px;
+    height: 160px;
+}

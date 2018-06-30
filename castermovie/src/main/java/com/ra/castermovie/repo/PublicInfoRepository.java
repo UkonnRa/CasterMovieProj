@@ -11,4 +11,7 @@ public interface PublicInfoRepository extends ReactiveMongoRepository<PublicInfo
 
     Flux<PublicInfo> findAllBySchedule(Long schedule);
 
+    Flux<PublicInfo> findAllByScheduleAfter(Long schedule);
+
+    Flux<PublicInfo> findAllByScheduleBetween(Long start, Long end);
 }

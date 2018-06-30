@@ -14,4 +14,8 @@ public interface ShowLogic {
     Result<List<Show>> findAllByGenreInAndStartTime(List<Genre> genreList, Long startTime);
 
     Result<Show> findById(String id);
+
+    Result<List<Show>> findAllPlayingNow();
+
+    Result<List<Show>> findAllWillPlay();
 }

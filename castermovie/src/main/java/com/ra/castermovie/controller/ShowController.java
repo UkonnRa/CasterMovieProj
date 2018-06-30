@@ -8,11 +8,7 @@ import com.ra.castermovie.model.common.Genre;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -39,6 +35,16 @@ public class ShowController {
     @GetMapping(value = "findById", consumes = MediaType.ALL_VALUE)
     Result<Show> findById(@RequestParam String id) {
         return showLogic.findById(id);
+    }
+
+    @GetMapping(value = "findAllPlayingNow")
+    Result<List<Show>> findAllPlayingNow() {
+        return showLogic.findAllPlayingNow();
+    }
+
+    @GetMapping(value = "findAllWillPlay")
+    Result<List<Show>> findAllWillPlay() {
+        return showLogic.findAllWillPlay();
     }
 
 }

@@ -34,6 +34,8 @@ export const Api = {
         findAllByGenreIn: `${HTTP_HEADER}/show/findAllByGenreIn`,
         findAllByGenreInAndStartTime: `${HTTP_HEADER}/show/findAllByGenreInAndStartTime`,
         findById: `${HTTP_HEADER}/show/findById`,
+        findAllPlayingNow: `${HTTP_HEADER}/show/findAllPlayingNow`,
+        findAllWillPlay: `${HTTP_HEADER}/show/findAllWillPlay`,
     },
     order: {
         newOrder: `${HTTP_HEADER}/order/newOrder`,
