@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Deprecated
 public class CouponInfoLogicImpl implements CouponInfoLogic {
     private final CouponService couponService;
     private final CouponInfoService couponInfoService;

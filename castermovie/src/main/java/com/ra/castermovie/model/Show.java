@@ -27,12 +27,15 @@ public class Show {
     // second
     @NotNull(message = "Show::duration must not be null")
     private Integer duration;
+    @NotNull(message = "Show::poster must not be null")
+    private String poster;
 
-    public Show(String name, Genre genre, Integer duration) {
+    public Show(String name, Genre genre, Integer duration, String poster) {
         this.id = UUID.randomUUID().toString();
         this.condition = Condition.EXISTING;
         this.name = name;
         this.genre = genre;
         this.duration = duration;
+        this.poster = poster;
     }
 }

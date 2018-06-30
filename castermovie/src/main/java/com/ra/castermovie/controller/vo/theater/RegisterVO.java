@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ra.castermovie.model.Theater.DEFAULT_AVATAR;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,7 +38,8 @@ public class RegisterVO {
                 location,
                 seatNumber,
                 seatPerLine,
-                map
+                map,
+                DEFAULT_AVATAR
         );
     }
 }

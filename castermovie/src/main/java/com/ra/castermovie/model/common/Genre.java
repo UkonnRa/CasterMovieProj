@@ -1,5 +1,8 @@
 package com.ra.castermovie.model.common;
 
 public enum Genre {
-    MUSIC, DANCE, DRAMA, SPORT, MOVIE
+    // TODO: delete when conplete
+    @Deprecated MUSIC, @Deprecated DANCE, @Deprecated SPORT, @Deprecated MOVIE,
+
+    ADVENTURE, ROMANCE, HORROR,DRAMA
 }

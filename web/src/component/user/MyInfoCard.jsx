@@ -107,9 +107,9 @@ class MyInfoCard extends Component {
             onCancel: () => {}
         });
 
-    avatar = () => (
+    avatar = (avatar) => (
         <img
-            src="http://6120491.s21i.faiusr.com/2/ABUIABACGAAg0725rAUoiLv9qAQwrAI4rAI.jpg"
+            src={avatar}
             style={{
                 width: this.props.width,
                 height: this.props.width
@@ -210,7 +210,7 @@ class MyInfoCard extends Component {
         return (
             <Card
                 hoverable={true}
-                cover={this.avatar()}
+                cover={this.avatar(this.props.user.avatar)}
                 style={{ width: this.props.width, cursor: 'auto', color: 'whitesmoke' }}
                 actions={this.actions()}
             >

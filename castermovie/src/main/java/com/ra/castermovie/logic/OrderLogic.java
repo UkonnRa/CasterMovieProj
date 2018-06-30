@@ -10,11 +10,11 @@ public interface OrderLogic {
     String FAILED = "failed";
     int MIN_FULL_RETRIEVE_DAY = 7;
 
-    Result<UserOrder> newOrder(String userId, String publicInfoId, List<Integer> seats, String couponInfoId);
+    Result<UserOrder> newOrder(String userId, String publicInfoId, List<Integer> seats);
 
     Result<UserOrder> checkIn(String theaterId, String orderId);
 
-    Result<UserOrder> payOrder(String userId, String couponInfoId, String orderId);
+    Result<UserOrder> payOrder(String userId, String orderId);
 
     Result<UserOrder> retrieveOrder(String orderId);
 

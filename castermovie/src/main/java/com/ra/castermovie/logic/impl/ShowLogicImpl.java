@@ -20,8 +20,8 @@ public class ShowLogicImpl implements ShowLogic {
     }
 
     @Override
-    public Result<Show> newShow(String name, Genre genre, int duration) {
-        Show show = showService.save(new Show(name, genre, duration)).block();
+    public Result<Show> newShow(String name, Genre genre, int duration, String poster) {
+        Show show = showService.save(new Show(name, genre, duration, poster)).block();
         return show == null ? Result.fail("影剧信息保存失败") : Result.succeed(show);
     }
 

@@ -21,6 +21,8 @@ import java.util.Map;
 @Data
 @Document(collection = "theater")
 public class Theater {
+    public static final String DEFAULT_AVATAR = "https://castermovie.oss-cn-beijing.aliyuncs.com/theater/theater_bg.jpg";
+
     @Id
     // id is email
     private String id;
@@ -43,6 +45,7 @@ public class Theater {
     private List<String> publicInfos;
     @NotNull(message = "Theater::discounts must not be null")
     private Map<Level, Double> discounts;
+    private String avatar;
 
     public Theater(String id, String password, String name, Integer regionId, String location, Integer seatNumber, Integer seatPerLine, Map<Level, Double> discounts) {
         this.id = id;
@@ -56,6 +59,7 @@ public class Theater {
         this.seatPerLine = seatPerLine;
         this.publicInfos = Collections.emptyList();
         this.discounts = discounts;
+        this.avatar = DEFAULT_AVATAR;
     }
 
     public Theater(UserTheater userTheater) {
@@ -70,5 +74,6 @@ public class Theater {
         this.seatPerLine = userTheater.getSeatPerLine();
         this.publicInfos = Collections.emptyList();
         this.discounts = userTheater.getDiscounts();
+        this.avatar = userTheater.getAvatar();
     }
 }

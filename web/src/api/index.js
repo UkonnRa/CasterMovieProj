@@ -1,4 +1,4 @@
-const HTTP_HEADER = 'http://106.15.92.114:8080/api/castermovie';
+const HTTP_HEADER = 'http://localhost:8080/api/castermovie';
 
 export const Api = {
     user: {

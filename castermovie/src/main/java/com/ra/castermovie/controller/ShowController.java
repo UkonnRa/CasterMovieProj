@@ -23,7 +23,7 @@ public class ShowController {
 
     @PostMapping(value = "newShow", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<Show> newShow(@RequestBody NewShowVO vo) {
-        return showLogic.newShow(vo.getName(), vo.getGenre(), vo.getDuration());
+        return showLogic.newShow(vo.getName(), vo.getGenre(), vo.getDuration(), vo.getPoster());
     }
 
     @GetMapping(value = "findAllByGenreIn", consumes = MediaType.ALL_VALUE)

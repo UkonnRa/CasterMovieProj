@@ -7,7 +7,7 @@ import com.ra.castermovie.model.common.Genre;
 import java.util.List;
 
 public interface ShowLogic {
-    Result<Show> newShow(String name, Genre genre, int duration);
+    Result<Show> newShow(String name, Genre genre, int duration, String poster);
 
     Result<List<Show>> findAllByGenreIn(List<Genre> genreList);
 

@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
+@Deprecated
 public class CouponServiceImpl implements CouponService {
     @Autowired
     private CouponRepository couponRepository;

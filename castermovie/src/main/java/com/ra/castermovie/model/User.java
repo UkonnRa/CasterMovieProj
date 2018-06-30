@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @Document(collection = "user")
 public class User {
+    private static final String DEFAULT_AVATAR = "https://castermovie.oss-cn-beijing.aliyuncs.com/user/user1.png";
     @Id
     @NotNull(message = "User::id must not be null")
     // id is email
@@ -40,6 +41,7 @@ public class User {
     // 一分钱一个点，以实际支付为准
     @NotNull(message = "User::point must not be null")
     private Integer point;
+    private String avatar;
 
     public User(String name, String password, String email, Role role) {
         this.id = email;
@@ -52,5 +54,6 @@ public class User {
         this.paid = 0;
         this.level = Level.LEVEL1;
         this.point = 0;
+        this.avatar = DEFAULT_AVATAR;
     }
 }
