@@ -72,11 +72,10 @@ public class UserLogicImpl implements UserLogic {
 
     @Override
     public Result<User> update(String email, String name, String password) {
-        User user = userService.findById(email).map(u -> {
-            if (name != null && !name.equals("")) u.setName(name);
-            if (password != null&& !password.equals("")) u.setPassword(password);
-            return userService.update(email, u).block();
-        }).block();
+        User user = userService.findById(email).block();
+        if (name != null && !name.equals("")) user.setName(name);
+        if (password != null && !password.equals("")) user.setPassword(password);
+        user = userService.update(email, user).block();
         return user == null ? Result.fail("数据库连接失败") : Result.succeed(user);
     }
 

@@ -1,7 +1,7 @@
 import {FIND_ALL_SHOWS_BY_GENRE_IN, FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME, SELECT_SHOW} from "./types";
 import axios from "axios";
 import {Api} from '../../api'
-import qs from 'query-string'
+import qs from 'qs'
 
 export const findAllByGenreInAndStartTime = ({genreList = [], startTime}) => {
     return dispatch => {

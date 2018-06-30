@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CouponInfoLogicImpl implements CouponInfoLogic {
@@ -51,9 +52,11 @@ public class CouponInfoLogicImpl implements CouponInfoLogic {
 
     @Override
     public Result<List<UserCouponInfo>> findAllByUserId(String userId) {
-        return Result.succeed(couponInfoService.findAllByUserId(userId).map(info -> {
+        List<CouponInfo> list = couponInfoService.findAllByUserId(userId).collectList().block();
+        List<UserCouponInfo> listUser = list.stream().map(info -> {
             Coupon coupon = couponService.findById(info.getCouponId()).block();
             return new UserCouponInfo(info, coupon);
-        }).collectList().block());
+        }).collect(Collectors.toList());
+        return Result.succeed(listUser);
     }
 }

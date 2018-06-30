@@ -277,10 +277,12 @@ public class OrderLogicImpl implements OrderLogic {
     }
 
     private UserOrder orderToUserOrder(Mono<Order> mono) {
-        return mono.map(this::mapper).block();
+        Order order = mono.block();
+        return mapper(order);
     }
 
-    private List<UserOrder> orderToUserOrder(Flux<Order> mono) {
-        return mono.map(this::mapper).collectList().block(Duration.ofMillis(1000));
+    private List<UserOrder> orderToUserOrder(Flux<Order> flux) {
+        List<Order> list = flux.collectList().block();
+        return list.stream().map(this::mapper).collect(Collectors.toList());
     }
 }
