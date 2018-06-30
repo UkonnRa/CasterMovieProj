@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {connect} from 'react-redux'
 import {Card, Col, Row} from 'antd'
 import {Genre} from "../../model/show";
@@ -11,7 +11,7 @@ import TheaterList from '../tickets/TheaterList'
 import MyPublicInfos from '../theater/MyPublicInfos'
 import moment from 'moment'
 
-class Main extends Component {
+class Main extends React.Component {
 
     componentWillMount = () => {
         this.props.findAllByGenreInAndStartTime({genreList: Array.from(Genre.keys()), startTime: Date.now()})

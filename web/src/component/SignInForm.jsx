@@ -32,7 +32,7 @@ class Login extends React.Component {
                 })
                 .catch(err => {
                     console.log(err);
-                    message.error(err);
+                    message.error("网络连接似乎出了问题，请稍后再试");
                 });
         });
     };

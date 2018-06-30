@@ -53,6 +53,15 @@ class CustomerSignUpForm extends React.Component {
         });
     };
 
+    checkPassword = (rule, value, callback) => {
+        if (value && this.state.confirmDirty) {
+            this.props.form.validateFields(['passwordConfirm'], {
+                force: true
+            });
+        }
+        callback();
+    };
+
     checkPasswordConfirm = (rule, value, callback) => {
         if (value && value !== this.props.form.getFieldValue('password')) {
             callback('密码不一致，请重新输入');
