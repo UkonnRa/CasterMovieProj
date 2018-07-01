@@ -63,7 +63,11 @@ class MyOrder extends Component {
                     <Col>{this.tag(item)}</Col>
                 </Row>
                 <br />
-                <h3>{moment(item.startTime).calendar(null, {sameElse: 'YY/MM/DD Ah点mm分'})}</h3>
+                <h3>
+                    {moment(item.startTime).calendar(null, {
+                        sameElse: 'YY/MM/DD Ah点mm分'
+                    })}
+                </h3>
                 <h3>{item.theaterName}</h3>
             </div>
             <Button.Group
@@ -116,11 +120,16 @@ class MyOrder extends Component {
 
     orderDetails = item => (
         <div>
-            <div>创建时间：{moment(item.createTime).calendar(null, {sameElse: 'YY/MM/DD Ah点mm分'})}</div>
+            <div>
+                创建时间：{moment(item.createTime).calendar(null, {
+                    sameElse: 'YY/MM/DD Ah点mm分'
+                })}
+            </div>
             <div>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;票价：{(
                     item.originalCost / 100
-                ).toFixed(2)} 元
+                ).toFixed(2)}{' '}
+                元
             </div>
         </div>
     );
@@ -208,13 +217,15 @@ class MyOrder extends Component {
         );
     };
 
-    image = () => (
+    image = item => (
         <img
-            src="http://6120491.s21i.faiusr.com/2/ABUIABACGAAg0725rAUoiLv9qAQwrAI4rAI.jpg"
+            src={item.poster}
             style={{
                 float: 'right',
                 width: '150px',
-                height: '200px'
+                height: '200px',
+                boxShadow: 'darkgrey 10px 10px 20px 1px',
+                borderRadius: '6px'
             }}
         />
     );
@@ -227,23 +238,20 @@ class MyOrder extends Component {
                     dataSource={this.props.orders
                         .sort((a, b) => -a.createTime + b.createTime)
                         .slice(this.state.start, this.state.end)}
-                    renderItem={item => {
-                        console.log(item);
-                        return (
-                            <List.Item>
-                                <Card
-                                    hoverable={true}
-                                    style={{
-                                        cursor: 'auto',
-                                        borderRadius: '10px'
-                                    }}
-                                >
-                                    {this.info(item)}
-                                    {this.image()}
-                                </Card>
-                            </List.Item>
-                        );
-                    }}
+                    renderItem={item => (
+                        <List.Item>
+                            <Card
+                                hoverable={true}
+                                style={{
+                                    cursor: 'auto',
+                                    borderRadius: '10px'
+                                }}
+                            >
+                                {this.info(item)}
+                                {this.image(item)}
+                            </Card>
+                        </List.Item>
+                    )}
                 />
                 <Pagination
                     current={this.state.currPage}

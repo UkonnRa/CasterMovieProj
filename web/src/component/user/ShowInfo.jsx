@@ -1,250 +1,219 @@
-import React, {Component} from 'react'
-import {Card, Divider, List, Modal, Select, Tabs} from 'antd'
-import {connect} from 'react-redux'
+import React from 'react';
+import { Divider, Icon, Card, List, Tabs, Row, Col, Tag, Button } from 'antd';
+import { connect } from 'react-redux';
 
 import 'react-area-linkage/dist/index.css'; // v2 or higher
-import {pcaa} from "area-data";
-
-import {AreaCascader} from 'react-area-linkage';
-import {Genre} from "../../model/show";
-import {findAllPublicInfoByShowId, findById} from "../../redux/publicInfo/actions";
-import {route} from "../../redux/ui/actions";
+import { Genre } from '../../model/show';
+import {
+    findAllPublicInfoByShowId,
+    findById
+} from '../../redux/publicInfo/actions';
+import { route } from '../../redux/ui/actions';
 import Moment from 'moment';
-import {extendMoment} from 'moment-range';
-import axios from 'axios'
-import {Api} from "../../api";
-import _ from 'lodash'
-import {RouteTable} from "../../route";
-import {ExpiredType} from "../../model/coupon";
+import { extendMoment } from 'moment-range';
+import axios from 'axios';
+import { Api } from '../../api';
+import _ from 'lodash';
+import { RouteTable } from '../../route';
 
 const moment = extendMoment(Moment);
 
-class TheaterInfo extends Component {
-    componentWillMount = () => {
-        const {theater} = this.props
-
-        axios.get(Api.coupon.findAllByTheaterId, {
-            data: {theaterId: theater.id},
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                Authorization: `Bearer ${localStorage.getItem("jwt")}`
-            }
-        }).then(couponsData => {
-            if (couponsData.data.value) {
-                this.setState({coupons: couponsData.data.value})
-            } else {
-                console.log(couponsData.data.message)
-            }
-        }).catch(err => console.log(err))
-    }
-    render = () => Modal.info({
-        title: this.props.theater.name,
-        content: (
-            <div>
-                <p>地点：{this.props.theater.location}</p>
-                <p>座位总数：{this.props.theater.seatNumber}</p>
-                <p><Select>
-                    {this.state.coupons.map(coupon => {
-                        return <Select.Option value={coupon.id}>
-                            <Card>
-                                <p>名称：{coupon.name}</p>
-                                <p>折扣：{coupon.discount}</p>
-                                <p>失效类型：{ExpiredType[coupon.expiredType].text}</p>
-                                <p>失效时间：{
-                                    coupon.expiredType === ExpiredType.TIME_PERIOD.name ?
-                                        moment.utc(moment.duration(coupon.expiredTime, 's').asMilliseconds()).format("HH:mm:ss") :
-                                        moment(coupon.expiredTime).format("YYYY-MM-DD")
-                                }</p>
-                            </Card>
-                        </Select.Option>
-                    })}
-                </Select>
-                </p>
-            </div>
-        ),
-        onOk() {
-        },
-    });
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            coupons: []
-        }
-    }
-}
-
-
-class ShowInfo extends Component {
-    selectCoupon = (couponId) => {
-
-    }
+class ShowInfo extends React.Component {
+    state = {
+        theaters: null,
+        theaterModalShow: false,
+        selectedTheater: {}
+    };
 
     componentWillMount = () => {
-        this.props.findAllPublicInfoByShowId(this.props.selectedShow.id)
-            .then(() => {
-                Promise.all(Array.from(new Set(this.props.publicInfos.map(info => info.theaterId)))
-                    .map(theaterId =>
-                        axios.get(Api.theater.findById, {
-                            params: {"id": theaterId},
-                            headers: {
-                                'Content-Type': 'application/json;charset=utf-8'
-                            }
-                        }).then(resp => {
-                            return [theaterId, resp.data.value]
-                        })
-                    )).then(result => {
-                    this.setState({theaters: new Map(result)})
-                })
-            })
-    };
-
-    onRegionIdChange = (code) => {
-        this.setState({regionId: !_.isEmpty(code) ? Number(_.last(code)) : -1})
-    };
-
-    onChooseTheaterClick = (publicInfoId) => {
-        this.props.findById(publicInfoId).then(() => {
-            this.props.route(RouteTable.CUSTOMER.ChooseSeat.path + `#${publicInfoId}`, this.props.isAuthed)
-        })
-    };
-    info = (theaterId) => {
-        const self = this
-        console.log(theaterId)
-        axios.get(Api.theater.findById, {
-            params: {id: theaterId},
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                Authorization: `Bearer ${localStorage.getItem("jwt")}`
-            }
-        }).then(theaterData => {
-            if (theaterData.data.value) {
-                this.setState({selectedTheater: theaterData.data.value})
-            } else {
-                console.log(theaterData.data.message)
-            }
-        }).then(() => axios.get(Api.coupon.findAllByTheaterId, {
-            params: {theaterId: this.state.selectedTheater.id},
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                Authorization: `Bearer ${localStorage.getItem("jwt")}`
-            }
-        }).then(couponsData => {
-            if (couponsData.data.value) {
-                const coupons = couponsData.data.value
-                Modal.info({
-                    title: this.state.selectedTheater.name,
-                    content: (
-                        <div>
-                            <p>地点：{this.state.selectedTheater.location}</p>
-                            <p>座位总数：{this.state.selectedTheater.seatNumber}</p>
-                            <div><Select style={{width: 250}}
-                                         onChange={(value) => this.setState({selectedCoupon: value})}
-                                         optionLabelProp={"title"}>
-                                {coupons.map(coupon => {
-                                    return <Select.Option value={coupon.id} title={coupon.name}>
-                                        <Card>
-                                            <p>名称：{coupon.name}</p>
-                                            <p>折扣：{coupon.discount}</p>
-                                            <p>失效类型：{ExpiredType[coupon.expiredType].text}</p>
-                                            <p>失效时间：{
-                                                coupon.expiredType === ExpiredType.TIME_PERIOD.name ?
-                                                    moment.utc(moment.duration(coupon.expiredTime, 's').asMilliseconds()).format("HH:mm:ss") :
-                                                    moment(coupon.expiredTime).format("YYYY-MM-DD")
-                                            }</p>
-                                        </Card>
-                                    </Select.Option>
-                                })}
-                            </Select>
-                            </div>
-                        </div>
-                    ),
-                    onOk() {
-                        if (!_.isEmpty(self.state.selectedCoupon)) {
-                            console.log(self.props)
-                            axios.post(Api.couponInfo.getCoupon,
-                                {
-                                    userId: self.props.user.id,
-                                    couponId: self.state.selectedCoupon,
-                                }, {
+        this.props
+            .findAllPublicInfoByShowId(this.props.selectedShow.id)
+            .then(() =>
+                Promise.all(
+                    _
+                        .uniqBy(this.props.publicInfos, i => i.theaterId)
+                        .map(theater =>
+                            axios
+                                .get(Api.theater.findById, {
+                                    params: { id: theater.theaterId },
                                     headers: {
-                                        'Content-Type': 'application/json;charset=utf-8',
-                                        Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                                        'Content-Type':
+                                            'application/json;charset=utf-8'
                                     }
-                                }).then(couponInfoData => {
-                                if (couponInfoData.data.value) {
-                                    alert(`优惠券获取成功`)
-                                } else {
-                                    alert(`优惠券获取失败，${couponInfoData.data.message}`)
+                                })
+                                .then(resp => [
+                                    theater.theaterId,
+                                    resp.data.value
+                                ])
+                        )
+                )
+            )
+            .then(result => this.setState({ theaters: new Map(result) }));
+    };
+
+    onChooseTheaterClick = publicInfoId => {
+        this.props.findById(publicInfoId).then(() => {
+            this.props.route(
+                RouteTable.CUSTOMER.ChooseSeat.path + `#${publicInfoId}`,
+                this.props.isAuthed
+            );
+        });
+    };
+
+    showInfo(show) {
+        return (
+            <Row align="top">
+                <Col span={6}>
+                    <img
+                        src={show.poster}
+                        style={{
+                            width: '100%',
+                            borderRadius: '10px',
+                            boxShadow: 'darkgrey 18px 18px 18px',
+                            margin: '0 18px 18px 0'
+                        }}
+                    />
+                </Col>
+                <Col
+                    offset={2}
+                    span={6}
+                    style={{
+                        textAlign: 'left',
+                        marginLeft: '50px',
+                        paddingTop: '10px'
+                    }}
+                >
+                    <h1>{show.name}</h1>
+                    <div>
+                        <Tag style={{ cursor: 'default' }}>
+                            {Genre.get(show.genre)}
+                        </Tag>
+                    </div>
+                    <br />
+                    <h3>
+                        <Icon type="clock-circle-o" />&nbsp;&nbsp;{(
+                            show.duration / 60
+                        ).toFixed(0)}&nbsp;&nbsp;分钟
+                    </h3>
+                </Col>
+            </Row>
+        );
+    }
+
+    playSelector = () => (
+        <Tabs defaultActiveKey="1">
+            {Array.from(moment.rangeFromInterval('d', 7).by('days')).map(
+                (date, index) => (
+                    <Tabs.TabPane tab={date.format('MM-DD')} key={index}>
+                        <List
+                            loading={this.state.theaters === null}
+                            itemLayout="horizontal"
+                            dataSource={this.goingOnTheater(date)}
+                            renderItem={this.playEntry}
+                        />
+                    </Tabs.TabPane>
+                )
+            )}
+        </Tabs>
+    );
+
+    playEntry = item => {
+        const theaters = this.state.theaters;
+        const theater = theaters === null ? null : theaters.get(item.theaterId);
+        return (
+            <List.Item style={{ textAlign: 'left', cursor: 'default' }}>
+                {theater === null ? (
+                    ''
+                ) : (
+                    <Row type="flex" align="middle" style={{ width: '100%' }}>
+                        <Col offset={2} span={14}>
+                            <h2>{theater === null ? '' : theater.name}</h2>
+                            <h3 style={{ color: 'gray' }}>
+                                地址：{theater.location}
+                            </h3>
+                        </Col>
+                        <Col span={3}>
+                            <span style={{ color: 'red' }}>
+                                ￥<span style={{ fontSize: '1.3em' }}>
+                                    {(item.basePrice / 100).toFixed(0)}
+                                </span>
+                            </span>&nbsp;&nbsp; 起
+                        </Col>
+                        <Col span={3}>
+                            <button
+                                onClick={() =>
+                                    this.onChooseTheaterClick(item.id)
                                 }
-                            })
-                        }
-                    },
-                });
-            } else {
-                console.log(couponsData.data.message)
-            }
-        }).catch(err => console.log(err)))
+                                style={{
+                                    backgroundColor: '#ff5e59',
+                                    border: '0',
+                                    borderRadius: '15px',
+                                    width: '100%',
+                                    height: '30px',
+                                    color: 'white',
+                                    fontSize: '14px',
+                                    textAlign: 'center',
+                                    boxShadow: '0 2px 10px -2px #f03d37',
+                                    cursor: 'pointer',
+                                    fontWeight: '550'
+                                }}
+                            >
+                                选座购票
+                            </button>
+                        </Col>
+                    </Row>
+                )}
+            </List.Item>
+        );
+    };
 
-    }
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            regionId: 440305,
-            theaters: new Map(),
-            theaterModalShow: false,
-            selectedTheater: {},
-            selectedCoupon: "",
-        }
-    }
+    goingOnTheater = date =>
+        _.map(
+            _.groupBy(
+                this.props.publicInfos.filter(info =>
+                    date.isSame(info.schedule, 'd')
+                ),
+                p => p.theaterId
+            ),
+            arr => _.minBy(arr, 'basePrice')
+        );
 
     render() {
-        return <div>
-            <Divider>{this.props.selectedShow.name}</Divider>
-            类型：{Genre.get(this.props.selectedShow.genre)}
-            <br/>
-            时长：{this.props.selectedShow.duration}
-            <br/>
-            <Divider dashed>抢票</Divider>
-            <AreaCascader data={pcaa} placeholder={'选择区域，默认全选'} defaultArea={null} level={1} onChange={this.onRegionIdChange}/>
-            <Tabs defaultActiveKey="1">
-                {Array.from(moment.rangeFromInterval('d', 80).by('days')).map((date, index) =>
-                    <Tabs.TabPane tab={date.format("YYYY-MM-DD")} key={index}>
-                        <List itemLayout="horizontal"
-                              dataSource={this.props.publicInfos.filter(info => moment(info.schedule).isSame(date, 'd') && (this.state.regionId === -1 || (!_.isEmpty(this.state.theaters.get(info.theaterId)) && this.state.theaters.get(info.theaterId).regionId === this.state.regionId)))}
-                              renderItem={item => (
-                                  <List.Item actions={[<a onClick={() => this.onChooseTheaterClick(item.id)}>选择</a>]}>
-                                      <List.Item.Meta
-                                          title={<a
-                                              onClick={() => this.info(item.theaterId)}>{this.state.theaters.get(item.theaterId).name}</a>}
-                                          description={`从${(item.basePrice / 100).toFixed(2)}元起`}/>
-                                      时间：{moment(item.schedule).format("HH:mm:ss")}
-                                  </List.Item>)}/>
-                    </Tabs.TabPane>)}
-            </Tabs>
-        </div>
+        const show = this.props.selectedShow;
+        return (
+            <div style={{ width: '80%', margin: '0 auto' }}>
+                {this.showInfo(show)}
+                <br />
+                <div>
+                    <Divider orientation="left">
+                        <h3>正在上映的影院</h3>
+                    </Divider>
+                    {this.playSelector()}
+                </div>
+            </div>
+        );
     }
 }
 
-const
-    mapDispatchToProps = (dispatch) => {
-        return {
-            findAllPublicInfoByShowId: (showId) => dispatch(findAllPublicInfoByShowId(showId)),
-            findById: (id) => dispatch(findById(id)),
-            route: (path, isAuthed) => dispatch(route(path, isAuthed))
-        }
+const mapDispatchToProps = dispatch => {
+    return {
+        findAllPublicInfoByShowId: showId =>
+            dispatch(findAllPublicInfoByShowId(showId)),
+        findById: id => dispatch(findById(id)),
+        route: (path, isAuthed) => dispatch(route(path, isAuthed))
     };
+};
 
-const
-    mapStateToProps = (state) => {
-        return {
-            selectedShow: state.showReducer.selectedShow,
-            publicInfos: state.publicInfoReducer.publicInfos,
-            isAuthed: state.loginReducer.isAuthed,
-            user: state.loginReducer.user,
-        }
+const mapStateToProps = state => {
+    return {
+        selectedShow: state.showReducer.selectedShow,
+        publicInfos: state.publicInfoReducer.publicInfos,
+        isAuthed: state.loginReducer.isAuthed,
+        user: state.loginReducer.user
     };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShowInfo)
-
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ShowInfo);

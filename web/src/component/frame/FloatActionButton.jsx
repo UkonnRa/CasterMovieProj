@@ -16,7 +16,7 @@ class FloatActionButton extends React.Component {
             >
                 <Avatar
                     size="large"
-                    icon="user"
+                    src={this.props.user.avatar}
                     shape="square"
                     style={{ color: 'rgb(0, 54, 104)' }}
                     onClick={

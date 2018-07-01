@@ -58,23 +58,10 @@ export const SiderMap = {
             text: RouteTable[Role.CUSTOMER].ShowList.text
         },
         {
-            type: "subMenu", icon: "idcard", text: "我的", item: [
-                {
-                    type: "item",
-                    key: RouteTable[Role.CUSTOMER].MyInfo.path,
-                    text: RouteTable[Role.CUSTOMER].MyInfo.text
-                },
-                {
-                    type: "item",
-                    key: RouteTable[Role.CUSTOMER].MyOrder.path,
-                    text: RouteTable[Role.CUSTOMER].MyOrder.text
-                },
-                {
-                    type: "item",
-                    key: RouteTable[Role.CUSTOMER].MyCouponInfo.path,
-                    text: RouteTable[Role.CUSTOMER].MyCouponInfo.text
-                }
-            ]
+            type: "item", 
+            icon: "idcard", 
+            text: RouteTable[Role.CUSTOMER].MyInfo.text,
+            key: RouteTable[Role.CUSTOMER].MyInfo.path
         }
     ],
     [Role.THEATER]: [

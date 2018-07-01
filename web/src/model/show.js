@@ -1,1 +1,1 @@
-export const Genre = new Map([["MUSIC", "音乐"], ["DANCE", "舞蹈"], ["DRAMA", "戏剧"], ["SPORT", "体育"], ["MOVIE","电影"]]);
+export const Genre = new Map([["ADVENTURE", "奇幻"], ["ROMANCE", "爱情"], ["HORROR", "惊悚"], ["DRAMA", "戏剧"]])

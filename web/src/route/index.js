@@ -1,8 +1,6 @@
 import React from 'react'
 import Main from '../component/user/Main'
 import MyInfo from '../component/user/MyInfo'
-import MyCouponInfo from '../component/user/MyCouponInfo'
-import MyOrder from '../component/user/MyOrder'
 import ShowList from "../component/user/ShowList"
 import ShowInfo from "../component/user/ShowInfo"
 import ChooseSeat from "../component/user/ChooseSeat"
@@ -41,18 +39,6 @@ export const RouteTable = {
             path: "MyInfo",
             text: " 我的信息",
             component: <MyInfo/>,
-            needAuthed: true
-        },
-        MyCouponInfo: {
-            path: "MyCouponInfo",
-            text: " 我的优惠券",
-            component: <MyCouponInfo/>,
-            needAuthed: true
-        },
-        MyOrder: {
-            path: "MyOrder",
-            text: " 我的订单",
-            component: <MyOrder/>,
             needAuthed: true
         },
         ShowList: {

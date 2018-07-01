@@ -109,10 +109,11 @@ class MyInfoCard extends Component {
 
     avatar = () => (
         <img
-            src="http://6120491.s21i.faiusr.com/2/ABUIABACGAAg0725rAUoiLv9qAQwrAI4rAI.jpg"
+            src={this.props.user.avatar}
             style={{
-                width: this.props.width,
-                height: this.props.width
+                width: '95%',
+                height: '95%',
+                margin: '2.5%'
             }}
         />
     );
