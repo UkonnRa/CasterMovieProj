@@ -12,4 +12,5 @@ public class NewShowVO {
     private String name;
     private Genre genre;
     private int duration;
+    private String poster;
 }

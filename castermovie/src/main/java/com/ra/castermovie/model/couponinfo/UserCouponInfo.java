@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Deprecated
 public class UserCouponInfo {
     private String id;
     private Long createTime;

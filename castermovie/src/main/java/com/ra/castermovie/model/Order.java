@@ -37,9 +37,8 @@ public class Order {
     private OrderState orderState;
     @NotNull(message = "Order::seat must not be null")
     private List<Integer> seats;
-    private String usedCouponInfoId;
 
-    public Order(String userId, String publicInfoId, Integer originalCost, Integer actualCost, List<Integer> seats, String usedCouponInfoId) {
+    public Order(String userId, String publicInfoId, Integer originalCost, Integer actualCost, List<Integer> seats) {
         this.id = UUID.randomUUID().toString();
         this.condition = Condition.EXISTING;
         this.userId = userId;
@@ -50,6 +49,5 @@ public class Order {
         this.createTime = System.currentTimeMillis();
         this.orderState = OrderState.UNPAID;
         this.seats = seats;
-        this.usedCouponInfoId = usedCouponInfoId;
     }
 }

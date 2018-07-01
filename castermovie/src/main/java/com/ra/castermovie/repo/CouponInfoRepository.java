@@ -4,7 +4,7 @@ import com.ra.castermovie.model.CouponInfo;
 import com.ra.castermovie.model.couponinfo.State;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
-
+@Deprecated
 public interface CouponInfoRepository extends ReactiveMongoRepository<CouponInfo, String> {
     Flux<CouponInfo> findAllByState(State state);
 

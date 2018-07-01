@@ -5,7 +5,7 @@ import com.ra.castermovie.model.CouponInfo;
 import com.ra.castermovie.model.couponinfo.UserCouponInfo;
 
 import java.util.List;
-
+@Deprecated
 public interface CouponInfoLogic {
     Result<CouponInfo> getCoupon(String userId, String couponId);
 

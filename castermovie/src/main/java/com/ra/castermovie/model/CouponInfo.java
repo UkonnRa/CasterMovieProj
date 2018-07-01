@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "coupon_info")
+@Deprecated
 public class CouponInfo {
     @Id
     private String id;

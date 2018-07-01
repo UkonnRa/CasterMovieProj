@@ -20,7 +20,7 @@ public class OrderController {
 
     @PostMapping(value = "newOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<UserOrder> newOrder(@RequestBody NewOrderVO vo) {
-        return orderLogic.newOrder(vo.getUserId(), vo.getPublicInfoId(), vo.getSeats(), vo.getCouponInfoId());
+        return orderLogic.newOrder(vo.getUserId(), vo.getPublicInfoId(), vo.getSeats());
     }
 
     @PostMapping(value = "checkIn", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -31,7 +31,7 @@ public class OrderController {
 
     @PostMapping(value = "payOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<UserOrder> payOrder(@RequestBody PayOrderVO vo) {
-        return orderLogic.payOrder(vo.getUserId(), vo.getCouponInfoId(), vo.getOrderId());
+        return orderLogic.payOrder(vo.getUserId(), vo.getOrderId());
     }
 
     @PostMapping(value = "retrieveOrder", consumes = MediaType.APPLICATION_JSON_VALUE)

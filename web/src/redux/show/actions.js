@@ -1,4 +1,10 @@
-import {FIND_ALL_SHOWS_BY_GENRE_IN, FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME, SELECT_SHOW} from "./types";
+import {
+    FIND_ALL_BY_PLAYING_NOW,
+    FIND_ALL_BY_WILL_PLAY,
+    FIND_ALL_SHOWS_BY_GENRE_IN,
+    FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME,
+    SELECT_SHOW
+} from "./types";
 import axios from "axios";
 import {Api} from '../../api'
 import qs from 'qs'
@@ -41,4 +47,16 @@ export const findAllShowsByGenreIn = ({genreList = []}) => dispatch =>
     }).then(resp => {
         if (resp.data.value) dispatch({type: FIND_ALL_SHOWS_BY_GENRE_IN, shows: resp.data.value});
         else console.log(`ERROR: ${resp.data.message}`)
+    });
+
+export const findAllPlayingNow = () => dispatch =>
+    axios.get(Api.show.findAllPlayingNow).then(resp => {
+        if (resp.data.value) dispatch({type: FIND_ALL_BY_PLAYING_NOW, shows: resp.data.value});
+        else console.log(`ERROR in findAllPlayingNow: ${resp.data.message}`)
+    });
+
+export const findAllWillPlay = () => dispatch =>
+    axios.get(Api.show.findAllWillPlay).then(resp => {
+        if (resp.data.value) dispatch({type: FIND_ALL_BY_WILL_PLAY, shows: resp.data.value});
+        else console.log(`ERROR in findAllWillPlay: ${resp.data.message}`)
     });

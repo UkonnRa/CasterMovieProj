@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Deprecated
 @RestController
 @RequestMapping("api/castermovie/couponInfo")
 public class CouponInfoController {

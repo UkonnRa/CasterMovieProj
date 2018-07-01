@@ -4,7 +4,7 @@ import com.ra.castermovie.model.coupon.ExpiredType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+@Deprecated
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

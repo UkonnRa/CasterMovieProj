@@ -20,6 +20,7 @@ public class UserTheater {
     private Integer seatNumber;
     private Integer seatPerLine;
     private Map<Level, Double> discounts;
+    private String avatar;
 
     public Theater toTheater(Theater from) {
         if (this.id != null) from.setId(this.id);
@@ -30,6 +31,7 @@ public class UserTheater {
         if (this.seatNumber != null) from.setSeatNumber(this.seatNumber);
         if (this.seatPerLine != null) from.setSeatPerLine(this.seatPerLine);
         if (this.discounts != null) from.setDiscounts(this.discounts);
+        if (this.avatar != null) from.setAvatar(this.avatar);
         return from;
     }
 }

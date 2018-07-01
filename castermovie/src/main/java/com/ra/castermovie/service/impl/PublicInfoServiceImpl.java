@@ -31,6 +31,16 @@ public class PublicInfoServiceImpl implements PublicInfoService {
     }
 
     @Override
+    public Flux<PublicInfo> findAllByScheduleAfter(Long from) {
+        return Filters.filterDeleted(publicInfoRepository.findAllByScheduleAfter(from), PublicInfo.class);
+    }
+
+    @Override
+    public Flux<PublicInfo> findAllByScheduleBetween(Long start, Long end) {
+        return Filters.filterDeleted(publicInfoRepository.findAllByScheduleBetween(start, end), PublicInfo.class);
+    }
+
+    @Override
     public Flux<PublicInfo> findAll() {
         return Filters.filterDeleted(publicInfoRepository.findAll(), PublicInfo.class);
     }
