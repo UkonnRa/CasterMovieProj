@@ -4,12 +4,15 @@ import com.ra.castermovie.controller.vo.theater.FindAllShowPlayingVO;
 import com.ra.castermovie.controller.vo.theater.NewPublicInfoVO;
 import com.ra.castermovie.controller.vo.theater.RegisterVO;
 import com.ra.castermovie.controller.vo.theater.UpdateVO;
+import com.ra.castermovie.logic.ShowLogic;
 import com.ra.castermovie.logic.TheaterLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.PublicInfo;
 import com.ra.castermovie.model.RequestInfo;
+import com.ra.castermovie.model.Show;
 import com.ra.castermovie.model.Theater;
 import com.ra.castermovie.model.order.OrderState;
+import com.ra.castermovie.model.show.WillPlayShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
@@ -24,6 +27,8 @@ import java.util.Map;
 public class TheaterController {
     @Autowired
     private TheaterLogic theaterLogic;
+    @Autowired
+    private ShowLogic showLogic;
 
     @PostMapping(value = "register", consumes = MediaType.APPLICATION_JSON_VALUE)
     Result<RequestInfo> register(@RequestBody RegisterVO vo) {
@@ -47,6 +52,17 @@ public class TheaterController {
         Pair<Instant, Instant> timePair = Pair.of(from, to);
         return theaterLogic.findAllShowPlaying(vo.getTheaterId(), timePair, vo.getGenreList());
     }
+
+    @GetMapping(value = "findAllShowPlayingNow")
+    Result<List<Show>> findAllPlayingNow(@RequestParam String id) {
+        return showLogic.findAllPlayingNow(id);
+    }
+
+    @GetMapping(value = "findAllShowWillPlay")
+    Result<List<WillPlayShow>> findAllWillPlay(@RequestParam String id) {
+        return showLogic.findAllWillPlay(id);
+    }
+
 
     @GetMapping(value = "findAllTheater", consumes = MediaType.ALL_VALUE)
     Result<List<Theater>> findAllTheater(@RequestParam int regionId) {

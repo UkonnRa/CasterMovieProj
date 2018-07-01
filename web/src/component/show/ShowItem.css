@@ -1,0 +1,16 @@
+.show-item {
+    alignment: left;
+    /*position: relative;*/
+    color: white;
+}
+
+.show-item img {
+    alignment: right;
+    height: 160px;
+}
+
+.show-item .show-name {
+    width: 160px;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+}
