@@ -109,11 +109,7 @@ class MyInfoCard extends Component {
 
     avatar = (avatar) => (
         <img
-<<<<<<< HEAD
-            src={this.props.user.avatar}
-=======
             src={avatar}
->>>>>>> 020d2fdc2c5aad85c26dca5ffa73e1bbfc0f2e3f
             style={{
                 width: '95%',
                 height: '95%',
