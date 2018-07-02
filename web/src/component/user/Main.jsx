@@ -18,13 +18,14 @@ class Main extends React.Component {
     componentWillMount = async () => {
         this.props.findAllByGenreInAndStartTime({genreList: Array.from(Genre.keys()), startTime: Date.now()});
         await axios.get(Api.show.findAllPlayingNow).then(resp => {
-            if (resp.data.value) this.setState({playingNowShows: resp.data.value});
+            if (resp.data.value) this.setState({playingNowShows: resp.data.value.slice(0, 6)});
             else console.log(`ERROR in findAllPlayingNow: ${resp.data.message}`)
         }).then(() => axios.get(Api.show.findAllWillPlay).then(resp => {
-            if (resp.data.value) this.setState({willPlayShows: resp.data.value});
+            if (resp.data.value) this.setState({willPlayShows: resp.data.value.slice(0, 6)});
             else console.log(`ERROR in findAllWillPlay: ${resp.data.message}`)
         }));
     };
+
     render = () => {
         switch (this.props.role) {
             case Role.CUSTOMER:
@@ -42,7 +43,7 @@ class Main extends React.Component {
                             </Row>
                             <Divider/>
                             {<Row type="flex"
-                                  justify="space-between">{this.state.playingNowShows.slice(0, 6).map(show => <Col
+                                  justify="start">{this.state.playingNowShows.map(show => <Col
                                 span={4}><ShowItem show={show}/></Col>)}</Row>}
                         </div>
 
@@ -52,7 +53,7 @@ class Main extends React.Component {
                                 <Col span={6} offset={12} align="right"><Button>全部<Icon type="right"/></Button></Col>
                             </Row>
                             <Divider/>
-                            {<Row type="flex" justify="space-between"> {this.state.willPlayShows.slice(0, 6).map(show =>
+                            {<Row type="flex" justify="start"> {this.state.willPlayShows.map(show =>
                                 <Col span={4}><ShowItem show={show}/></Col>)}</Row>}
                         </div>
                     </div>
