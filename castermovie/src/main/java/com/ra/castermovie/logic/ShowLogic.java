@@ -3,6 +3,7 @@ package com.ra.castermovie.logic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.Show;
 import com.ra.castermovie.model.common.Genre;
+import com.ra.castermovie.model.show.WillPlayShow;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface ShowLogic {
 
     Result<Show> findById(String id);
 
-    Result<List<Show>> findAllPlayingNow();
+    Result<List<Show>> findAllPlayingNow(String theaterId);
 
-    Result<List<Show>> findAllWillPlay();
+    Result<List<WillPlayShow>> findAllWillPlay(String theaterId);
 }

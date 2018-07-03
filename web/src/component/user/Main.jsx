@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux'
-import {Carousel} from 'antd'
+import {Button, Carousel, Col, Divider, Icon, Row} from 'antd'
 import './Main.css'
 import {Genre} from "../../model/show";
 import {findAllByGenreInAndStartTime, findAllPlayingNow, findAllWillPlay, selectShow} from "../../redux/show/actions";
@@ -9,20 +9,24 @@ import {RouteTable} from "../../route";
 import {route} from "../../redux/ui/actions";
 import TheaterList from '../tickets/TheaterList'
 import MyPublicInfos from '../theater/MyPublicInfos'
+import ShowItem from '../show/ShowItem'
+import {Api} from "../../api";
+import axios from "axios/index";
 
 class Main extends React.Component {
 
-    componentWillMount = () => {
-        this.props.findAllByGenreInAndStartTime({genreList: Array.from(Genre.keys()), startTime: Date.now()})
-        this.props.findAllPlayingNow();
-        this.props.findAllWillPlay();
+    componentWillMount = async () => {
+        this.props.findAllByGenreInAndStartTime({genreList: Array.from(Genre.keys()), startTime: Date.now()});
+        await axios.get(Api.show.findAllPlayingNow).then(resp => {
+            if (resp.data.value) this.setState({playingNowShows: resp.data.value.slice(0, 6)});
+            else console.log(`ERROR in findAllPlayingNow: ${resp.data.message}`)
+        }).then(() => axios.get(Api.show.findAllWillPlay).then(resp => {
+            if (resp.data.value) this.setState({willPlayShows: resp.data.value.slice(0, 6)});
+            else console.log(`ERROR in findAllWillPlay: ${resp.data.message}`)
+        }));
     };
 
-    onShowItemClick = (showId) => {
-        this.props.selectShow(showId).then(() => this.props.route(RouteTable[Role.CUSTOMER].ShowInfo.path + `#${showId}`, this.props.isAuthed))
-    };
-
-    component = () => {
+    render = () => {
         switch (this.props.role) {
             case Role.CUSTOMER:
                 return <div>
@@ -31,40 +35,54 @@ class Main extends React.Component {
                             src={s.poster}
                         />)}
                     </Carousel>
-                    <div>
-                        <h1>正在热映（{this.props.playingNowShows.length}）</h1>
+                    <div className="two-shows-panel">
+                        <div align="left" className="shows">
+                            <Row type="flex" justify="space-around" align="middle">
+                                <Col span={6}><h1>正在热映（{this.state.playingNowShows.length}部）</h1></Col>
+                                <Col span={6} offset={12} align="right"><Button>全部<Icon type="right"/></Button></Col>
+                            </Row>
+                            <Divider/>
+                            {<Row type="flex"
+                                  justify="start">{this.state.playingNowShows.map(show => <Col
+                                span={4}><ShowItem show={show}/></Col>)}</Row>}
+                        </div>
+
+                        <div align="left" className="shows">
+                            <Row type="flex" justify="space-around" align="middle">
+                                <Col span={6}><h1>即将上映（{this.state.willPlayShows.length}部）</h1></Col>
+                                <Col span={6} offset={12} align="right"><Button>全部<Icon type="right"/></Button></Col>
+                            </Row>
+                            <Divider/>
+                            {<Row type="flex" justify="start"> {this.state.willPlayShows.map(show =>
+                                <Col span={4}><ShowItem show={show}/></Col>)}</Row>}
+                        </div>
                     </div>
+
                 </div>;
-            // return _.chunk(this.props.shows, 4).map((showRow, index) => {
-            //     return <div>
-            //         <Row style={{margin: "0 0 16px"}} key={index} gutter={16}>
-            //             {showRow.map((show, innerIndex) => {
-            //                 return <Col key={innerIndex} span={6}>
-            //                     <Card key={innerIndex} title={<a
-            //                         onClick={() => this.onShowItemClick(show.id)}>{show.name}</a>}>
-            //                         <p>种类：{Genre.get(show.genre)}</p>
-            //                         <p>时长：{moment.utc(moment.duration(show.duration, 's').asMilliseconds()).format("HH:mm:ss")}</p>
-            //                     </Card>
-            //                 </Col>})}
-            //         </Row>
-            //     </div>
-            //
-            // });
+
             case Role.TICKETS:
                 return <TheaterList/>;
             case Role.THEATER:
                 return <MyPublicInfos/>
         }
+    }
+
+    onShowItemClick = (showId) => {
+        this.props.selectShow(showId).then(() => this.props.route(RouteTable[Role.CUSTOMER].ShowInfo.path + `#${showId}`, this.props.isAuthed))
     };
 
-    render = () => this.component()
+    constructor(props) {
+        super(props);
+        this.state = {
+            playingNowShows: [],
+            willPlayShows: [],
+        }
+    }
 
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        findAllPlayingNow: () => dispatch(findAllPlayingNow()),
-        findAllWillPlay: () => dispatch(findAllWillPlay()),
         findAllByGenreInAndStartTime: (elems) => dispatch(findAllByGenreInAndStartTime(elems)),
         selectShow: (showId) => dispatch(selectShow(showId)),
         route: (key, isAuthed, role = Role.CUSTOMER) => dispatch(route(key, isAuthed, role)),
@@ -73,8 +91,6 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
     return {
-        playingNowShows: state.showReducer.playingNowShows,
-        willPlayShows: state.showReducer.willPlayShows,
         shows: state.showReducer.shows,
         isAuthed: state.loginReducer.isAuthed,
         role: state.loginReducer.user.role,

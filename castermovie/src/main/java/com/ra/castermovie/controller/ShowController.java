@@ -5,6 +5,7 @@ import com.ra.castermovie.logic.ShowLogic;
 import com.ra.castermovie.logic.common.Result;
 import com.ra.castermovie.model.Show;
 import com.ra.castermovie.model.common.Genre;
+import com.ra.castermovie.model.show.WillPlayShow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -39,12 +40,12 @@ public class ShowController {
 
     @GetMapping(value = "findAllPlayingNow")
     Result<List<Show>> findAllPlayingNow() {
-        return showLogic.findAllPlayingNow();
+        return showLogic.findAllPlayingNow(null);
     }
 
     @GetMapping(value = "findAllWillPlay")
-    Result<List<Show>> findAllWillPlay() {
-        return showLogic.findAllWillPlay();
+    Result<List<WillPlayShow>> findAllWillPlay() {
+        return showLogic.findAllWillPlay(null);
     }
 
 }

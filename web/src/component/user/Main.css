@@ -5,6 +5,14 @@
 }
 
 .ant-carousel .slick-slide img {
-    width: 10px;
     height: 160px;
+}
+
+.shows {
+    padding-top: 50px;
+}
+
+.two-shows-panel {
+    width: 80%;
+    margin: auto;
 }

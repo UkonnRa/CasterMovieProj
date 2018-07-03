@@ -1,30 +1,19 @@
-import React, { Component } from 'react';
-import { DatePicker, Input, List, Pagination, Tag } from 'antd';
-import { connect } from 'react-redux';
-import {
-    findAllByGenreInAndStartTime,
-    selectShow
-} from '../../redux/show/actions';
-import { route } from '../../redux/ui/actions';
-import { Genre } from '../../model/show';
+import React, {Component} from 'react';
+import {Col, Input, Pagination, Row, Tabs, Tag} from 'antd';
+import {connect} from 'react-redux';
+import {Genre} from '../../model/show';
 import _ from 'lodash';
-import { RouteTable } from '../../route';
-import { Role } from '../../model/user';
-import moment from 'moment';
+import './ShowList.css'
+import {Api} from "../../api";
+import axios from "axios/index";
+import {findAllByGenreInAndStartTime} from "../../redux/show/actions";
+import ShowItem from '../show/ShowItem'
+
+class SearchPanel extends Component {
+
+}
 
 class ShowList extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            selectedGenres: [...Genre.keys()],
-            start: 0,
-            end: this.pagination.pageSize,
-            currPage: 1,
-            keyword: '',
-            startTime: Date.now()
-        };
-    }
-
     pagination = {
         pageSize: 5,
         onPageChange: (page, pageSize) => {
@@ -35,7 +24,28 @@ class ShowList extends Component {
             });
         }
     };
-
+    componentWillMount = async () => {
+        this.props.findAllByGenreInAndStartTime({genreList: Array.from(Genre.keys()), startTime: Date.now()});
+        await axios.get(Api.show.findAllPlayingNow).then(resp => {
+            if (resp.data.value) this.setState({playingNowShows: resp.data.value});
+            else console.log(`ERROR in findAllPlayingNow: ${resp.data.message}`)
+        }).then(() => axios.get(Api.show.findAllWillPlay).then(resp => {
+            if (resp.data.value) this.setState({willPlayShows: resp.data.value});
+            else console.log(`ERROR in findAllWillPlay: ${resp.data.message}`)
+        }));
+    };
+    pagination = {
+        rowNumber: 6,
+        rowSpan: 4,
+        colPerRow: 6,
+        onPageChange: (page, pageSize) => {
+            this.setState({
+                currPage: page,
+                start: (page - 1) * pageSize,
+                end: _.min([this.props.shows.length, page * pageSize])
+            });
+        }
+    };
     handleTagChecked = (key, checked) => {
         const nextSelectedGenres = checked
             ? [...this.state.selectedGenres, key]
@@ -46,56 +56,41 @@ class ShowList extends Component {
             end: this.pagination.pageSize,
             currPage: 1
         });
-        this.props.findAllByGenreInAndStartTime({
-            genreList: nextSelectedGenres,
-            startTime: this.state.startTime
-        });
     };
+    tabContent = (isNowPlaying) => {
+        const {selectedGenres} = this.state;
 
-    onDateChange = date => {
-        this.setState({
-            startTime: Number(date),
-            start: 0,
-            end: this.pagination.pageSize,
-            currPage: 1
-        });
-        this.props.findAllByGenreInAndStartTime({
-            genreList: this.state.selectedGenres,
-            startTime: Number(date)
-        });
-    };
+        const shows = isNowPlaying ? this.state.playingNowShows : this.state.willPlayShows;
 
-    onShowItemClick = showId => {
-        this.props
-            .selectShow(showId)
-            .then(() =>
-                this.props.route(
-                    `${RouteTable[Role.CUSTOMER].ShowInfo.path}#${showId}`,
-                    this.props.isAuthed
-                )
-            );
-    };
-
-    render() {
-        const { selectedGenres } = this.state;
-        const resultShow = this.props.shows.filter(
+        const resultShows = shows.filter(
             item =>
                 _.isEmpty(this.state.keyword)
                     ? true
                     : item.name.indexOf(this.state.keyword) !== -1
-        );
-        return (
-            <div>
-                <Input.Search
+        ).filter(item => this.state.selectedGenres.some(genre => genre === item.genre));
+
+        console.log("is playing now: ", isNowPlaying, shows);
+
+        return <div className="show-list-panel">
+            <Row className="show-filter">
+                <Col span={6} align="right" className="show-label">
+                    <div>关键词：</div>
+                </Col>
+                <Col span={18} align="left" className="show-keyword-input"><Input.Search
                     placeholder="剧集名称"
-                    style={{ width: '50%', alignSelf: 'center' }}
+                    style={{width: '50%', alignSelf: 'center'}}
                     onSearch={value => {
-                        this.setState({ keyword: value });
+                        this.setState({keyword: value});
                     }}
                     enterButton
-                />
-                <br />
-                {Array.from(Genre.entries()).map(pair => {
+                /></Col>
+            </Row>
+
+            <Row className="show-filter">
+                <Col span={6} align="right" className="show-label">
+                    <div>类型：</div>
+                </Col>
+                <Col span={18} align="left" className="show-type-tags">{Array.from(Genre.entries()).map(pair => {
                     return (
                         <Tag.CheckableTag
                             key={pair[0]}
@@ -107,61 +102,67 @@ class ShowList extends Component {
                             {pair[1]}
                         </Tag.CheckableTag>
                     );
-                })}
-                <List
-                    dataSource={resultShow.slice(
-                        this.state.start,
-                        this.state.end
-                    )}
-                    renderItem={item => (
-                        <List.Item key={item.id}>
-                            <List.Item.Meta
-                                title={
-                                    <a
-                                        onClick={() =>
-                                            this.onShowItemClick(item.id)
-                                        }
-                                    >
-                                        {item.name}
-                                    </a>
-                                }
-                                description={Genre.get(item.genre)}
-                            />
-                            时长：{moment
-                                .utc(
-                                    moment
-                                        .duration(item.duration, 's')
-                                        .asMilliseconds()
-                                )
-                                .format('HH:mm:ss')}
-                        </List.Item>
-                    )}
-                />
-                <Pagination
-                    current={this.state.currPage}
-                    total={resultShow.length}
-                    pageSize={this.pagination.pageSize}
-                    onChange={this.pagination.onPageChange}
-                />
+                })}</Col>
+            </Row>
+
+            {_.range(this.pagination.rowNumber).map(row => <Row type="flex" justify="start">
+                {_.range(this.pagination.colPerRow).map(index => <Col span={this.pagination.rowSpan}>
+                    <ShowItem
+                        show={resultShows[(this.state.currPage - 1) * this.pagination.rowNumber * this.pagination.colPerRow + row * this.pagination.colPerRow + index]}/>
+                </Col>)}
+            </Row>)}
+
+            <Pagination
+                current={this.state.currPage}
+                total={resultShows.length}
+                pageSize={this.pagination.rowNumber * this.pagination.colPerRow}
+                onChange={this.pagination.onPageChange}
+            />
+        </div>
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedGenres: [...Genre.keys()],
+            start: 0,
+            end: this.pagination.pageSize,
+            currPage: 1,
+            keyword: '',
+            startTime: Date.now(),
+
+            playingNowShows: [],
+            willPlayShows: [],
+
+        };
+    }
+
+    render() {
+
+        return (
+            <div>
+
+                <Tabs className="search-panel" defaultActiveKey="1" onChange={this.handleTagChecked}>
+                    <Tabs.TabPane tab="正在热映" key="1">
+                        {this.tabContent(true)}
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="即将上映" key="2">
+                        {this.tabContent(false)}
+                    </Tabs.TabPane>
+                </Tabs>
             </div>
         );
     }
 }
 
 const mapStateToProps = state => {
-    return {
-        shows: state.showReducer.shows,
-        userId: state.loginReducer.user.id,
-        isAuthed: state.loginReducer.isAuthed
-    };
+    return {};
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         findAllByGenreInAndStartTime: value =>
             dispatch(findAllByGenreInAndStartTime(value)),
-        selectShow: showId => dispatch(selectShow(showId)),
-        route: (key, isAuthed) => dispatch(route(key, isAuthed))
     };
 };
 
