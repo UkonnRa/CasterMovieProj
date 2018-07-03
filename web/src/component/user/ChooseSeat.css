@@ -1,0 +1,97 @@
+.show-info {
+    text-align: left;
+}
+
+.show-info-info {
+    font-weight: bold;
+}
+
+.show-info-show-name {
+    font-weight: bold;
+}
+
+.choose-seat {
+    border: 1px solid #e5e5e5;
+    width: 80%;
+    margin: auto;
+}
+
+.choose-seat-side {
+    background-color: #f9f9f9;
+    padding: 20px;
+}
+
+.choose-seat-side-img {
+}
+
+.ant-col-17 div {
+    align-self: center;
+    width: 80%;
+}
+
+.show-info-info-time {
+    word-break: keep-all;
+    white-space: nowrap;
+    color: red;
+}
+
+.show-info-info-total {
+    word-break: keep-all;
+    white-space: nowrap;
+    color: red;
+    font-size: 20px;
+}
+
+.Seat {
+    background-color: #4FC3F7;
+    margin-right: 10px;
+    height: 55px;
+    width: 65px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-border-top-left-radius: 10px;
+    -webkit-border-top-right-radius: 10px;
+}
+
+.Seat--enabled {
+    cursor: pointer;
+}
+
+.Seat--enabled:hover {
+    background-color: #03A9F4;
+}
+
+.Seat--selected {
+    cursor: pointer;
+    background-color: #4CAF50;
+}
+
+.Seat--reserved {
+    cursor: not-allowed;
+    background-color: #E0E0E0;
+}
+
+.Row {
+    font-family: "Helvetica", serif;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.Row--enabled:hover {
+    background-color: #F5F5F5;
+}
+
+.Row--selected {
+    background-color: #F5F5F5;
+}
+
+.RowNumber {
+    font-weight: normal;
+    width: 35px;
+    text-align: center;
+    color: #9E9E9E;
+}

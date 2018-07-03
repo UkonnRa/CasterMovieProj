@@ -1,16 +1,17 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import axios from 'axios'
-import {Button, Checkbox, Select} from 'antd'
-import moment from 'moment'
+import {Button, Col, Divider, message, Row} from 'antd'
+import Seatmap from '../seatmap/build';
 import {Api} from "../../api";
 import _ from 'lodash'
 import {findById} from "../../redux/order/actions";
 import {RouteTable} from "../../route";
 import {route} from "../../redux/ui/actions";
-import {State} from "../../model/couponInfo";
 import {findAllByUserId} from "../../redux/couponInfo/actions";
-
+import './ChooseSeat.css'
+import {Genre} from '../../model/show'
+import moment from 'moment'
 
 class ChooseSeat extends Component {
     constructor(props) {
@@ -20,7 +21,6 @@ class ChooseSeat extends Component {
             selectedTheater: {},
             selectedSeats: [],
             autoNumber: 0,
-            selectedCouponInfo: {discount: 1.0},
         }
     }
 
@@ -62,37 +62,14 @@ class ChooseSeat extends Component {
                 });
             if (orderData.data.value) {
                 await this.props.findById(orderData.data.value.id);
+                message.info("已成功预定座位，即将跳转至付款页面...");
                 this.props.route(`${RouteTable.CUSTOMER.PayOrder.path}#${orderData.data.value.id}`, this.props.isAuthed)
             } else {
-                alert(`Order error: ${orderData.data.message}`)
+                message.info(`发生错误：${orderData.data.message}`);
             }
-        } else alert("Some thing is empty!!!")
-    };
-
-    createCouponInfoSelect = () =>
-        <Select defaultValue="no" onChange={(id) => this.setState({selectedCouponInfo: this.findFromArray(id)})}>
-            <Select.Option value="no">[不选择优惠]</Select.Option>
-            {this.props.couponInfos.filter(info => info.state === State.READY)
-                .map(info => <Select.Option value={info.id}>{info.name}</Select.Option>)}
-        </Select>;
-
-    component = () => {
-
-            return <div>
-                <Checkbox.Group onChange={this.onSeatClick}>
-                    {_.chunk(this.props.selectedPublicInfo.seatDistribution, this.state.selectedTheater.seatPerLine).map((seatLine, outerIndex) =>
-                        <div>
-                            {seatLine.map((item, innerIndex) => <Checkbox
-                                value={outerIndex * this.state.selectedTheater.seatPerLine + innerIndex}
-                                disabled={!item}/>)}
-                            <br/>
-                            <br/>
-                        </div>
-                    )}
-                </Checkbox.Group>
-                <Button onClick={this.submit}>提交订单</Button>
-            </div>
-
+        } else {
+            message.warning("请至少选择一个座位");
+        }
     };
 
     autoOrder = () => {
@@ -117,19 +94,78 @@ class ChooseSeat extends Component {
         }).catch(err => alert(err))
     };
 
-    render = () => <div>
-        剧集名称：{this.state.selectedShow.name}
-        <br/>
-        剧院：{this.state.selectedTheater.name}
-        <br/>
-        放映时间：{moment(this.props.selectedPublicInfo.schedule).format("YYYY-MM-DD HH:mm:ss")}
-        <br/>
-        {this.component()}
-    </div>
+    onAddSeat = (row, number) => {
+        this.setState({selectedSeats: [...this.state.selectedSeats, (row.charCodeAt(0) - 'A'.charCodeAt(0)) * this.state.selectedTheater.seatPerLine + (number - 1)]})
+    };
+
+    onRemoveSeat = (row, number) => {
+        this.setState({selectedSeats: _.without(this.state.selectedSeats, (row.charCodeAt(0) - 'A'.charCodeAt(0)) * this.state.selectedTheater.seatPerLine + (number - 1))})
+
+    };
+
+    mapRowFromSeatDistribution = () => {
+        let seatPerLine = this.state.selectedTheater.seatPerLine;
+        let {seatDistribution} = this.props.selectedPublicInfo;
+        let mapToSeats = seatDistribution
+            .map((elem, index) => {
+                return {number: index % seatPerLine + 1, isReserved: !elem}
+            });
+        return _.chunk(mapToSeats, seatPerLine);
+    };
+
+    render = () => {
+        let {genre, duration} = this.state.selectedShow;
+        let showName = this.state.selectedShow.name;
+        let theaterName = this.state.selectedTheater.name;
+        let basePrice = this.props.selectedPublicInfo.basePrice;
+
+        return <div align="center" className="choose-seat">
+            <Row>
+                <Col span={17} style={{padding: '20px'}}>
+                    <Divider>银幕</Divider>
+                    {this.state.selectedTheater.seatPerLine ?
+                        <Seatmap addSeatCallback={this.onAddSeat} removeSeatCallback={this.onRemoveSeat}
+                                 maxSeatCallback={() => {
+                                     message.warning('一次最多可购买6张票');
+                                 }} rows={this.mapRowFromSeatDistribution()} maxReservableSeats={6} alpha/> : null}
+                </Col>
+                <Col span={7} className="   choose-seat-side">
+                    <Row type="flex" justify="start">
+                        <Col span={14}>
+                            <img className="choose-seat-side-img"
+                                 src="https://castermovie.oss-cn-beijing.aliyuncs.com/show/crzdy.jpg"
+                                 style={{width: '160px'}}/>
+                        </Col>
+                        <Col span={10} className="show-info">
+                            <h2 className="show-info-show-name">{showName}</h2>
+                            <br/>
+                            <span className="show-info-info">类型：</span>{Genre.get(genre)}
+                            <br/>
+                            <span className="show-info-info">时长：</span>{duration / 60 | 0} 分钟
+                        </Col>
+                    </Row>
+                    <div className="show-info">
+                        <span className="show-info-info">剧院：</span>{theaterName}
+                        <br/>
+                        <span className="show-info-info">场次：</span><span
+                        className="show-info-info-time">{moment(this.props.selectedPublicInfo.schedule).format("YYYY-MM-DD HH:mm")}</span>
+                        <br/>
+                        <span className="show-info-info">票价：</span>{basePrice / 100} 元/人
+                        <Divider/>
+                        <span className="show-info-info">总价：</span><span
+                        className="show-info-info-total">{basePrice / 100 * this.state.selectedSeats.length} 元</span>
+                    </div>
+                    <Button onClick={this.submit}>提交订单</Button>
+
+                </Col>
+            </Row>
+        </div>
+    }
 }
 
 const mapStateToProps = state => {
     return {
+
         selectedPublicInfo: state.publicInfoReducer.selectedPublicInfo,
         user: state.loginReducer.user,
         couponInfos: state.couponInfoReducer.couponInfos,

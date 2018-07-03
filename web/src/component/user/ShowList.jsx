@@ -74,7 +74,7 @@ class ShowList extends Component {
         return <div className="show-list-panel">
             <Row className="show-filter">
                 <Col span={6} align="right" className="show-label">
-                    <div>关键词：</div>
+                    <div style={{fontWeight: "bold"}}>关键词：</div>
                 </Col>
                 <Col span={18} align="left" className="show-keyword-input"><Input.Search
                     placeholder="剧集名称"
@@ -88,7 +88,7 @@ class ShowList extends Component {
 
             <Row className="show-filter">
                 <Col span={6} align="right" className="show-label">
-                    <div>类型：</div>
+                    <div style={{fontWeight: "bold"}}>类型：</div>
                 </Col>
                 <Col span={18} align="left" className="show-type-tags">{Array.from(Genre.entries()).map(pair => {
                     return (

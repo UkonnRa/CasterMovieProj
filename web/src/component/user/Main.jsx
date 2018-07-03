@@ -12,6 +12,7 @@ import MyPublicInfos from '../theater/MyPublicInfos'
 import ShowItem from '../show/ShowItem'
 import {Api} from "../../api";
 import axios from "axios/index";
+import Slider from "react-slick";
 
 class Main extends React.Component {
 
@@ -27,14 +28,32 @@ class Main extends React.Component {
     };
 
     render = () => {
+        const settings = {
+            dots: true,
+            autoplay: true,
+            autoplaySpeed: 3000,
+            className: "slider-header",
+            centerMode: true,
+            infinite: true,
+            centerPadding: "60px",
+            slidesToShow: 5,
+            speed: 500
+        };
+
         switch (this.props.role) {
             case Role.CUSTOMER:
                 return <div>
-                    <Carousel autoplay>
-                        {this.props.shows.map(s => <img
-                            src={s.poster}
-                        />)}
-                    </Carousel>
+                    <Slider {...settings}>
+                        {["https://castermovie.oss-cn-beijing.aliyuncs.com/show/crzdy.jpg",
+                            "https://castermovie.oss-cn-beijing.aliyuncs.com/show/dwsj.jpg",
+                            "https://castermovie.oss-cn-beijing.aliyuncs.com/show/jf.jpg",
+                            "https://castermovie.oss-cn-beijing.aliyuncs.com/show/lmjr.jpg",
+                            "https://castermovie.oss-cn-beijing.aliyuncs.com/show/qyqx.jpg",
+                            "https://castermovie.oss-cn-beijing.aliyuncs.com/show/xskdjs.jpg",
+                            "https://castermovie.oss-cn-beijing.aliyuncs.com/show/zljgy2.jpg",
+                        ].map(s => <img style={{width: "160px"}} src={s}/>)}
+                    </Slider>
+
                     <div className="two-shows-panel">
                         <div align="left" className="shows">
                             <Row type="flex" justify="space-around" align="middle">
