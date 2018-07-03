@@ -5,6 +5,7 @@ import ShowList from "../component/user/ShowList"
 import ShowInfo from "../component/user/ShowInfo"
 import ChooseSeat from "../component/user/ChooseSeat"
 import PayOrder from '../component/user/PayOrder'
+import TheaterInfo from '../component/user/TheaterInfo'
 import _ from "lodash";
 import CheckIn from '../component/theater/CheckIn'
 import MyPublicInfos from '../component/theater/MyPublicInfos'
@@ -50,6 +51,12 @@ export const RouteTable = {
             path: "ShowInfo",
             text: "剧集信息",
             component: <ShowInfo/>
+        },
+        TheaterInfo: {
+            path: "TheaterInfo",
+            text: "影院信息",
+            needAuthed: true,
+            component: <TheaterInfo />
         },
         ChooseSeat: {
             path: "ChooseSeat",

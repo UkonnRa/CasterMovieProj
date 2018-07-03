@@ -1,20 +1,21 @@
 import React from 'react';
-import { Divider, Icon, Card, List, Tabs, Row, Col, Tag, Button } from 'antd';
 import { connect } from 'react-redux';
-
 import 'react-area-linkage/dist/index.css'; // v2 or higher
+import { Divider, Icon, List, Tabs, Row, Col, Tag } from 'antd';
+import { RouteTable } from '../../route';
 import { Genre } from '../../model/show';
+import { Api } from '../../api';
 import {
     findAllPublicInfoByShowId,
-    findById
+    findPublicInfo
 } from '../../redux/publicInfo/actions';
+import { selectTheater } from '../../redux/theater/actions';
+import { chooseSeatButtonStyle } from './common'
 import { route } from '../../redux/ui/actions';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import axios from 'axios';
-import { Api } from '../../api';
 import _ from 'lodash';
-import { RouteTable } from '../../route';
 
 const moment = extendMoment(Moment);
 
@@ -51,10 +52,10 @@ class ShowInfo extends React.Component {
             .then(result => this.setState({ theaters: new Map(result) }));
     };
 
-    onChooseTheaterClick = publicInfoId => {
-        this.props.findById(publicInfoId).then(() => {
+    onChooseTheaterClick = theaterId => {
+        this.props.findTheaterInfo(theaterId).then(() => {
             this.props.route(
-                RouteTable.CUSTOMER.ChooseSeat.path + `#${publicInfoId}`,
+                RouteTable.CUSTOMER.TheaterInfo.path,
                 this.props.isAuthed
             );
         });
@@ -63,7 +64,7 @@ class ShowInfo extends React.Component {
     showInfo(show) {
         return (
             <Row align="top">
-                <Col span={6}>
+                <Col offset={1} span={6}>
                     <img
                         src={show.poster}
                         style={{
@@ -126,37 +127,25 @@ class ShowInfo extends React.Component {
                     ''
                 ) : (
                     <Row type="flex" align="middle" style={{ width: '100%' }}>
-                        <Col offset={2} span={14}>
+                        <Col span={14}>
                             <h2>{theater === null ? '' : theater.name}</h2>
                             <h3 style={{ color: 'gray' }}>
                                 地址：{theater.location}
                             </h3>
                         </Col>
-                        <Col span={3}>
+                        <Col offset={2} span={3}>
                             <span style={{ color: 'red' }}>
                                 ￥<span style={{ fontSize: '1.3em' }}>
                                     {(item.basePrice / 100).toFixed(0)}
                                 </span>
                             </span>&nbsp;&nbsp; 起
                         </Col>
-                        <Col span={3}>
+                        <Col offset={2} span={3}>
                             <button
                                 onClick={() =>
-                                    this.onChooseTheaterClick(item.id)
+                                    this.onChooseTheaterClick(item.theaterId)
                                 }
-                                style={{
-                                    backgroundColor: '#ff5e59',
-                                    border: '0',
-                                    borderRadius: '15px',
-                                    width: '100%',
-                                    height: '30px',
-                                    color: 'white',
-                                    fontSize: '14px',
-                                    textAlign: 'center',
-                                    boxShadow: '0 2px 10px -2px #f03d37',
-                                    cursor: 'pointer',
-                                    fontWeight: '550'
-                                }}
+                                style={chooseSeatButtonStyle}
                             >
                                 选座购票
                             </button>
@@ -199,7 +188,8 @@ const mapDispatchToProps = dispatch => {
     return {
         findAllPublicInfoByShowId: showId =>
             dispatch(findAllPublicInfoByShowId(showId)),
-        findById: id => dispatch(findById(id)),
+        findPublicInfo: id => dispatch(findPublicInfo(id)),
+        findTheaterInfo: id => dispatch(selectTheater(id)),
         route: (path, isAuthed) => dispatch(route(path, isAuthed))
     };
 };
