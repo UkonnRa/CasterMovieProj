@@ -10,16 +10,20 @@ import com.ra.castermovie.model.show.WillPlayShow;
 import com.ra.castermovie.service.PublicInfoService;
 import com.ra.castermovie.service.ShowService;
 import com.ra.castermovie.service.TheaterService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+@Slf4j
 public class ShowLogicImpl implements ShowLogic {
     private final ShowService showService;
     private final PublicInfoService publicInfoService;
@@ -55,8 +59,8 @@ public class ShowLogicImpl implements ShowLogic {
     }
 
     private Stream<Show> _findAllPlayingNowToStream(String theaterId) {
-        long now = System.currentTimeMillis();
-        long endOfToday = (((now / 86_400_000) + 1) * (86_400_000)) - 1;
+        long now = Instant.now().toEpochMilli();
+        long endOfToday = Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli();
 
         List<PublicInfo> piThisDay = publicInfoService.findAllByScheduleBetween(now, endOfToday).collectList().block();
         if (theaterId != null)
