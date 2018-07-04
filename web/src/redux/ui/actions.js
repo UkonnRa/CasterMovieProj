@@ -4,13 +4,13 @@ import {LOGIN} from "../auth/types";
 import {Role} from "../../model/user";
 import {RouteTable} from "../../route";
 
-export const route = (key, isAuthed, role = Role.CUSTOMER) => (dispatch) => {
+export const route = (key, isAuthed, role = Role.CUSTOMER) => async (dispatch) => {
     let itemKey = key;
     if (itemKey.indexOf("#") !== -1) {
         itemKey = itemKey.substring(0, itemKey.indexOf("#"))
     }
 
-    // console.log(RouteTable[role], itemKey);
+    console.log(itemKey);
     if (RouteTable[role][itemKey].needAuthed) {
         if (isAuthed) {
             if (RouteTable[role][itemKey]) {
@@ -20,7 +20,7 @@ export const route = (key, isAuthed, role = Role.CUSTOMER) => (dispatch) => {
                 dispatch({type: NOW_ROUTER, key: RouteTable[role].Main.path})
             }
         } else {
-            getByJwt().then(userData => {
+            await getByJwt().then(userData => {
                 if (userData.data.value) {
                     dispatch({type: LOGIN, user: userData.data.value});
                     dispatch({type: NOW_ROUTER, key: key});
@@ -35,7 +35,7 @@ export const route = (key, isAuthed, role = Role.CUSTOMER) => (dispatch) => {
         }
     } else {
         if (!isAuthed) {
-            getByJwt().then(userData => {
+            await  getByJwt().then(userData => {
                 if (userData.data.value) {
                     dispatch({type: LOGIN, user: userData.data.value})
                 }

@@ -12,26 +12,16 @@ class SearchPanel extends Component {
 }
 
 class ShowList extends Component {
-    pagination = {
-        pageSize: 5,
-        onPageChange: (page, pageSize) => {
-            this.setState({
-                currPage: page,
-                start: (page - 1) * pageSize,
-                end: _.min([this.props.shows.length, page * pageSize])
-            });
-        }
-    };
 
     pagination = {
         rowNumber: 6,
         rowSpan: 4,
         colPerRow: 6,
-        onPageChange: (page, pageSize) => {
+        onPageChange: (page, pageSize, isNowPlaying) => {
             this.setState({
                 currPage: page,
                 start: (page - 1) * pageSize,
-                end: _.min([this.props.shows.length, page * pageSize])
+                end: _.min([isNowPlaying? this.props.showsPlayingNowInRegion.length:  this.props.showsWillPlayInRegion.length, page * pageSize])
             });
         }
     };
@@ -42,10 +32,11 @@ class ShowList extends Component {
         this.setState({
             selectedGenres: nextSelectedGenres,
             start: 0,
-            end: this.pagination.pageSize,
+            end: this.pagination.rowNumber * this.pagination.colPerRow,
             currPage: 1
         });
     };
+
     tabContent = (isNowPlaying) => {
         const {selectedGenres} = this.state;
 
@@ -105,7 +96,7 @@ class ShowList extends Component {
                 current={this.state.currPage}
                 total={resultShows.length}
                 pageSize={this.pagination.rowNumber * this.pagination.colPerRow}
-                onChange={this.pagination.onPageChange}
+                onChange={(page, pageSize) => this.pagination.onPageChange(page, pageSize, isNowPlaying)}
             />
         </div>
     }
@@ -115,7 +106,7 @@ class ShowList extends Component {
         this.state = {
             selectedGenres: [...Genre.keys()],
             start: 0,
-            end: this.pagination.pageSize,
+            end: this.pagination.rowNumber * this.pagination.colPerRow,
             currPage: 1,
             keyword: '',
             startTime: Date.now(),
@@ -123,15 +114,13 @@ class ShowList extends Component {
     }
 
     render() {
-
         return (
             <div>
-
-                <Tabs className="search-panel" defaultActiveKey="1" onChange={this.handleTagChecked}>
-                    <Tabs.TabPane tab="正在热映" key="1">
+                <Tabs className="search-panel" defaultActiveKey={this.props.showListIsPlayingNow? "playingNow": "willPlay"}>
+                    <Tabs.TabPane tab="正在热映" key="playingNow">
                         {this.tabContent(true)}
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="即将上映" key="2">
+                    <Tabs.TabPane tab="即将上映" key="willPlay">
                         {this.tabContent(false)}
                     </Tabs.TabPane>
                 </Tabs>
@@ -142,6 +131,7 @@ class ShowList extends Component {
 
 const mapStateToProps = state => {
     return {
+        showListIsPlayingNow: state.showReducer.showListIsPlayingNow,
         showsPlayingNowInRegion: state.showReducer.showsPlayingNowInRegion,
         showsWillPlayInRegion: state.showReducer.showsWillPlayInRegion,
     };

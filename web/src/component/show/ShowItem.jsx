@@ -18,7 +18,7 @@ class ShowItem extends React.Component {
         hoverable
         style={{width: 160}}
         cover={<img alt="Waiting..." src={this.props.show.poster}/>}
-        actions={[<div onClick={this.onShowSelect}>购票</div>]}
+        actions={[<div onClick={this.onShowSelect}>{this.props.show.startDate ? "预览": "购票"}</div>]}
     >
         <Card.Meta
             title={<div>{this.props.show.name}</div>}

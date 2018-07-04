@@ -16,6 +16,7 @@ import TheaterList from '../tickets/TheaterList'
 import MyPublicInfos from '../theater/MyPublicInfos'
 import ShowItem from '../show/ShowItem'
 import Slider from "react-slick";
+import {CHOOSE_PLAYING_NOW, CHOOSE_WILL_PLAY} from "../../redux/show/types";
 
 class Main extends React.Component {
     componentWillMount = async () => {
@@ -24,6 +25,19 @@ class Main extends React.Component {
         await this.props.findAllWillPlayInRegion(Object.keys(this.props.location)[0]);
     };
 
+    onPlayingNowListClick = async () => {
+        this.props.showListchoosePlayingNow();
+        await this.props.route(RouteTable.CUSTOMER.ShowList.path + "#playingNow", this.props.isAuthed, this.props.role)
+    }
+
+    onWillPlayListClick = async () => {
+        this.props.showListchooseWillPlay();
+        await this.props.route(RouteTable.CUSTOMER.ShowList.path + "#willPlay", this.props.isAuthed, this.props.role)
+    }
+    onShowSelect = async (s) => {
+        await this.props.selectShow(s.id);
+        await this.props.route(RouteTable.CUSTOMER.ShowInfo.path, this.props.isAuthed);
+    };
     render = () => {
         const settings = {
             dots: true,
@@ -42,28 +56,28 @@ class Main extends React.Component {
             case Role.CUSTOMER:
                 return <div>
                     <Slider {...settings}>
-                        {this.props.showsPlayingNowInRegion.slice(0, 6).map(s => <img onClick={() => console.log(s)} style={{width: "160px"}} src={s.poster}/>)}
+                        {this.props.showsPlayingNowInRegion.slice(0, 6).map(s => <img onClick={() => this.onShowSelect(s)} style={{width: "160px"}} src={s.poster}/>)}
                     </Slider>
 
                     <div className="two-shows-panel">
                         <div align="left" className="shows">
                             <Row type="flex" justify="space-around" align="middle">
                                 <Col span={6}><h1>正在热映（{this.props.showsPlayingNowInRegion.length}部）</h1></Col>
-                                <Col span={6} offset={12} align="right"><Button>全部<Icon type="right"/></Button></Col>
+                                <Col span={6} offset={12} align="right"><Button onClick={this.onPlayingNowListClick}>全部<Icon type="right"/></Button></Col>
                             </Row>
                             <Divider/>
                             {<Row type="flex"
-                                  justify="start">{this.props.showsPlayingNowInRegion.map(show => <Col
+                                  justify="start">{this.props.showsPlayingNowInRegion.slice(6, 12).map(show => <Col
                                 span={4}><ShowItem show={show}/></Col>)}</Row>}
                         </div>
 
                         <div align="left" className="shows">
                             <Row type="flex" justify="space-around" align="middle">
                                 <Col span={6}><h1>即将上映（{this.props.showsWillPlayInRegion.length}部）</h1></Col>
-                                <Col span={6} offset={12} align="right"><Button>全部<Icon type="right"/></Button></Col>
+                                <Col span={6} offset={12} align="right"><Button onClick={this.onWillPlayListClick}>全部<Icon type="right"/></Button></Col>
                             </Row>
                             <Divider/>
-                            {<Row type="flex" justify="start"> {this.props.showsWillPlayInRegion.map(show =>
+                            {<Row type="flex" justify="start"> {this.props.showsWillPlayInRegion.slice(0, 6).map(show =>
                                 <Col span={4}><ShowItem show={show}/></Col>)}</Row>}
                         </div>
                     </div>
@@ -87,6 +101,8 @@ class Main extends React.Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        showListchoosePlayingNow: () => dispatch({type: CHOOSE_PLAYING_NOW}),
+        showListchooseWillPlay: ()  => dispatch({type: CHOOSE_WILL_PLAY}),
         findAllPlayingNowInRegion: (regionId) => dispatch(findAllPlayingNowInRegion(regionId)),
         findAllWillPlayInRegion: (regionId) => dispatch(findAllWillPlayInRegion(regionId)),
 
