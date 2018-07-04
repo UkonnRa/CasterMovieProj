@@ -1,11 +1,16 @@
-.logo {
-    width: 120px;
-    height: 31px;
-    background: rgba(255,255,255,.2);
-    margin: 16px 24px 16px 0;
-    float: left;
-}
-
 .app-menu-item {
     font-size: 18px;
+}
+
+.app-menu-location-popover {
+    font-size: 18px;
+    color: #f0f2f5;
+}
+
+.area-select.medium {
+    width: auto;
+}
+
+.ant-dropdown-menu {
+    margin-top: 15px;
 }

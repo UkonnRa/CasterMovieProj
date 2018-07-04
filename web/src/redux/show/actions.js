@@ -1,4 +1,10 @@
-import {FIND_ALL_SHOWS_BY_GENRE_IN, FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME, SELECT_SHOW} from "./types";
+import {
+    FIND_ALL_PLAYING_NOW_IN_REGION,
+    FIND_ALL_SHOWS_BY_GENRE_IN,
+    FIND_ALL_SHOWS_BY_GENRE_IN_AND_START_TIME,
+    FIND_ALL_WILL_PLAY_IN_REGION,
+    SELECT_SHOW
+} from "./types";
 import axios from "axios";
 import {Api} from '../../api'
 import qs from 'qs'
@@ -40,5 +46,27 @@ export const findAllShowsByGenreIn = ({genreList = []}) => dispatch =>
         }
     }).then(resp => {
         if (resp.data.value) dispatch({type: FIND_ALL_SHOWS_BY_GENRE_IN, shows: resp.data.value});
+        else console.log(`ERROR: ${resp.data.message}`)
+    });
+
+export const findAllPlayingNowInRegion = (regionId) => dispatch =>
+    axios.get(Api.show.findAllPlayingNowInRegion, {
+        params: {"regionId": regionId},
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+        }
+    }).then(resp => {
+        if (resp.data.value) dispatch({type: FIND_ALL_PLAYING_NOW_IN_REGION, showsPlayingNowInRegion: resp.data.value});
+        else console.log(`ERROR: ${resp.data.message}`)
+    });
+
+export const findAllWillPlayInRegion = (regionId) => dispatch =>
+    axios.get(Api.show.findAllWillPlayInRegion, {
+        params: {"regionId": regionId},
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+        }
+    }).then(resp => {
+        if (resp.data.value) dispatch({type: FIND_ALL_WILL_PLAY_IN_REGION, showsWillPlayInRegion: resp.data.value});
         else console.log(`ERROR: ${resp.data.message}`)
     });

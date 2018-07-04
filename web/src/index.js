@@ -1,19 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension'; //devToolsEnhancer,
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import {composeWithDevTools} from 'redux-devtools-extension'; //devToolsEnhancer,
+import {applyMiddleware, combineReducers, createStore} from 'redux';
 import BaseFrame from './App';
-import { loginReducer } from './redux/auth/reducers';
-import { siderReducer } from './redux/ui/frameSider/reducers';
-import { orderReducer } from './redux/order/reducers';
-import { showReducer } from './redux/show/reducers';
-import { routeReducer } from './redux/ui/reducers';
-import { couponInfoReducer } from './redux/couponInfo/reducers';
-import { publicInfoReducer } from './redux/publicInfo/reducers';
-import { theaterReducer } from './redux/theater/reducers';
+import {loginReducer} from './redux/auth/reducers';
+import {siderReducer} from './redux/ui/frameSider/reducers';
+import {orderReducer} from './redux/order/reducers';
+import {showReducer} from './redux/show/reducers';
+import {routeReducer} from './redux/ui/reducers';
+import {couponInfoReducer} from './redux/couponInfo/reducers';
+import {publicInfoReducer} from './redux/publicInfo/reducers';
+import {theaterReducer} from './redux/theater/reducers';
 import entryFormReducer from './redux/entry/reducers';
+import {locationReducer} from './redux/location/reducers'
 import registerServiceWorker from './registerServiceWorker';
 import moment from 'moment';
 
@@ -149,7 +150,8 @@ const reducers = combineReducers({
     couponInfoReducer,
     publicInfoReducer,
     theaterReducer,
-    entryFormReducer
+    entryFormReducer,
+    locationReducer,
 });
 
 let store = createStore(

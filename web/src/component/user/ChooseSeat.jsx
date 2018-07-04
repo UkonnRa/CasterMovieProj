@@ -121,7 +121,7 @@ class ChooseSeat extends Component {
 
         return <div align="center" className="choose-seat">
             <Row>
-                <Col span={17} style={{padding: '20px'}}>
+                <Col span={15} style={{padding: '20px'}}>
                     <Divider>银幕</Divider>
                     {this.state.selectedTheater.seatPerLine ?
                         <Seatmap addSeatCallback={this.onAddSeat} removeSeatCallback={this.onRemoveSeat}
@@ -129,14 +129,14 @@ class ChooseSeat extends Component {
                                      message.warning('一次最多可购买6张票');
                                  }} rows={this.mapRowFromSeatDistribution()} maxReservableSeats={6} alpha/> : null}
                 </Col>
-                <Col span={7} className="   choose-seat-side">
+                <Col span={9} className="   choose-seat-side">
                     <Row type="flex" justify="start">
-                        <Col span={14}>
+                        <Col span={13}>
                             <img className="choose-seat-side-img"
                                  src="https://castermovie.oss-cn-beijing.aliyuncs.com/show/crzdy.jpg"
                                  style={{width: '160px'}}/>
                         </Col>
-                        <Col span={10} className="show-info">
+                        <Col span={11} className="show-info">
                             <h2 className="show-info-show-name">{showName}</h2>
                             <br/>
                             <span className="show-info-info">类型：</span>{Genre.get(genre)}

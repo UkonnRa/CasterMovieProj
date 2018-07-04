@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/castermovie/show")
@@ -46,6 +47,16 @@ public class ShowController {
     @GetMapping(value = "findAllWillPlay")
     Result<List<WillPlayShow>> findAllWillPlay() {
         return showLogic.findAllWillPlay(null);
+    }
+
+    @GetMapping(value = "findAllPlayingNowInRegion")
+    Result<Set<Show>> findAllPlayingNowInRegion(@RequestParam int regionId) {
+        return showLogic.findAllPlayingNowInRegion(regionId);
+    }
+
+    @GetMapping(value = "findAllWillPlayInRegion")
+    Result<Set<WillPlayShow>> findAllWillPlayInRegion(@RequestParam int regionId) {
+        return showLogic.findAllWillPlayInRegion(regionId);
     }
 
 }

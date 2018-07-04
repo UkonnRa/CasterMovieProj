@@ -1,19 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import 'react-area-linkage/dist/index.css'; // v2 or higher
-import { Divider, Icon, List, Tabs, Row, Col, Tag } from 'antd';
-import { RouteTable } from '../../route';
-import { Genre } from '../../model/show';
-import { Api } from '../../api';
-import {
-    findAllPublicInfoByShowId,
-    findPublicInfo
-} from '../../redux/publicInfo/actions';
-import { selectTheater } from '../../redux/theater/actions';
-import { chooseSeatButtonStyle } from './common'
-import { route } from '../../redux/ui/actions';
+import {Col, Divider, Icon, List, message, Row, Tabs, Tag} from 'antd';
+import {RouteTable} from '../../route';
+import {Genre} from '../../model/show';
+import {Api} from '../../api';
+import {findAllPublicInfoByShowId, findPublicInfo} from '../../redux/publicInfo/actions';
+import {selectTheater} from '../../redux/theater/actions';
+import {chooseSeatButtonStyle} from './common'
+import {route} from '../../redux/ui/actions';
 import Moment from 'moment';
-import { extendMoment } from 'moment-range';
+import {extendMoment} from 'moment-range';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -27,6 +24,7 @@ class ShowInfo extends React.Component {
     };
 
     componentWillMount = () => {
+        console.log(this.props.selectedShow);
         this.props
             .findAllPublicInfoByShowId(this.props.selectedShow.id)
             .then(() =>
@@ -53,12 +51,16 @@ class ShowInfo extends React.Component {
     };
 
     onChooseTheaterClick = theaterId => {
-        this.props.findTheaterInfo(theaterId).then(() => {
-            this.props.route(
-                RouteTable.CUSTOMER.TheaterInfo.path,
-                this.props.isAuthed
-            );
-        });
+        if (this.props.isAuthed) {
+            this.props.findTheaterInfo(theaterId).then(() => {
+                this.props.route(
+                    RouteTable.CUSTOMER.TheaterInfo.path,
+                    this.props.isAuthed
+                );
+            });
+        } else {
+            message.warning("选座前请先登录");
+        }
     };
 
     showInfo(show) {

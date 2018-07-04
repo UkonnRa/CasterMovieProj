@@ -4,8 +4,6 @@ import {connect} from 'react-redux';
 import {Genre} from '../../model/show';
 import _ from 'lodash';
 import './ShowList.css'
-import {Api} from "../../api";
-import axios from "axios/index";
 import {findAllByGenreInAndStartTime} from "../../redux/show/actions";
 import ShowItem from '../show/ShowItem'
 
@@ -24,16 +22,7 @@ class ShowList extends Component {
             });
         }
     };
-    componentWillMount = async () => {
-        this.props.findAllByGenreInAndStartTime({genreList: Array.from(Genre.keys()), startTime: Date.now()});
-        await axios.get(Api.show.findAllPlayingNow).then(resp => {
-            if (resp.data.value) this.setState({playingNowShows: resp.data.value});
-            else console.log(`ERROR in findAllPlayingNow: ${resp.data.message}`)
-        }).then(() => axios.get(Api.show.findAllWillPlay).then(resp => {
-            if (resp.data.value) this.setState({willPlayShows: resp.data.value});
-            else console.log(`ERROR in findAllWillPlay: ${resp.data.message}`)
-        }));
-    };
+
     pagination = {
         rowNumber: 6,
         rowSpan: 4,
@@ -60,7 +49,7 @@ class ShowList extends Component {
     tabContent = (isNowPlaying) => {
         const {selectedGenres} = this.state;
 
-        const shows = isNowPlaying ? this.state.playingNowShows : this.state.willPlayShows;
+        const shows = isNowPlaying ? this.props.showsPlayingNowInRegion : this.props.showsWillPlayInRegion;
 
         const resultShows = shows.filter(
             item =>
@@ -130,10 +119,6 @@ class ShowList extends Component {
             currPage: 1,
             keyword: '',
             startTime: Date.now(),
-
-            playingNowShows: [],
-            willPlayShows: [],
-
         };
     }
 
@@ -156,7 +141,10 @@ class ShowList extends Component {
 }
 
 const mapStateToProps = state => {
-    return {};
+    return {
+        showsPlayingNowInRegion: state.showReducer.showsPlayingNowInRegion,
+        showsWillPlayInRegion: state.showReducer.showsWillPlayInRegion,
+    };
 };
 
 const mapDispatchToProps = dispatch => {

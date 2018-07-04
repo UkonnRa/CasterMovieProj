@@ -26,7 +26,7 @@ export const mainComponent = (props) => {
     if (itemKey.indexOf("#") !== -1) {
         itemKey = props.itemKey.substring(0, props.itemKey.indexOf("#"))
     }
-    return RouteTable[props.role][itemKey].component
+    return RouteTable[props.user.role][itemKey].component
 };
 
 export const RouteTable = {

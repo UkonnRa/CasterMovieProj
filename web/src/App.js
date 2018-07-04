@@ -1,17 +1,20 @@
-import React, { Component } from 'react';
-import { Layout, Menu, Icon, Row, Col, Input } from 'antd';
+import React, {Component} from 'react';
+import {Avatar, Col, Dropdown, Input, Layout, Menu, message, Popover, Row} from 'antd';
 import EntryForm from './component/EntryForm';
-import FloatActionButton from './component/frame/FloatActionButton';
 import Main from './component/user/Main';
-import { route } from './redux/ui/actions';
-import { connect } from 'react-redux';
-import { mainComponent, RouteTable } from './route';
-import { getCurrentUser } from './redux/auth/actions';
-import { Role } from './model/user';
+import {route} from './redux/ui/actions';
+import {connect} from 'react-redux';
+import {mainComponent, RouteTable} from './route';
+import {getCurrentUser, logout} from './redux/auth/actions';
+import {changeLocation} from "./redux/location/actions";
+import {Role} from './model/user';
 import _ from 'lodash';
-
 import 'react-area-linkage/dist/index.css'; // v2 or higher
+import {pcaa} from "area-data";
+import {AreaCascader} from 'react-area-linkage';
 import './App.css'
+import {PREPARE_SIGN_IN} from "./redux/entry/actions";
+
 const { Header, Content, Footer } = Layout;
 
 class App extends Component {
@@ -26,7 +29,7 @@ class App extends Component {
         if (_.isEmpty(this.props.itemKey)) {
             this.props.route(
                 RouteTable[
-                    _.isEmpty(this.props.role) ? Role.CUSTOMER : this.props.role
+                    _.isEmpty(this.props.user.role) ? Role.CUSTOMER : this.props.user.role
                 ].Main.path,
                 this.props.isAuthed
             );
@@ -35,11 +38,51 @@ class App extends Component {
         }
     };
 
-    onCityChange = (value) => {
-        console.log(value);
-    }
+    onMenuClick = (e) => {
+        console.log(e.key);
+        if (e.key.toString() === "logout") {
+            this.props.route(RouteTable.CUSTOMER.Main.path, this.props.isAuthed);
+            message.info("登出成功，返回主页");
+            this.props.logout();
+        } else if (e.key.toString() === "login"){
+            this.props.showSignInForm();
+        } else {
+            this.props.route(e.key.toString(), this.props.isAuthed);
+        }
+    };
+
+    onRegionCodeChange = code => {
+        console.log(code);
+        this.props.changeLocation(code[2]);
+    };
+
+    loginMenu = (menu) => this.props.isAuthed? <Dropdown overlay={menu}>
+        <a className="ant-dropdown-link" href="#">
+            <Avatar
+                size="large"
+                src={this.props.user.avatar}
+                shape="square"
+                style={{ color: 'rgb(0, 54, 104)', marginLeft: '10px' }}
+            />
+        </a>
+    </Dropdown>: <Menu
+        onClick={this.onMenuClick}
+        theme="dark"
+        mode="horizontal"
+        style={{ lineHeight: '64px' }}>
+        <Menu.Item key="login">登录</Menu.Item>
+    </Menu>;
 
     render = () => {
+        const menu = <Menu
+            onClick={this.onMenuClick}
+            theme="dark"
+            mode="horizontal"
+            style={{ lineHeight: '64px' }}>
+                <Menu.Item key="MyInfo">我的信息</Menu.Item>
+                <Menu.Item key="logout">退出登录</Menu.Item>
+        </Menu>;
+
         return (
             <Layout style={{ minHeight: '100vh' }}>
                 {!this.props.isAuthed ? (
@@ -49,22 +92,18 @@ class App extends Component {
                 <Layout>
                     <Header>
                         <Row>
-                            <Col span={16}>
+                            <Col span={4}>
+                                    <Popover placement="bottomLeft" content={<AreaCascader onChange={this.onRegionCodeChange} defaultArea={['110000','110100','110101']} level={1} type='all' data={pcaa}/>}>
+                                        <div className="app-menu-location-popover">{Object.values(this.props.location)[0]}</div>
+                                    </Popover>
+                            </Col>
+                            <Col span={12}>
                                 <Menu
+                                    onClick={this.onMenuClick}
                                     theme="dark"
                                     mode="horizontal"
                                     defaultSelectedKeys={['Main']}
                                     style={{ lineHeight: '64px' }}>
-                                    <Menu.SubMenu title={<span>南京 <Icon type="down"/></span>}>
-                                        <Menu.ItemGroup title="南京">
-                                            <Menu.Item key="鼓楼区_320106">鼓楼区</Menu.Item>
-                                            <Menu.Item key="栖霞区_320113">栖霞区</Menu.Item>
-                                        </Menu.ItemGroup>
-                                        <Menu.ItemGroup title="北京">
-                                            <Menu.Item key="东城区_110101">东城区</Menu.Item>
-                                            <Menu.Item key="西城区_110102">西城区</Menu.Item>
-                                        </Menu.ItemGroup>
-                                    </Menu.SubMenu>
                                     <Menu.Item className="app-menu-item" key="Main">主页</Menu.Item>
                                     <Menu.Item className="app-menu-item" key="ShowList">剧集列表</Menu.Item>
                                 </Menu>
@@ -75,41 +114,12 @@ class App extends Component {
                                     onSearch={value => console.log(value)}/>
                             </Col>
                             <Col span={2}>
-                                <Menu
-                                    theme="dark"
-                                    mode="horizontal"
-                                    style={{ lineHeight: '64px' }}>
-                                    <Menu.SubMenu title={<span><Icon className="app-menu-item" style={{marginRight: '0px'}} type="user"/><Icon className="app-menu-item" type="down"/></span>}>
-                                            <Menu.Item key="MyInfo">我的信息</Menu.Item>
-                                            <Menu.Item key="Logout">退出登录</Menu.Item>
-                                    </Menu.SubMenu>
-                                </Menu>
+                                { this.loginMenu(menu) }
                             </Col>
                         </Row>
 
                     </Header>
                     <Content style={{ margin: '0 16px', marginTop: 80 }}>
-                        {/*<Breadcrumb style={{ margin: '0 0 16px' }}>*/}
-                            {/*{this.props.itemKey.indexOf('#') === -1 ? (*/}
-                                {/*<Breadcrumb.Item>*/}
-                                    {/*{*/}
-                                        {/*RouteTable[this.props.role][*/}
-                                            {/*_.isEmpty(this.props.itemKey)*/}
-                                                {/*? 'Main'*/}
-                                                {/*: this.props.itemKey*/}
-                                        {/*].text*/}
-                                    {/*}*/}
-                                {/*</Breadcrumb.Item>*/}
-                            {/*) : (*/}
-                                {/*<Breadcrumb.Item>*/}
-                                    {/*{*/}
-                                        {/*RouteTable[this.props.role][*/}
-                                            {/*this.props.itemKey.split('#')[0]*/}
-                                        {/*].text*/}
-                                    {/*}*/}
-                                {/*</Breadcrumb.Item>*/}
-                            {/*)}*/}
-                        {/*</Breadcrumb>*/}
                         <div
                             style={{
                                 padding: 24,
@@ -119,7 +129,6 @@ class App extends Component {
                         >
                             {mainComponent(this.props)}
 
-                            <FloatActionButton />
                         </div>
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>
@@ -134,14 +143,17 @@ class App extends Component {
 const mapStateToProps = state => {
     return {
         isAuthed: state.loginReducer.isAuthed,
-        username: state.loginReducer.username,
-        role: state.loginReducer.user.role,
-        itemKey: state.routeReducer.key
+        user: state.loginReducer.user,
+        itemKey: state.routeReducer.key,
+        location: state.locationReducer.location
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
+        showSignInForm: () => dispatch({ type: PREPARE_SIGN_IN }),
+        logout: () => dispatch(logout()),
+        changeLocation: (location) => dispatch(changeLocation(location)),
         getCurrentUser: () => dispatch(getCurrentUser()),
         route: (key, isAuthed, role = Role.CUSTOMER) =>
             dispatch(route(key, isAuthed, role))

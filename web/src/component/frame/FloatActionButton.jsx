@@ -1,10 +1,10 @@
 import React from 'react';
-import { Icon, Button, Affix, Avatar, Popover } from 'antd';
-import { connect } from 'react-redux';
-import { findAllByUserId } from '../../redux/order/actions';
-import { PREPARE_SIGN_IN, PREPARE_SIGN_UP } from '../../redux/entry/actions';
+import {Affix, Avatar, Button, Icon, Popover} from 'antd';
+import {connect} from 'react-redux';
+import {findAllByUserId} from '../../redux/order/actions';
+import {PREPARE_SIGN_UP} from '../../redux/entry/actions';
 import UserPopoverContent from '../user/PopoverContent';
-import { Role } from '../../model/user';
+import {Role} from '../../model/user';
 
 class FloatActionButton extends React.Component {
     render() {
@@ -63,7 +63,6 @@ class FloatActionButton extends React.Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        showSignInForm: () => dispatch({ type: PREPARE_SIGN_IN }),
         showSignUpForm: () => dispatch({ type: PREPARE_SIGN_UP }),
         findAllByUserId: userId => dispatch(findAllByUserId(userId))
     };
