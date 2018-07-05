@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
-import {Button, Select} from 'antd'
+import {Button, Select, message} from 'antd'
 import {route} from "../../redux/ui/actions";
 import {findAllByUserId} from "../../redux/couponInfo/actions";
 import _ from 'lodash'
@@ -37,7 +37,7 @@ class PayOrder extends Component {
             let disc = theater.discounts[this.props.user.level];
             this.setState({levelDiscount: (_.isEmpty(disc)? 1.0: disc)})
         }
-        else alert('cannot find theater')
+        else message.error('该剧院不存在，请重试')
     };
 
     renderer = ({hours, minutes, seconds, completed}) => {
@@ -72,11 +72,11 @@ class PayOrder extends Component {
             }
         });
         if (order.data.value && order.data.value.orderState === OrderState.READY) {
-            alert("ok");
+            message.info("支付成功");
             this.props.route(`${RouteTable.CUSTOMER.ShowList.path}`, this.props.isAuthed);
             this.props.getCurrentUser()
         } else {
-            alert(`订单支付失败：${order.data.message}`)
+            message.error(`订单支付失败：${order.data.message}`)
         }
     };
 

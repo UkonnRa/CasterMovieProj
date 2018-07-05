@@ -97,12 +97,12 @@ class MyInfoCard extends Component {
                     )
                     .then(userData => {
                         if (userData.data.value) {
-                            alert('充值成功');
+                            message.info('充值成功');
                         } else {
-                            alert(`充值失败，${userData.data.message}`);
+                            message.error(`充值失败，${userData.data.message}`);
                         }
                     })
-                    .catch(err => alert(err));
+                    .catch(err => message.error(err));
             },
             onCancel: () => {}
         });

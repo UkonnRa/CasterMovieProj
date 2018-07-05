@@ -137,7 +137,7 @@ class MyOrder extends Component {
     onPayOrderClick = async (orderInfo) => {
         const order = await axios.post(Api.order.payOrder, {
             orderId: orderInfo.id,
-            userId: this.props.user.id
+            userId: this.props.userId
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
