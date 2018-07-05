@@ -325,7 +325,7 @@
 
 .slider-poster {
     border-radius: 10px;
-    background: rgb(255, 225, 200);
+    background: rgba(225,225,225, .6);
 }
 
 .slider-poster img {

@@ -204,7 +204,7 @@ class TheaterInfo extends React.Component {
                     )}
                     afterChange={i => {
                         if (this.props.onGoingShows[i] !== this.props.show.id) {
-                            this.props.selectShow(this.props.onGoingShows[i]);
+                            this.updateShowInfo(this.props.onGoingShows[i]);
                         }
                     }}
                 >

@@ -21,7 +21,7 @@ class ShowItem extends React.Component {
         actions={[<div onClick={this.onShowSelect}>{this.props.show.startDate ? "预览": "购票"}</div>]}
     >
         <Card.Meta
-            title={<div>{this.props.show.name}</div>}
+            title={<div style={{wordWrap: 'break-word', whiteSpace: 'normal'}}>{this.props.show.name}</div>}
             description={this.props.show.startDate ?
                 <div>{moment(this.props.show.startDate).format("YYYY-MM-DD")} 起</div> :
                 <div>{this.props.show.duration / 60 | 0} 分钟</div>}
