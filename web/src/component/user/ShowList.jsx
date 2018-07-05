@@ -7,10 +7,6 @@ import './ShowList.css'
 import {findAllByGenreInAndStartTime} from "../../redux/show/actions";
 import ShowItem from '../show/ShowItem'
 
-class SearchPanel extends Component {
-
-}
-
 class ShowList extends Component {
 
     pagination = {
@@ -116,7 +112,7 @@ class ShowList extends Component {
     render() {
         return (
             <div>
-                <Tabs className="search-panel" defaultActiveKey={this.props.showListIsPlayingNow? "playingNow": "willPlay"}>
+                <Tabs className="search-panel" onChange={() => this.setState({currPage: 1})} defaultActiveKey={this.props.showListIsPlayingNow? "playingNow": "willPlay"}>
                     <Tabs.TabPane tab="正在热映" key="playingNow">
                         {this.tabContent(true)}
                     </Tabs.TabPane>

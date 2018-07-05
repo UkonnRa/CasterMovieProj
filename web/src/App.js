@@ -88,7 +88,6 @@ class App extends Component {
                 {!this.props.isAuthed ? (
                     <EntryForm visible={this.props.modalVisible} />
                 ) : null}
-                {/*<FrameSider />*/}
                 <Layout>
                     <Header>
                         <Row>
@@ -109,9 +108,7 @@ class App extends Component {
                                 </Menu>
                             </Col>
                             <Col span={6}>
-                                <Input.Search
-                                    placeholder="请输入关键词"
-                                    onSearch={value => console.log(value)}/>
+                                <div/>
                             </Col>
                             <Col span={2}>
                                 { this.loginMenu(menu) }
