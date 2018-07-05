@@ -49,10 +49,10 @@ class ShowList extends Component {
 
         return <div className="show-list-panel">
             <Row className="show-filter">
-                <Col span={9} align="right" className="show-label">
+                <Col span={8} align="right" className="show-label">
                     <div style={{fontWeight: "bold"}}>关键词：</div>
                 </Col>
-                <Col span={15} align="left" className="show-keyword-input"><Input.Search
+                <Col span={16} align="left" className="show-keyword-input"><Input.Search
                     placeholder="剧集名称"
                     style={{width: '50%', alignSelf: 'center'}}
                     onSearch={value => {
