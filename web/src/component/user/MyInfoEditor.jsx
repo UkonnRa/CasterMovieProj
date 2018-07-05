@@ -21,6 +21,10 @@ class MyInfoEditor extends React.Component {
         this.props.reportError(this.hasErrors());
     }
 
+    componentDidUpdate() {
+        this.props.reportError(this.hasErrors());
+    }
+
     checkPassword = (rule, value, callback) => {
         if (value && this.state.confirmDirty) {
             this.props.form.validateFields(['modifiedPasswordConfirm'], {
@@ -83,8 +87,7 @@ class MyInfoEditor extends React.Component {
             };
         };
 
-        const form = (
-            <Form style={{ textAlign: 'left' }}>
+        return <Form style={{ textAlign: 'left' }}>
                 <Form.Item
                     label={<span style={{ fontSize: '12px' }}>新密码</span>}
                     {...itemStatus('modifiedPassword')}
@@ -128,11 +131,7 @@ class MyInfoEditor extends React.Component {
                     )}
                 </Form.Item>
             </Form>
-        );
-
-        this.props.reportError(this.hasErrors());
-
-        return form;
+;
     }
 }
 

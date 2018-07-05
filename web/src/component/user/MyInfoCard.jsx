@@ -124,7 +124,7 @@ class MyInfoCard extends Component {
             reportError={hasErrors =>
                 this.setState({ canSubmitModification: !hasErrors })
             }
-            ref={ref => this.editorRef = ref}
+            registerRef={r => {this.editorRef = r}}
         />
     );
 
