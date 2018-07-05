@@ -23,9 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/castermovie/show/**",
             "/api/castermovie/publicInfo/**",
             "/api/castermovie/theater/register",
-            "/api/castermovie/theater/findAllShowPlaying",
-            "/api/castermovie/theater/findById",
-            "/api/castermovie/theater/findAllTheater",
+            "/api/castermovie/theater/find*",
     };
     private final UserService userService;
     private final TheaterService theaterService;

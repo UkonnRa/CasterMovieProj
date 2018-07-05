@@ -22,6 +22,8 @@ export const Api = {
         update: `${HTTP_HEADER}/theater/update`,
         newPublicInfo: `${HTTP_HEADER}/theater/newPublicInfo`,
         findAllShowPlaying: `${HTTP_HEADER}/theater/findAllShowPlaying`,
+        findAllShowPlayingNow: `${HTTP_HEADER}/theater/findAllShowPlayingNow`,
+        findAllShowWillPlay: `${HTTP_HEADER}/theater/findAllShowWillPlay`,
         findAllTheater: `${HTTP_HEADER}/theater/findAllTheater`,
         findById: `${HTTP_HEADER}/theater/findById`,
         bigFiveTotal: `${HTTP_HEADER}/theater/bigFiveTotal`,
