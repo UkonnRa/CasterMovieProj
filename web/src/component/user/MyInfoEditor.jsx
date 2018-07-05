@@ -8,7 +8,6 @@ class MyInfoEditor extends React.Component {
 
     constructor(props) {
         super(props);
-        props.registerRef(this);
     }
 
     getInfo = () => ({
