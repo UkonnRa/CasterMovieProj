@@ -134,13 +134,31 @@ class MyOrder extends Component {
         </div>
     );
 
+    onPayOrderClick = async (orderInfo) => {
+        const order = await axios.post(Api.order.payOrder, {
+            orderId: orderInfo.id,
+            userId: this.props.user.id
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                Authorization: `Bearer ${localStorage.getItem("jwt")}`
+            }
+        });
+        if (order.data.value && order.data.value.orderState === OrderState.READY) {
+            message.info("付款成功");
+            await this.props.findAllByUserId(this.props.userId);
+        } else {
+            message.error(`订单支付失败：${order.data.message}`)
+        }
+    };
+
     actionButton = item => {
         switch (item.orderState) {
             case 'UNPAID':
                 return (
                     <Button
                         type="primary"
-                        onClick={() => this.routeToPay(item)}
+                        onClick={() => this.onPayOrderClick(item)}
                     >
                         付款
                     </Button>
