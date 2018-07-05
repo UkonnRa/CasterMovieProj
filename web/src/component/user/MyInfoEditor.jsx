@@ -8,6 +8,7 @@ class MyInfoEditor extends React.Component {
 
     constructor(props) {
         super(props);
+        props.registerRef(this);
     }
 
     getInfo = () => ({
@@ -25,7 +26,7 @@ class MyInfoEditor extends React.Component {
     }
 
     checkPassword = (rule, value, callback) => {
-        if (value && this.state.confirmDirty) {
+        if (this.state.confirmDirty) {
             this.props.form.validateFields(['modifiedPasswordConfirm'], {
                 force: true
             });

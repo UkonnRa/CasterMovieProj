@@ -22,6 +22,7 @@ class Login extends React.Component {
         form.validateFields((err, values) => {
             if (err) {
                 message.error('请完整填写您的登录信息');
+                return;
             }
 
             login({ ...values, role })
@@ -31,8 +32,7 @@ class Login extends React.Component {
                     this.props.hideEntryForm();
                 })
                 .catch(err => {
-                    console.log(err);
-                    message.error("网络连接似乎出了问题，请稍后再试");
+                    message.error(err.toString());
                 });
         });
     };
