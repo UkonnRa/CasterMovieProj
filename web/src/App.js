@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Avatar, Col, Dropdown, Input, Layout, Menu, message, Popover, Row} from 'antd';
+import {Avatar, Col, Dropdown, Layout, Menu, message, Popover, Row} from 'antd';
 import EntryForm from './component/EntryForm';
 import Main from './component/user/Main';
 import {route} from './redux/ui/actions';
@@ -52,19 +52,18 @@ class App extends Component {
     };
 
     onRegionCodeChange = code => {
-        console.log(code);
         this.props.changeLocation(code[2]);
     };
 
     loginMenu = (menu) => this.props.isAuthed? <Dropdown overlay={menu}>
-        <a className="ant-dropdown-link" href="#">
+        <span className="ant-dropdown-link">
             <Avatar
                 size="large"
                 src={this.props.user.avatar}
                 shape="square"
                 style={{ color: 'rgb(0, 54, 104)', marginLeft: '10px' }}
             />
-        </a>
+        </span>
     </Dropdown>: <Menu
         onClick={this.onMenuClick}
         theme="dark"
@@ -77,7 +76,6 @@ class App extends Component {
         const menu = <Menu
             onClick={this.onMenuClick}
             theme="dark"
-            mode="horizontal"
             style={{ lineHeight: '64px' }}>
                 <Menu.Item key="MyInfo">我的信息</Menu.Item>
                 <Menu.Item key="logout">退出登录</Menu.Item>
@@ -89,7 +87,7 @@ class App extends Component {
                     <EntryForm visible={this.props.modalVisible} />
                 ) : null}
                 <Layout>
-                    <Header>
+                    <Header style={{position: 'fixed', zIndex: 1, width: '100%'}}>
                         <Row>
                             <Col span={4}>
                                     <Popover placement="bottomLeft" content={<AreaCascader onChange={this.onRegionCodeChange} defaultArea={['110000','110100','110101']} level={1} type='all' data={pcaa}/>}>

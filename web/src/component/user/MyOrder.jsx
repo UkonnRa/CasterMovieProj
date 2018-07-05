@@ -237,6 +237,7 @@ class MyOrder extends Component {
 
     image = item => (
         <img
+            alt="海报"
             src={item.poster}
             style={{
                 float: 'right',

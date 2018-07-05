@@ -1,4 +1,4 @@
-import {FIND_ALL_PUBLIC_INFO_BY_SHOW_ID, FIND_PUBLIC_INFO_BY_ID, SELECT_PUBLIC_INFO} from "./types";
+import {FIND_ALL_PUBLIC_INFO_BY_SHOW_ID, FIND_PUBLIC_INFO_BY_ID} from "./types";
 import axios from "axios";
 import {Api} from '../../api'
 

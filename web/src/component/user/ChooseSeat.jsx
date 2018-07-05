@@ -130,7 +130,9 @@ class ChooseSeat extends Component {
                 <Col span={9} className="   choose-seat-side">
                     <Row type="flex" justify="start">
                         <Col span={13}>
-                            <img className="choose-seat-side-img"
+                            <img
+                                alt="pic"
+                                className="choose-seat-side-img"
                                  src={this.state.selectedShow.poster}
                                  style={{width: '160px'}}/>
                         </Col>

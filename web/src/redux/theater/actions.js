@@ -1,7 +1,6 @@
 import {
     SELECT_THEATER,
-    ON_GOING_SHOWS_OF_THEATER,
-    COMING_SOON_SHOWS_OF_THEATER
+    ON_GOING_SHOWS_OF_THEATER
 } from './types';
 import axios from 'axios';
 import { Api } from '../../api';
@@ -23,10 +22,10 @@ export const selectTheater = id => dispatch =>
                 });
         });
 
-export const findOnGoingShowsByTheater = theaterId => dispatch =>
+export const findOnGoingShowsByTheater = id => dispatch =>
     axios
-        .get(Api.theater.onGoingPlays, {
-            params: { theaterId },
+        .get(Api.theater.findAllShowPlayingNow, {
+            params: { id },
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 Authorization: `Bearer ${localStorage.getItem('jwt')}`

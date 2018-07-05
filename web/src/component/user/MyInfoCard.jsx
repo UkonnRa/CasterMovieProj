@@ -29,7 +29,7 @@ class MyInfoCard extends Component {
     };
 
     performModify = () => {
-        const { hasErrors, getInfo } = this.state.editorRef;
+        const { hasErrors, getInfo } = this.editorRef;
 
         message.destroy();
 
@@ -109,6 +109,7 @@ class MyInfoCard extends Component {
 
     avatar = (avatar) => (
         <img
+            alt="我的头像"
             src={avatar}
             style={{
                 width: '95%',
@@ -123,9 +124,7 @@ class MyInfoCard extends Component {
             reportError={hasErrors =>
                 this.setState({ canSubmitModification: !hasErrors })
             }
-            registerRef={ref => {
-                this.state.editorRef = ref;
-            }}
+            ref={ref => this.editorRef = ref}
         />
     );
 

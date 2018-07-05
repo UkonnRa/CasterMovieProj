@@ -30,8 +30,6 @@ export const Api = {
         orderStatesTotal: `${HTTP_HEADER}/theater/orderStatesTotal`,
         grossIncomeMonthly: `${HTTP_HEADER}/theater/grossIncomeMonthly`,
         grossIncomeMonthlyRange: `${HTTP_HEADER}/theater/grossIncomeMonthlyRange`,
-        onGoingPlays: `${HTTP_HEADER}/theater/findAllShowPlaying`,
-        comingSoonPlays: `${HTTP_HEADER}/theater/findAllWillPlay`
     },
     show: {
         newShow: `${HTTP_HEADER}/show/newShow`,

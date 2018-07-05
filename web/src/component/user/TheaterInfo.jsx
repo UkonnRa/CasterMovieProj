@@ -11,8 +11,6 @@ import { findOnGoingShowsByTheater } from '../../redux/theater/actions';
 import { chooseSeatButtonStyle } from './common';
 import { route } from '../../redux/ui/actions';
 import moment from 'moment';
-import axios from 'axios';
-import { Api } from '../../api';
 import _ from 'lodash';
 import { RouteTable } from '../../route';
 import Slider from 'react-slick';
@@ -39,41 +37,6 @@ function filterOwnPublicInfo(props) {
     );
 }
 
-class ShowCard extends React.Component {
-    state = {
-        poster: null
-    };
-
-    componentWillMount() {
-        axios
-            .get(Api.show.findById, {
-                params: { id: this.props.showId },
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    Authorization: `Bearer ${localStorage.getItem('jwt')}`
-                }
-            })
-            .then(resp => {
-                if (resp.data) {
-                    this.setState({ poster: resp.data.value.poster });
-                }
-            });
-    }
-
-    render() {
-        return (
-            <div>
-                <img
-                    src={
-                        this.state.poster ||
-                        'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1466133021,2867387712&fm=27&gp=0.jpg'
-                    }
-                />
-            </div>
-        );
-    }
-}
-
 class TheaterInfo extends React.Component {
     constructor(props) {
         super(props);
@@ -88,19 +51,25 @@ class TheaterInfo extends React.Component {
 
     goToSeatChoose = publicInfo => {
         this.props.selectPublicInfo(publicInfo);
-        this.props.route(RouteTable.CUSTOMER.ChooseSeat.path, this.props.isAuthed);
+        this.props.route(
+            RouteTable.CUSTOMER.ChooseSeat.path,
+            this.props.isAuthed
+        );
     };
 
-    updateShowInfo = id => {
-        this.props.selectShow(id);
-        this.props.findPublicInfo(id);
+    updateShowInfo = show => {
+        this.props.selectShow(show.id);
+        this.props.findPublicInfo(show.id);
     };
 
     componentWillMount() {
         this.props.findOnGoingShows(this.props.theater.id).then(() => {
             if (this.slider) {
                 this.slider.slickGoTo(
-                    this.props.onGoingShows.indexOf(this.props.show.id),
+                    _.findIndex(
+                        this.props.onGoingShows,
+                        show => show.id === this.props.show.id
+                    ),
                     true
                 );
             }
@@ -117,6 +86,7 @@ class TheaterInfo extends React.Component {
             <Row align="top">
                 <Col offset={1} span={6}>
                     <img
+                        alt="影院照片"
                         src={theater.avatar}
                         style={{
                             width: '100%',
@@ -154,11 +124,11 @@ class TheaterInfo extends React.Component {
             display: 'flex',
             alignItems: 'center',
             height: '100%',
-            zIndex: '1',
             width: '5%'
         };
         const arrowIconStyle = {
             fontSize: '3.4em',
+            zIndex: '1',
             color: 'white'
         };
         const cursorDivStyle = {
@@ -189,6 +159,7 @@ class TheaterInfo extends React.Component {
                     <Icon type="caret-up" style={arrowIconStyle} />
                 </div>
                 <Slider
+                    draggable={true}
                     arrows={false}
                     swipeToSlide={true}
                     accessibility={true}
@@ -199,17 +170,26 @@ class TheaterInfo extends React.Component {
                     slidesToShow={5}
                     slidesToScroll={1}
                     ref={s => (this.slider = s)}
-                    initialSlide={this.props.onGoingShows.indexOf(
-                        this.props.show.showId
+                    initialSlide={_.findIndex(
+                        this.props.onGoingShows,
+                        show => show.id === this.props.show.id
                     )}
                     afterChange={i => {
-                        if (this.props.onGoingShows[i] !== this.props.show.id) {
+                        if (
+                            this.props.onGoingShows[i].id !== this.props.show.id
+                        ) {
                             this.updateShowInfo(this.props.onGoingShows[i]);
                         }
                     }}
                 >
-                    {this.props.onGoingShows.map(id => (
-                        <ShowCard showId={id} />
+                    {this.props.onGoingShows.map((show, index) => (
+                        <div>
+                            <img
+                                alt={show.name}
+                                onClick={() => this.slider.slickGoTo(index)}
+                                src={show.poster}
+                            />
+                        </div>
                     ))}
                 </Slider>
             </div>
@@ -297,9 +277,7 @@ class TheaterInfo extends React.Component {
 
 const mapStateToProps = state => ({
     theater: state.theaterReducer.selectedTheater,
-    onGoingShows: _
-        .uniqBy(state.theaterReducer.onGoingShowsOfTheater || [], 'showId')
-        .map(x => x.showId),
+    onGoingShows: state.theaterReducer.onGoingShowsOfTheater,
     show: state.showReducer.selectedShow,
     publicInfo: state.publicInfoReducer.publicInfos,
     isAuthed: state.loginReducer.isAuthed
@@ -307,7 +285,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     selectShow: showId => dispatch(selectShow(showId)),
-    selectPublicInfo: publicInfo => dispatch({type: SELECT_PUBLIC_INFO, selectedPublicInfo: publicInfo}),
+    selectPublicInfo: publicInfo =>
+        dispatch({ type: SELECT_PUBLIC_INFO, selectedPublicInfo: publicInfo }),
     findPublicInfo: showId => dispatch(findAllPublicInfoByShowId(showId)),
     findOnGoingShows: theaterId =>
         dispatch(findOnGoingShowsByTheater(theaterId)),

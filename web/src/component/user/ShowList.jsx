@@ -49,10 +49,10 @@ class ShowList extends Component {
 
         return <div className="show-list-panel">
             <Row className="show-filter">
-                <Col span={6} align="right" className="show-label">
+                <Col span={9} align="right" className="show-label">
                     <div style={{fontWeight: "bold"}}>关键词：</div>
                 </Col>
-                <Col span={18} align="left" className="show-keyword-input"><Input.Search
+                <Col span={15} align="left" className="show-keyword-input"><Input.Search
                     placeholder="剧集名称"
                     style={{width: '50%', alignSelf: 'center'}}
                     onSearch={value => {
@@ -62,11 +62,11 @@ class ShowList extends Component {
                 /></Col>
             </Row>
 
-            <Row className="show-filter">
-                <Col span={6} align="right" className="show-label">
+            <Row className="show-filter" type="flex" align="middle">
+                <Col span={8} align="right" className="show-label">
                     <div style={{fontWeight: "bold"}}>类型：</div>
                 </Col>
-                <Col span={18} align="left" className="show-type-tags">{Array.from(Genre.entries()).map(pair => {
+                <Col span={16} align="left" className="show-type-tags">{Array.from(Genre.entries()).map(pair => {
                     return (
                         <Tag.CheckableTag
                             key={pair[0]}

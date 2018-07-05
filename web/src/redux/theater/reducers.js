@@ -5,16 +5,15 @@ import {
 
 const initState = {
     selectedTheater: {},
-    onGoingShowsOfTheater: {},
-    comingSoonShowsOfTheater: {}
+    onGoingShowsOfTheater: []
 };
 
 export function theaterReducer(state = initState, action = {}) {
     switch (action.type) {
         case SELECT_THEATER:
-            return { selectedTheater: action.selectedTheater };
+            return { ...state, selectedTheater: action.selectedTheater };
         case ON_GOING_SHOWS_OF_THEATER:
-            return { onGoingShowsOfTheater: action.payload, selectedTheater: state.selectedTheater };
+            return { ...state, onGoingShowsOfTheater: action.payload };
         default:
             return state;
     }

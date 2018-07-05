@@ -24,7 +24,6 @@ class ShowInfo extends React.Component {
     };
 
     componentWillMount = () => {
-        console.log(this.props.selectedShow);
         this.props
             .findAllPublicInfoByShowId(this.props.selectedShow.id)
             .then(() =>
@@ -68,6 +67,7 @@ class ShowInfo extends React.Component {
             <Row align="top">
                 <Col offset={1} span={6}>
                     <img
+                        alt="海报"
                         src={show.poster}
                         style={{
                             width: '100%',
