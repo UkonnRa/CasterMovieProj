@@ -12,3 +12,7 @@
     width: 80%;
     margin: auto;
 }
+
+.ant-tabs-ink-bar {
+    background-color: #00152a;
+}
